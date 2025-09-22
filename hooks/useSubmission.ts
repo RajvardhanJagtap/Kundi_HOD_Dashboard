@@ -1,6 +1,10 @@
 // hooks/useSubmission.ts
 import { useState, useCallback } from 'react';
-import { approveCATMarksByHOD, approveExamMarksByHOD } from '@/lib/module-marks/grading-api';
+import { 
+  approveCATMarksByHOD, 
+  approveExamMarksByHOD,
+  approveOverallMarksByHOD 
+} from '@/lib/module-marks/grading-api';
 
 interface SubmissionData {
   success: boolean;
@@ -11,13 +15,14 @@ interface SubmissionData {
 interface SubmissionOptions {
   comments?: string;
   additionalNotes?: string;
+  forwardToNext?: boolean;
 }
 
 interface UseSubmissionReturn {
   isSubmitting: boolean;
   submissionData: SubmissionData | null;
   error: string | null;
-  submit: (moduleId: string, type: 'cat' | 'exam', options?: SubmissionOptions) => Promise<void>;
+  submit: (moduleId: string, type: 'cat' | 'exam' | 'overall', options?: SubmissionOptions) => Promise<void>;
   clearSubmission: () => void;
 }
 
@@ -28,7 +33,7 @@ export const useSubmission = (): UseSubmissionReturn => {
 
   const submit = useCallback(async (
     moduleId: string, 
-    type: 'cat' | 'exam',
+    type: 'cat' | 'exam' | 'overall',
     options?: SubmissionOptions
   ) => {
     if (!moduleId) {
@@ -54,8 +59,17 @@ export const useSubmission = (): UseSubmissionReturn => {
         result = await approveExamMarksByHOD(
           moduleId
         );
+      } else if (type === 'overall') {
+        result = await approveOverallMarksByHOD(
+          moduleId,
+          {
+            comments: options?.comments || 'Overall marks approved and ready for Dean review',
+            forwardToNext: options?.forwardToNext || true,
+            additionalNotes: options?.additionalNotes || 'Module assessment completed successfully'
+          }
+        );
       } else {
-        throw new Error('Invalid submission type. Must be "cat" or "exam"');
+        throw new Error('Invalid submission type. Must be "cat", "exam", or "overall"');
       }
 
       // Handle successful submission

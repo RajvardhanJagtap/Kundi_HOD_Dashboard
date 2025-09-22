@@ -1,6 +1,34 @@
 // lib/module-marks/grading-api.ts
 import { api } from '@/lib/api';
 
+// Define interface for overall approval data
+export interface OverallApprovalData {
+  comments: string;
+  forwardToNext: boolean;
+  additionalNotes: string;
+}
+
+/**
+ * Approve overall module marks by HOD
+ * @param moduleId The ID of the module to approve
+ * @param data The approval data including comments and notes
+ */
+export async function approveOverallMarksByHOD(
+  moduleId: string,
+  data: OverallApprovalData
+): Promise<any> {
+  try {
+    const response = await api.post(
+      `/grading/marks-submission/module/${moduleId}/hod/approve-overall`,
+      data
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('Error approving overall marks:', error);
+    throw new Error(error.message || 'Failed to approve overall marks');
+  }
+}
+
 // Fetch the marksheet Excel file from database
 export const fetchModuleMarkSheetExcel = async (moduleId: string): Promise<Blob> => {
   try {
