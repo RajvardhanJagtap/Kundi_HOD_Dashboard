@@ -59,23 +59,6 @@ const departmentStats = {
   lowestModuleAvg: 62.1,
 };
 
-const deadlinesData = [
-  {
-    module: "COE3166 - Web Development",
-    instructor: "Ms. Carol Davis",
-    deadline: "Dec 18, 2024",
-    status: "Overdue",
-    daysLeft: -2,
-  },
-  {
-    module: "COE3163 - Software Engineering",
-    instructor: "Dr. Alice Smith",
-    deadline: "Dec 20, 2024",
-    status: "2 days left",
-    daysLeft: 2,
-  },
-];
-
 // Helper function to generate consistent status for demonstration
 const getStatusForAssignment = (assignmentId: string) => {
   const statuses = ["Pending", "Approved", "Overdue", "Rejected"];
@@ -262,9 +245,6 @@ export default function MarksSubmittedPage() {
     setLocalPage(1);
   }, [moduleSearch, statusFilter, yearFilter]);
 
-  // Deadlines state
-  const [selectedModule, setSelectedModule] = React.useState("");
-  const [selectedDeadline, setSelectedDeadline] = React.useState("");
 
   const renderStatusBadge = (status: string) => {
     const statusConfig = {
@@ -342,15 +322,6 @@ export default function MarksSubmittedPage() {
             onClick={() => setMainActiveTab("analytics")}
           >
             Analytics
-          </button>
-          <button
-            className={`px-6 py-2 rounded-md font-medium text-sm border ${mainActiveTab === "deadlines"
-                ? "bg-[#026892] text-white border-gray-200 hover:bg-[#026892]/90"
-                : "bg-white text-black border-gray-200 hover:bg-gray-100"
-              }`}
-            onClick={() => setMainActiveTab("deadlines")}
-          >
-            Deadlines
           </button>
         </div>
         <button 
@@ -722,115 +693,6 @@ export default function MarksSubmittedPage() {
             </div>
           </Card>
         </div>
-      )}
-
-      {/* Deadlines Tab */}
-      {mainActiveTab === "deadlines" && (
-        <Card className="p-6 border border-gray-200">
-          <h2 className="text-2xl font-bold text-black mb-1">
-            Mark Submission Deadlines
-          </h2>
-          <p className="text-gray-600 text-sm mb-6">
-            Manage and track mark submission deadlines for all modules
-          </p>
-
-          {/* Set New Deadline Section */}
-          <div className="bg-gray-50 p-4 rounded-lg mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Set New Deadline
-            </h3>
-            <div className="flex gap-4 items-end">
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Module
-                </label>
-                <select
-                  value={selectedModule}
-                  onChange={(e) => setSelectedModule(e.target.value)}
-                  className="w-full border rounded-md px-3 py-2 text-sm text-gray-700 bg-white"
-                >
-                  <option value="">Select Module</option>
-                  {moduleAssignments.map((assignment) => (
-                    <option key={assignment.id} value={assignment.moduleId}>
-                      {assignment.moduleCode} - {assignment.moduleName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Deadline
-                </label>
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={selectedDeadline}
-                    onChange={(e) => setSelectedDeadline(e.target.value)}
-                    className="w-full border rounded-md px-3 py-2 text-sm text-gray-700 bg-white pr-10"
-                  />
-                  <svg
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <button className="bg-[#026892] text-white px-6 py-2 rounded-md font-medium text-sm hover:bg-[#026892]/90">
-                Set Deadline
-              </button>
-            </div>
-          </div>
-
-          {/* Upcoming Deadlines Section */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Upcoming Deadlines
-            </h3>
-            <div className="space-y-3">
-              {deadlinesData.map((deadline, index) => (
-                <div
-                  key={index}
-                  className={`p-4 rounded-lg border ${deadline.status === "Overdue"
-                      ? "bg-red-50 border-red-200"
-                      : "bg-yellow-50 border-yellow-200"
-                    }`}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
-                        {deadline.module}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        Instructor: {deadline.instructor}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Deadline: {deadline.deadline}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${deadline.status === "Overdue"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                          }`}
-                      >
-                        {deadline.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
       )}
     </div>
   );
