@@ -46,6 +46,69 @@ export interface ModuleAssignment {
   updatedBy: string | null;
 }
 
+// New interfaces for department group readiness
+export interface ModuleDetail {
+  moduleAssignmentId: string;
+  moduleCode: string;
+  moduleName: string;
+  moduleCredits: number;
+  lecturerName: string;
+  semesterId: string;
+  catStatus: string;
+  examStatus: string;
+  overallStatus: string;
+  isComplete: boolean;
+  catSubmittedDate: string | null;
+  examSubmittedDate: string | null;
+  overallSubmittedDate: string | null;
+  catApprovedDate: string | null;
+  examApprovedDate: string | null;
+  overallApprovedDate: string | null;
+  completionSummary: string;
+}
+
+export interface GroupReadiness {
+  groupId: string;
+  groupName: string;
+  groupCode: string;
+  programName: string;
+  programCode: string;
+  yearLevel: number;
+  semesterId: string;
+  semesterName: string;
+  academicYear: string;
+  readinessStatus: string;
+  progressPercentage: number;
+  totalModules: number;
+  completedModules: number;
+  canBeSubmittedToDean: boolean;
+  isSubmittedToDean: boolean;
+  submissionStatus: string | null;
+  submissionDate: string | null;
+  moduleDetails: ModuleDetail[];
+  message: string | null;
+  lastUpdated: string;
+  progressDisplay: string;
+  displayStatus: string;
+  statusBadgeColor: string;
+}
+
+export interface DepartmentGroupReadinessResponse {
+  success: boolean;
+  message: string;
+  data: {
+    groups: GroupReadiness[];
+    totalGroups: number;
+    readyGroups: number;
+    partiallyReadyGroups: number;
+    notReadyGroups: number;
+    overallReadinessPercentage: number;
+    generatedAt: string;
+    summary: string;
+  };
+  timestamp: string;
+}
+
 export interface ModuleAssignmentsResponse {
   success: boolean;
   message: string;
@@ -122,7 +185,15 @@ export interface ModuleSubmissionDetailsListResponse {
 
 // API functions
 export const moduleAssignmentsApi = {
-  // Get all module assignments with optional filters and pagination
+  // Get department group readiness (NEW - replaces getModuleAssignments for HOD view)
+  getDepartmentGroupReadiness: async (semesterId: string): Promise<DepartmentGroupReadinessResponse> => {
+    const response = await api.get(`/grading/group-readiness/my-department`, { 
+      params: { semesterId } 
+    });
+    return response.data;
+  },
+
+  // Get all module assignments with optional filters and pagination (kept for backward compatibility)
   getModuleAssignments: async (params?: ModuleAssignmentsParams): Promise<ModuleAssignmentsResponse> => {
     const response = await api.get('/academics/module-assignments', { params });
     return response.data;

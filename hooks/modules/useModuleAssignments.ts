@@ -5,7 +5,9 @@ import {
   ModuleAssignmentsParams,
   ModuleSubmissionDetails,
   ModuleSubmissionDetailsResponse,
-  ModuleSubmissionDetailsListResponse
+  ModuleSubmissionDetailsListResponse,
+  GroupReadiness,
+  DepartmentGroupReadinessResponse
 } from '@/lib/modules/moduleAssignmentsApi';
 
 interface UseModuleAssignmentsState {
@@ -27,6 +29,100 @@ interface UseModuleAssignmentsReturn extends UseModuleAssignmentsState {
   setPageSize: (size: number) => void;
   clearError: () => void;
 }
+
+// New interface for department group readiness state
+interface UseDepartmentGroupReadinessState {
+  data: GroupReadiness[];
+  loading: boolean;
+  error: string | null;
+  totalGroups: number;
+  readyGroups: number;
+  partiallyReadyGroups: number;
+  notReadyGroups: number;
+  overallReadinessPercentage: number;
+  summary: string;
+}
+
+interface UseDepartmentGroupReadinessReturn extends UseDepartmentGroupReadinessState {
+  fetchGroupReadiness: (semesterId: string) => Promise<void>;
+  refetch: (semesterId: string) => Promise<void>;
+  clearError: () => void;
+}
+
+// New hook for department group readiness (for HOD view)
+export const useDepartmentGroupReadiness = (initialSemesterId?: string): UseDepartmentGroupReadinessReturn => {
+  const [state, setState] = useState<UseDepartmentGroupReadinessState>({
+    data: [],
+    loading: false,
+    error: null,
+    totalGroups: 0,
+    readyGroups: 0,
+    partiallyReadyGroups: 0,
+    notReadyGroups: 0,
+    overallReadinessPercentage: 0,
+    summary: '',
+  });
+
+  const fetchGroupReadiness = useCallback(async (semesterId: string) => {
+    if (!semesterId) {
+      setState(prev => ({ ...prev, error: 'Semester ID is required' }));
+      return;
+    }
+
+    try {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+      
+      const response = await moduleAssignmentsApi.getDepartmentGroupReadiness(semesterId);
+      
+      if (response.success) {
+        setState(prev => ({
+          ...prev,
+          data: response.data.groups,
+          totalGroups: response.data.totalGroups,
+          readyGroups: response.data.readyGroups,
+          partiallyReadyGroups: response.data.partiallyReadyGroups,
+          notReadyGroups: response.data.notReadyGroups,
+          overallReadinessPercentage: response.data.overallReadinessPercentage,
+          summary: response.data.summary,
+          loading: false,
+          error: null,
+        }));
+      } else {
+        setState(prev => ({
+          ...prev,
+          loading: false,
+          error: response.message || 'Failed to fetch department group readiness',
+        }));
+      }
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: error instanceof Error ? error.message : 'An error occurred while fetching department group readiness',
+      }));
+    }
+  }, []);
+
+  const refetch = useCallback((semesterId: string) => fetchGroupReadiness(semesterId), [fetchGroupReadiness]);
+
+  const clearError = useCallback(() => {
+    setState(prev => ({ ...prev, error: null }));
+  }, []);
+
+  // Fetch data on mount if initial semester ID is provided
+  useEffect(() => {
+    if (initialSemesterId) {
+      fetchGroupReadiness(initialSemesterId);
+    }
+  }, [initialSemesterId, fetchGroupReadiness]);
+
+  return {
+    ...state,
+    fetchGroupReadiness,
+    refetch,
+    clearError,
+  };
+};
 
 export const useModuleAssignments = (initialParams?: ModuleAssignmentsParams): UseModuleAssignmentsReturn => {
   const [state, setState] = useState<UseModuleAssignmentsState>({

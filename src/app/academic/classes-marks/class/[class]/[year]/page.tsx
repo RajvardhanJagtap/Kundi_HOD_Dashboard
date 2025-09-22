@@ -121,28 +121,7 @@ export default function ClassMarksPage() {
         setSelectedSemester(semesterId);
         localStorage.setItem("selectedSemester", semesterId);
     };
-
-    // Handle HOD approval
-    const handleApproveOverall = async () => {
-        const moduleId = typeof window !== "undefined" ? localStorage.getItem("selectedModuleId") || "16dd413e-5426-4093-9687-01e15f027ea9" : "16dd413e-5426-4093-9687-01e15f027ea9";
-        
-        const approvalData = {
-            comments: "Overall marks approved and ready for Dean review",
-            forwardToNext: true,
-            additionalNotes: "Module assessment completed successfully"
-        };
-
-        const result = await approveOverallMarks(moduleId, approvalData);
-        
-        if (result) {
-            setIsApproved(true);
-            // Persist approval state
-            localStorage.setItem(`marks_approved_${groupId}_${semesterId}`, "true");
-            toast.success("Overall marks approved successfully!");
-        } else if (approvalError) {
-            toast.error(approvalError);
-        }
-    };
+    
 
     // Handle submit to dean
     const handleSubmitToDean = async () => {
@@ -223,31 +202,6 @@ export default function ClassMarksPage() {
                             <p className="text-sm text-gray-600">Review and approve all marks before submitting to dean</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                            <Button
-                                onClick={handleApproveOverall}
-                                disabled={isApprovingOverall || isApproved}
-                                className={`${isApproved 
-                                    ? 'bg-green-600 hover:bg-green-700' 
-                                    : 'bg-[#026892] hover:bg-[#025a73]'
-                                } text-white whitespace-nowrap`}
-                            >
-                                {isApprovingOverall ? (
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        Approving...
-                                    </div>
-                                ) : isApproved ? (
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle className="h-4 w-4" />
-                                        Approved
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle className="h-4 w-4" />
-                                        Approve Marks
-                                    </div>
-                                )}
-                            </Button>
 
                             <Button
                                 onClick={handleSubmitToDean}
@@ -257,7 +211,7 @@ export default function ClassMarksPage() {
                                     !isApproved 
                                         ? "border-gray-300 text-gray-500 cursor-not-allowed" 
                                         : isSubmittedToDean
-                                        ? "bg-green-600 hover:bg-green-700 text-white"
+                                        ? "bg-[#026892] hover:bg-[#026892]/90 text-white"
                                         : "bg-[#026892] hover:bg-[#026892]/90 text-white"
                                 }`}
                             >
