@@ -27,14 +27,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   Sidebar,
   SidebarContent,
@@ -103,6 +96,7 @@ const hodNavigation = [
       { title: "Progress", url: "/students/progress" },
       { title: "Appeals", url: "/students/appeals" },
       { title: "Graduands", url: "/students/graduands" },
+      { title: "Student Transcripts", url: "/students/transcripts" },
     ],
   },
   {
