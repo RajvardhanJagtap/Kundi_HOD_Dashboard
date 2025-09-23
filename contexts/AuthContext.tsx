@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../lib/api";
+import { set } from "date-fns";
 
 interface User {
   id: string;
@@ -60,11 +61,13 @@ interface AuthContextType {
   user: User | null;
   permissions: string[];
   roles: string[];
+  departmentId: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
+  getDepartmentId: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -85,6 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
+  const [departmentId, setDepartmentId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -117,6 +121,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(data.user);
       setPermissions(data.permissions);
       setRoles(data.roles);
+    setDepartmentId(data.user.attributes?.DEPARTMENT_ID || null);
       setIsAuthenticated(true);
     } catch (error: any) {
       // Handle different types of errors
@@ -159,6 +164,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     setPermissions([]);
     setRoles([]);
+    setDepartmentId(null);
     setIsAuthenticated(false);
   };
 
@@ -186,6 +192,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(JSON.parse(storedUser));
         setPermissions(JSON.parse(storedPermissions));
         setRoles(JSON.parse(storedRoles));
+        setDepartmentId(JSON.parse(storedUser).attributes?.DEPARTMENT_ID || null);
         setIsAuthenticated(true);
       } else {
         logout();
@@ -198,6 +205,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const getDepartmentId = (): string | null => {
+    return departmentId || user?.attributes?.DEPARTMENT_ID || null;
+  }
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -206,11 +217,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     permissions,
     roles,
+    departmentId,
     isLoading,
     isAuthenticated,
     login,
     logout,
     checkAuth,
+    getDepartmentId
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
