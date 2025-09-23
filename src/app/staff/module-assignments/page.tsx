@@ -1,388 +1,682 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  BarChart as RechartsBarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts"
-
-interface Lecturer {
-  id: string
-  name: string
-  specialization: string
-  capacityHours: number
-  currentHours: number
-}
-
-interface Module {
-  code: string
-  name: string
-  yearOfStudy: number
-  semester: string
-  credits: number
-  hours: number
-}
-
-interface AssignmentRow {
-  id: string
-  moduleCode: string
-  lecturerId: string
-  yearOfStudy: number
-  semester: string
-}
-
-const YEARS_OF_STUDY = [1, 2, 3, 4]
-const SEMESTERS = ["Semester 1", "Semester 2"]
-
-const LECTURERS: Lecturer[] = [
-  { id: "l1", name: "Dr. Alice Smith", specialization: "Software Engineering", capacityHours: 16, currentHours: 8 },
-  { id: "l2", name: "Prof. Bob Johnson", specialization: "Data Science", capacityHours: 16, currentHours: 10 },
-  { id: "l3", name: "Dr. Sarah Lee", specialization: "AI/ML", capacityHours: 12, currentHours: 6 },
-  { id: "l4", name: "Ms. Carol White", specialization: "Databases", capacityHours: 14, currentHours: 12 },
-]
-
-const MODULES: Module[] = [
-  { code: "CSC101", name: "Intro to Computer Science", yearOfStudy: 1, semester: "Semester 1", credits: 12, hours: 4 },
-  { code: "CSC102", name: "Programming Fundamentals", yearOfStudy: 1, semester: "Semester 2", credits: 12, hours: 4 },
-  { code: "CSC201", name: "Object Oriented Programming", yearOfStudy: 2, semester: "Semester 1", credits: 12, hours: 4 },
-  { code: "CSC203", name: "Data Structures & Algorithms", yearOfStudy: 2, semester: "Semester 1", credits: 12, hours: 4 },
-  { code: "CSC205", name: "Database Systems", yearOfStudy: 2, semester: "Semester 2", credits: 12, hours: 4 },
-  { code: "CSC301", name: "Software Engineering", yearOfStudy: 3, semester: "Semester 1", credits: 12, hours: 4 },
-  { code: "CSC305", name: "Machine Learning", yearOfStudy: 3, semester: "Semester 2", credits: 12, hours: 4 },
-  { code: "CSC401", name: "Final Year Project I", yearOfStudy: 4, semester: "Semester 1", credits: 15, hours: 3 },
-  { code: "CSC402", name: "Final Year Project II", yearOfStudy: 4, semester: "Semester 2", credits: 15, hours: 3 },
-]
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { CalendarIcon, Loader2, Plus, Users, BookOpen, UserCheck, AlertCircle, Search, Filter } from "lucide-react"
+import { format } from "date-fns"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useTranscripts } from "@/hooks/transcripts/useAllGroups"
+import { 
+  useModuleAssignments, 
+  useLecturersByDepartment, 
+  useModulesByDepartment,
+  useCreateModuleAssignment 
+} from "@/hooks/modules-assigment/useModuleAssignments"
 
 export default function ModuleAssignmentsPage() {
-  const [selectedYearOfStudy, setSelectedYearOfStudy] = useState<number>(1)
-  const [selectedSemester, setSelectedSemester] = useState<string>("Semester 1")
-  const [moduleCode, setModuleCode] = useState<string>("")
-  const [lecturerId, setLecturerId] = useState<string>("")
-  const [search, setSearch] = useState<string>("")
-  const [assignments, setAssignments] = useState<AssignmentRow[]>([])
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedGroup, setSelectedGroup] = useState("all")
+  const [selectedLecturer, setSelectedLecturer] = useState("all")
+  const [academicYearId, setAcademicYearId] = useState<string>("")
+  const [currentSemesterId, setCurrentSemesterId] = useState<string>("")
 
-  const filteredModules = useMemo(
-    () => MODULES.filter(m => m.yearOfStudy === selectedYearOfStudy && m.semester === selectedSemester && (m.code.toLowerCase().includes(search.toLowerCase()) || m.name.toLowerCase().includes(search.toLowerCase()))),
-    [selectedYearOfStudy, selectedSemester, search]
-  )
+  // Form state
+  const [formData, setFormData] = useState({
+    moduleId: "",
+    instructorId: "",
+    groupId: "",
+    assignmentDate: new Date(),
+    startDate: new Date(),
+    endDate: new Date(),
+    creditHours: "",
+    contactHours: "",
+    assignmentType: "",
+    notes: "",
+    isActive: "true",
+    isPrimary: "true",
+    teachingMethods: "",
+    assessmentMethods: "",
+    venue: "",
+    schedule: "",
+    maxStudents: "",
+    currentEnrollment: "0"
+  })
 
-  const workloadData = useMemo(() => {
-    const base = LECTURERS.map(l => ({ name: l.name.split(" ")[1] || l.name, hours: l.currentHours, capacity: l.capacityHours }))
-    for (const a of assignments) {
-      const mod = MODULES.find(m => m.code === a.moduleCode)
-      if (!mod) continue
-      const row = base.find(b => LECTURERS.find(l => l.id === a.lecturerId)?.name.includes(b.name))
-      if (row) row.hours += mod.hours
+  // Initialize from localStorage
+  useEffect(() => {
+    const storedAcademicYearId = typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYearId") : ""
+    const storedSemesterId = typeof window !== "undefined" ? localStorage.getItem("selectedSemesterId") : ""
+    
+    if (storedAcademicYearId) setAcademicYearId(storedAcademicYearId)
+    if (storedSemesterId) setCurrentSemesterId(storedSemesterId)
+  }, [])
+
+  // Hooks
+  const { groups, isLoading: groupsLoading, error: groupsError } = useTranscripts({ academicYearId })
+  const { assignments, isLoading: assignmentsLoading, error: assignmentsError, refetch } = useModuleAssignments({ academicYearId })
+  const { lecturers, isLoading: lecturersLoading, error: lecturersError } = useLecturersByDepartment()
+  const { modules, isLoading: modulesLoading, error: modulesError } = useModulesByDepartment()
+  const { createAssignment, isCreating } = useCreateModuleAssignment()
+
+  // Filter assignments
+  const filteredAssignments = useMemo(() => {
+    return assignments.filter((assignment) => {
+      const matchesSearch = 
+        assignment.moduleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        assignment.moduleCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        assignment.instructorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        assignment.groupName.toLowerCase().includes(searchTerm.toLowerCase())
+      
+      const matchesGroup = selectedGroup === "all" || assignment.groupId === selectedGroup
+      const matchesLecturer = selectedLecturer === "all" || assignment.instructorId === selectedLecturer
+
+      return matchesSearch && matchesGroup && matchesLecturer
+    })
+  }, [assignments, searchTerm, selectedGroup, selectedLecturer])
+
+  // Statistics
+  const statistics = useMemo(() => {
+    const totalAssignments = assignments.length
+    const uniqueModules = new Set(assignments.map(a => a.moduleId)).size
+    const uniqueLecturers = new Set(assignments.map(a => a.instructorId)).size
+    const uniqueGroups = new Set(assignments.map(a => a.groupId)).size
+    const activeAssignments = assignments.filter(a => a.isActive).length
+
+    return {
+      totalAssignments,
+      uniqueModules,
+      uniqueLecturers,
+      uniqueGroups,
+      activeAssignments
     }
-    return base
   }, [assignments])
 
-  const selectedModule = MODULES.find(m => m.code === moduleCode)
-  const selectedLecturer = LECTURERS.find(l => l.id === lecturerId)
+  // Handle form submission
+  const handleCreateAssignment = async () => {
+    try {
+      if (!formData.moduleId || !formData.instructorId || !formData.groupId) {
+        toast.error("Please fill in all required fields")
+        return
+      }
 
-  const canAssign = !!(selectedYearOfStudy && selectedSemester && moduleCode && lecturerId)
-  const hasConflict = useMemo(() => {
-    if (!selectedModule || !selectedLecturer) return false
-    const current = workloadData.find(w => selectedLecturer.name.includes(w.name))
-    if (!current) return false
-    return current.hours + selectedModule.hours > selectedLecturer.capacityHours
-  }, [selectedModule, selectedLecturer, workloadData])
+      await createAssignment({
+        moduleId: formData.moduleId,
+        instructorId: formData.instructorId,
+        groupId: formData.groupId,
+        academicYearId,
+        semesterId: currentSemesterId,
+        assignmentDate: format(formData.assignmentDate, 'yyyy-MM-dd'),
+        startDate: format(formData.startDate, 'yyyy-MM-dd'),
+        endDate: format(formData.endDate, 'yyyy-MM-dd'),
+        creditHours: formData.creditHours,
+        contactHours: formData.contactHours,
+        assignmentType: formData.assignmentType,
+        notes: formData.notes,
+        isActive: formData.isActive,
+        isPrimary: formData.isPrimary,
+        teachingMethods: formData.teachingMethods,
+        assessmentMethods: formData.assessmentMethods,
+        venue: formData.venue,
+        schedule: formData.schedule,
+        maxStudents: formData.maxStudents,
+        currentEnrollment: formData.currentEnrollment
+      })
 
-  function handleAssign() {
-    if (!canAssign) return
-    if (hasConflict) {
-      toast.warning("This assignment exceeds the lecturer's capacity.")
+      toast.success("Module assignment created successfully!")
+      setIsCreateDialogOpen(false)
+      refetch()
+      
+      // Reset form
+      setFormData({
+        moduleId: "",
+        instructorId: "",
+        groupId: "",
+        assignmentDate: new Date(),
+        startDate: new Date(),
+        endDate: new Date(),
+        creditHours: "",
+        contactHours: "",
+        assignmentType: "",
+        notes: "",
+        isActive: "true",
+        isPrimary: "true",
+        teachingMethods: "",
+        assessmentMethods: "",
+        venue: "",
+        schedule: "",
+        maxStudents: "",
+        currentEnrollment: "0"
+      })
+    } catch (error) {
+      toast.error("Failed to create module assignment")
     }
-    const id = `${moduleCode}-${lecturerId}-${selectedYearOfStudy}-${selectedSemester}`
-    if (assignments.some(a => a.id === id)) {
-      toast.info("This assignment already exists.")
-      return
-    }
-    setAssignments(prev => [...prev, { id, moduleCode, lecturerId, yearOfStudy: selectedYearOfStudy, semester: selectedSemester }])
-    toast.success("Module assigned successfully!")
-    setModuleCode("")
-    setLecturerId("")
   }
+
+  // Handle errors
+  if (assignmentsError || groupsError || lecturersError || modulesError) {
+    return (
+      <div className="space-y-6">
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="text-red-800">
+            {assignmentsError || groupsError || lecturersError || modulesError}
+          </AlertDescription>
+        </Alert>
+        <Button onClick={refetch} className="mt-4">
+          Try Again
+        </Button>
+      </div>
+    )
+  }
+
+  const isLoading = assignmentsLoading || groupsLoading || lecturersLoading || modulesLoading
 
   return (
     <div className="space-y-6">
-      {/* Header with Year/Semester Selection */}
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">Module Assignments</h1>
-          <p className="text-gray-600 mt-1">Assign modules to lecturers for each year of study</p>
+          <p className="text-gray-600 mt-1">Assign modules to lecturers for each class group</p>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Year of Study:</label>
-            <Select value={selectedYearOfStudy.toString()} onValueChange={(v) => setSelectedYearOfStudy(Number(v))}>
-              <SelectTrigger className="bg-white w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {YEARS_OF_STUDY.map(y => (
-                  <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Semester:</label>
-            <Select value={selectedSemester} onValueChange={setSelectedSemester}>
-              <SelectTrigger className="bg-white w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SEMESTERS.map(s => (
-                  <SelectItem key={s} value={s}>{s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <Button asChild variant="outline" className="bg-[#026892] hover:bg-[#026892]/90 text-white hover:text-white rounded-md">
-            <Link href="/staff/workload">Back to Workload</Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* Assignment Interface */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Module Selection Card */}
-          <Card className="bg-white border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">Create Assignment</CardTitle>
-              <div className="text-sm text-gray-600">
-                Showing modules for <Badge variant="outline">Year {selectedYearOfStudy}</Badge> • <Badge variant="outline">{selectedSemester}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#026892] hover:bg-[#026892]/90 text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Create New Module Assignment
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Module Assignment</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-6 py-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Search & Select Module</label>
-                  <Input 
-                    value={search} 
-                    onChange={(e) => setSearch(e.target.value)} 
-                    placeholder="Search modules..." 
-                    className="bg-white mb-2" 
-                  />
-                  <Select value={moduleCode} onValueChange={setModuleCode}>
-                    <SelectTrigger className="bg-white">
-                      <SelectValue placeholder="Select module to assign" />
+                  <Label htmlFor="module">Module *</Label>
+                  <Select value={formData.moduleId} onValueChange={(value) => {
+                    setFormData(prev => ({ ...prev, moduleId: value }))
+                    const selectedModule = modules.find(m => m.id === value)
+                    if (selectedModule) {
+                      setFormData(prev => ({
+                        ...prev,
+                        creditHours: selectedModule.credits.toString(),
+                        contactHours: selectedModule.contactHours.toString()
+                      }))
+                    }
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select module" />
                     </SelectTrigger>
                     <SelectContent>
-                      {filteredModules.map(m => (
-                        <SelectItem key={m.code} value={m.code}>
+                      {modules.map(module => (
+                        <SelectItem key={module.id} value={module.id}>
                           <div className="flex flex-col">
-                            <span className="font-medium">{m.code}</span>
-                            <span className="text-xs text-gray-600">{m.name}</span>
+                            <span className="font-medium">{module.code}</span>
+                            <span className="text-sm text-gray-600">{module.name}</span>
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {selectedModule && (
-                    <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                      <div><strong>Credits:</strong> {selectedModule.credits}</div>
-                      <div><strong>Weekly Hours:</strong> {selectedModule.hours}</div>
-                    </div>
-                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Select Lecturer</label>
-                  <Select value={lecturerId} onValueChange={setLecturerId}>
-                    <SelectTrigger className="bg-white mt-8">
+                  <Label htmlFor="instructor">Lecturer *</Label>
+                  <Select value={formData.instructorId} onValueChange={(value) => setFormData(prev => ({ ...prev, instructorId: value }))}>
+                    <SelectTrigger>
                       <SelectValue placeholder="Select lecturer" />
                     </SelectTrigger>
                     <SelectContent>
-                      {LECTURERS.map(l => (
-                        <SelectItem key={l.id} value={l.id}>
+                      {lecturers.map(lecturer => (
+                        <SelectItem key={lecturer.id} value={lecturer.id}>
                           <div className="flex flex-col">
-                            <span className="font-medium">{l.name}</span>
-                            <span className="text-xs text-gray-600">{l.specialization}</span>
+                            <span className="font-medium">{lecturer.fullName}</span>
+                            <span className="text-sm text-gray-600">{lecturer.email}</span>
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {selectedLecturer && (
-                    <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                      <div><strong>Capacity:</strong> {selectedLecturer.capacityHours} hrs/week</div>
-                      <div><strong>Current Load:</strong> {selectedLecturer.currentHours} hrs/week</div>
-                      <div><strong>Available:</strong> {selectedLecturer.capacityHours - selectedLecturer.currentHours} hrs/week</div>
-                    </div>
-                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="group">Class Group *</Label>
+                  <Select value={formData.groupId} onValueChange={(value) => setFormData(prev => ({ ...prev, groupId: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select class group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groups.map(group => (
+                        <SelectItem key={group.id} value={group.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{group.name}</span>
+                            <span className="text-sm text-gray-600">{group.code} - Year {group.yearLevel}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="assignmentType">Assignment Type</Label>
+                  <Select value={formData.assignmentType} onValueChange={(value) => setFormData(prev => ({ ...prev, assignmentType: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select assignment type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PRIMARY">Primary Instructor</SelectItem>
+                      <SelectItem value="SECONDARY">Secondary Instructor</SelectItem>
+                      <SelectItem value="ASSISTANT">Assistant Instructor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="assignmentDate">Assignment Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(formData.assignmentDate, "PPP")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={formData.assignmentDate}
+                        onSelect={(date) => date && setFormData(prev => ({ ...prev, assignmentDate: date }))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(formData.startDate, "PPP")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={formData.startDate}
+                        onSelect={(date) => date && setFormData(prev => ({ ...prev, startDate: date }))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="endDate">End Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {format(formData.endDate, "PPP")}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={formData.endDate}
+                        onSelect={(date) => date && setFormData(prev => ({ ...prev, endDate: date }))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="creditHours">Credit Hours</Label>
+                  <Input
+                    id="creditHours"
+                    type="number"
+                    value={formData.creditHours}
+                    onChange={(e) => setFormData(prev => ({ ...prev, creditHours: e.target.value }))}
+                    placeholder="Enter credit hours"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="contactHours">Contact Hours</Label>
+                  <Input
+                    id="contactHours"
+                    type="number"
+                    value={formData.contactHours}
+                    onChange={(e) => setFormData(prev => ({ ...prev, contactHours: e.target.value }))}
+                    placeholder="Enter contact hours"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="maxStudents">Max Students</Label>
+                  <Input
+                    id="maxStudents"
+                    type="number"
+                    value={formData.maxStudents}
+                    onChange={(e) => setFormData(prev => ({ ...prev, maxStudents: e.target.value }))}
+                    placeholder="Enter max students"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="venue">Venue</Label>
+                  <Input
+                    id="venue"
+                    value={formData.venue}
+                    onChange={(e) => setFormData(prev => ({ ...prev, venue: e.target.value }))}
+                    placeholder="Enter venue"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="schedule">Schedule</Label>
+                  <Input
+                    id="schedule"
+                    value={formData.schedule}
+                    onChange={(e) => setFormData(prev => ({ ...prev, schedule: e.target.value }))}
+                    placeholder="Enter schedule (e.g., Mon/Wed/Fri 9:00-10:30)"
+                  />
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t">
-                {hasConflict && (
-                  <Badge variant="destructive">⚠ Exceeds Capacity</Badge>
-                )}
-                <Button 
-                  onClick={handleAssign} 
-                  disabled={!canAssign} 
-                  className="bg-[#026892] hover:bg-[#026892]/90"
-                  size="lg"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="teachingMethods">Teaching Methods</Label>
+                  <Textarea
+                    id="teachingMethods"
+                    value={formData.teachingMethods}
+                    onChange={(e) => setFormData(prev => ({ ...prev, teachingMethods: e.target.value }))}
+                    placeholder="Enter teaching methods"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="assessmentMethods">Assessment Methods</Label>
+                  <Textarea
+                    id="assessmentMethods"
+                    value={formData.assessmentMethods}
+                    onChange={(e) => setFormData(prev => ({ ...prev, assessmentMethods: e.target.value }))}
+                    placeholder="Enter assessment methods"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Enter any additional notes"
+                  rows={3}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                  disabled={isCreating}
                 >
-                  Assign Module
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateAssignment}
+                  disabled={isCreating}
+                  className="bg-[#026892] hover:bg-[#026892]/90"
+                >
+                  {isCreating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Create Assignment
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Current Assignments */}
-          <Card className="bg-white border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-xl text-gray-900">
-                Current Assignments
-                <Badge variant="secondary" className="ml-2">{assignments.length} total</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {assignments.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No assignments yet for Year {selectedYearOfStudy}, {selectedSemester}</p>
-                  <p className="text-sm">Use the form above to create assignments</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-gray-700">Module</TableHead>
-                      <TableHead className="text-gray-700">Lecturer</TableHead>
-                      <TableHead className="text-gray-700">Hours</TableHead>
-                      <TableHead className="text-gray-700">Credits</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {assignments.map(a => {
-                      const mod = MODULES.find(m => m.code === a.moduleCode)!
-                      const lec = LECTURERS.find(l => l.id === a.lecturerId)!
-                      return (
-                        <TableRow key={a.id}>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">{mod.code}</div>
-                              <div className="text-sm text-gray-600">{mod.name}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              <div className="font-medium">{lec.name}</div>
-                              <div className="text-sm text-gray-600">{lec.specialization}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{mod.hours} hrs/week</Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="secondary">{mod.credits} credits</Badge>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Workload Sidebar */}
-        <div className="space-y-6">
-          <Card className="bg-white border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-gray-900">Lecturer Workload</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {LECTURERS.map(lecturer => {
-                  const currentLoad = workloadData.find(w => lecturer.name.includes(w.name))?.hours || lecturer.currentHours
-                  const percentage = (currentLoad / lecturer.capacityHours) * 100
-                  const isOverloaded = percentage > 100
-                  
-                  return (
-                    <div key={lecturer.id} className="space-y-2">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="font-medium text-sm">{lecturer.name}</div>
-                          <div className="text-xs text-gray-600">{lecturer.specialization}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium">{currentLoad}/{lecturer.capacityHours} hrs</div>
-                          <div className={`text-xs ${
-                            isOverloaded ? 'text-red-600' : percentage > 80 ? 'text-orange-600' : 'text-green-600'
-                          }`}>
-                            {Math.round(percentage)}% capacity
-                          </div>
-                        </div>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full transition-all ${
-                            isOverloaded ? 'bg-red-500' : percentage > 80 ? 'bg-orange-500' : 'bg-green-500'
-                          }`}
-                          style={{ width: `${Math.min(percentage, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-gray-900">Available Modules</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {filteredModules.map(module => {
-                  const isAssigned = assignments.some(a => a.moduleCode === module.code)
-                  return (
-                    <div 
-                      key={module.code} 
-                      className={`p-2 rounded border text-sm ${
-                        isAssigned ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'
-                      }`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-medium">{module.code}</div>
-                          <div className="text-xs text-gray-600">{module.hours} hrs • {module.credits} credits</div>
-                        </div>
-                        {isAssigned && (
-                          <Badge variant="default" className="text-xs bg-green-600">✓ Assigned</Badge>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Assignments</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics.totalAssignments}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Modules</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics.uniqueModules}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Lecturers</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics.uniqueLecturers}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <UserCheck className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Groups</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics.uniqueGroups}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <Users className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Active</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : statistics.activeAssignments}
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <UserCheck className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search assignments by module, lecturer, or group..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={selectedGroup} onValueChange={setSelectedGroup}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="All Groups" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Groups</SelectItem>
+                {groups.map((group) => (
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedLecturer} onValueChange={setSelectedLecturer}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="All Lecturers" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Lecturers</SelectItem>
+                {lecturers.map((lecturer) => (
+                  <SelectItem key={lecturer.id} value={lecturer.id}>
+                    {lecturer.fullName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Assignments Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Module Assignments ({filteredAssignments.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin" />
+              <span className="ml-2">Loading module assignments...</span>
+            </div>
+          ) : (
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-gray-700">Module</TableHead>
+                    <TableHead className="text-gray-700">Lecturer</TableHead>
+                    <TableHead className="text-gray-700">Group</TableHead>
+                    <TableHead className="text-gray-700">Semester</TableHead>
+                    <TableHead className="text-gray-700">Credits</TableHead>
+                    <TableHead className="text-gray-700">Contact Hours</TableHead>
+                    <TableHead className="text-gray-700">Students</TableHead>
+                    <TableHead className="text-gray-700">Status</TableHead>
+                    <TableHead className="text-gray-700">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredAssignments.map((assignment) => (
+                    <TableRow key={assignment.id} className="hover:bg-gray-50">
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{assignment.moduleCode}</div>
+                          <div className="text-sm text-gray-600">{assignment.moduleName}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{assignment.instructorName}</div>
+                          <div className="text-sm text-gray-600">{assignment.instructorEmail}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{assignment.groupName}</div>
+                          {/* <div className="text-sm text-gray-600">{assignment.groupCode}</div> */}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{assignment.semesterName}</div>
+                          {/* <div className="text-sm text-gray-600">Semester {assignment.semesterNumber}</div> */}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{assignment.moduleCredits}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{assignment.contactHours} hrs</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <div>{assignment.currentEnrollment}/{assignment.maxStudents}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={assignment.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                          {assignment.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
+          {!isLoading && filteredAssignments.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p>No module assignments found matching your search criteria.</p>
+              <p className="text-sm mt-2">Try creating a new assignment using the button above.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
-
