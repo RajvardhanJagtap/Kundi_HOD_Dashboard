@@ -38,23 +38,45 @@ export const useTranscript = ({ studentId, academicYearId }: UseTranscriptParams
       setPdfUrl(null);
       setUseIframe(false);
 
-      const result = await transcriptApi.getStudentTranscriptPdf(studentId, academicYearId);
-      
-      if (typeof result === 'string') {
-        // URL fallback - iframe mode
-        setPdfUrl(result);
-        setUseIframe(true);
-        toast.success("Transcript loaded successfully (iframe mode)");
-      } else {
-        // Blob success - normal mode
-        const arrayBuffer = await result.arrayBuffer();
-        setPdfData(arrayBuffer);
+      // First, try the direct blob approach
+      try {
+        const result = await transcriptApi.getStudentTranscriptPdf(studentId, academicYearId);
         
-        const blobUrl = window.URL.createObjectURL(result);
-        setPdfUrl(blobUrl);
+        if (result instanceof Blob) {
+          // Verify it's a valid PDF
+          const arrayBuffer = await result.arrayBuffer();
+          const isValidPdf = transcriptApi.validatePdfData(arrayBuffer);
+          
+          if (isValidPdf) {
+            setPdfData(arrayBuffer);
+            const blobUrl = window.URL.createObjectURL(result);
+            setPdfUrl(blobUrl);
+            setUseIframe(false);
+            toast.success("Transcript loaded successfully");
+            return;
+          } else {
+            console.warn("Invalid PDF data received, falling back to iframe");
+          }
+        }
+      } catch (blobError: any) {
+        console.warn("Blob fetch failed, trying iframe fallback:", blobError);
         
-        toast.success("Transcript loaded successfully");
+        // Check if it's a CORS or network error
+        if (
+          blobError.code === 'ERR_NETWORK' || 
+          blobError.message?.includes('CORS') ||
+          blobError.message?.includes('ERR_RESPONSE_HEADERS') ||
+          blobError.response?.status === 0
+        ) {
+          console.log("Network/CORS issue detected, using iframe mode");
+        }
       }
+
+      // Fallback to iframe mode
+      const iframeUrl = transcriptApi.getStudentTranscriptUrl(studentId, academicYearId);
+      setPdfUrl(iframeUrl);
+      setUseIframe(true);
+      toast.success("Transcript loaded successfully (iframe mode)");
       
     } catch (err: any) {
       console.error("Error fetching transcript:", err);
@@ -68,8 +90,24 @@ export const useTranscript = ({ studentId, academicYearId }: UseTranscriptParams
         errorMessage = "Transcript not found for this student and academic year.";
       } else if (errorMessage.includes('Access denied') || errorMessage.includes('403')) {
         errorMessage = "You don't have permission to view this transcript.";
-      } else if (errorMessage.includes('Network')) {
-        errorMessage = "Network error. Please check your internet connection.";
+      } else if (
+        errorMessage.includes('Network') || 
+        errorMessage.includes('CORS') ||
+        errorMessage.includes('ERR_RESPONSE_HEADERS') ||
+        err.code === 'ERR_NETWORK'
+      ) {
+        // For network/CORS errors, still try iframe as last resort
+        console.log("Trying iframe as final fallback for network error");
+        try {
+          const iframeUrl = transcriptApi.getStudentTranscriptUrl(studentId, academicYearId);
+          setPdfUrl(iframeUrl);
+          setUseIframe(true);
+          setError(null);
+          toast.success("Transcript loaded (fallback mode)");
+          return;
+        } catch (iframeError) {
+          errorMessage = "Network error. Please check your internet connection and try again.";
+        }
       }
       
       setError(errorMessage);
@@ -107,6 +145,12 @@ export const useTranscript = ({ studentId, academicYearId }: UseTranscriptParams
       
       if (errorMessage.includes('Authentication') || errorMessage.includes('401')) {
         errorMessage = "Your session has expired. Please log in again to download.";
+      } else if (
+        errorMessage.includes('Network') || 
+        errorMessage.includes('CORS') ||
+        err.code === 'ERR_NETWORK'
+      ) {
+        errorMessage = "Network error. Please try downloading again or contact support.";
       }
       
       setError(errorMessage);
@@ -122,7 +166,7 @@ export const useTranscript = ({ studentId, academicYearId }: UseTranscriptParams
   // Cleanup blob URLs on unmount
   useEffect(() => {
     return () => {
-      if (pdfUrl && !useIframe) {
+      if (pdfUrl && !useIframe && pdfUrl.startsWith('blob:')) {
         window.URL.revokeObjectURL(pdfUrl);
       }
     };
@@ -139,6 +183,7 @@ export const useTranscript = ({ studentId, academicYearId }: UseTranscriptParams
         setError("Academic Year ID is required");
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [studentId, academicYearId]);
 
   return {

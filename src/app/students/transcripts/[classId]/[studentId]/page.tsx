@@ -1,7 +1,8 @@
+// src/app/students/transcripts/[classId]/[studentId]/page.tsx
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { ArrowLeft, Download, Loader2, AlertCircle, FileText, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +10,20 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useTranscript } from "@/hooks/transcripts/useTranscript"
 import { useStudentEnrollments } from "@/hooks/transcripts/useAllGroups"
 import { toast } from "sonner"
-import PDFViewer from "@/components/PDFViewer"
+import dynamic from "next/dynamic"
+
+// Use SimplePDFViewer instead of PDFViewer - this fixes the worker issues
+const SimplePDFViewer = dynamic(() => import("@/components/SimplePDFViewer"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center min-h-[400px] border rounded-lg bg-gray-50">
+      <div className="flex flex-col items-center space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="text-sm text-gray-600">Loading PDF Viewer...</span>
+      </div>
+    </div>
+  )
+})
 
 export default function StudentTranscriptPage() {
   const params = useParams()
@@ -176,16 +190,6 @@ export default function StudentTranscriptPage() {
         </div>
       </div>
 
-      {/* Error Alert */}
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {error}
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* Student Info Card */}
       {studentInfo && (
         <Card>
@@ -218,40 +222,34 @@ export default function StudentTranscriptPage() {
         </Card>
       )}
 
-      {/* PDF Viewer */}
+      {/* Error Display */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* PDF Viewer Section */}
       <div>
-        {useIframe ? (
-          <div>
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Academic Transcript</h2>
-            </div>
-            <div className="border rounded-lg overflow-hidden">
-              <iframe
-                src={pdfUrl || ''}
-                className="w-full min-h-[700px]"
-                title="Student Transcript"
-                style={{ border: 'none' }}
-              />
-            </div>
-          </div>
-        ) : (
-          <div>
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">Academic Transcript</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                Use the controls below to navigate through the transcript pages
-              </p>
-            </div>
-            
-            <PDFViewer
-              pdfData={pdfData}
-              pdfUrl={pdfUrl}
-              isLoading={isLoading}
-              error={error}
-              className="min-h-[700px]"
-            />
-          </div>
-        )}
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Academic Transcript</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            {isLoading ? "Loading transcript..." : "View and download your transcript"}
+          </p>
+        </div>
+        
+        {/* Always use SimplePDFViewer - it handles both modes intelligently */}
+        <SimplePDFViewer
+          pdfData={pdfData}
+          pdfUrl={pdfUrl}
+          isLoading={isLoading}
+          error={error}
+          className="min-h-[700px]"
+          studentName={studentInfo?.studentFullName}
+        />
       </div>
     </div>
   )

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Link from "next/link"
 import { Search, ArrowLeft, Eye, Download, Users, GraduationCap, BookOpen, TrendingUp, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -296,24 +297,6 @@ export default function ClassTranscriptsPage() {
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Enrollment #
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Student Name
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        GPA
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Credits
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Progress
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Status
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -348,14 +331,16 @@ export default function ClassTranscriptsPage() {
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-blue-600 hover:text-blue-700 bg-transparent"
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View Transcript
-                          </Button>
+                          <Link href={`/students/transcripts/${groupId}/${enrollment.studentId}`}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-blue-600 hover:text-blue-700 bg-transparent hover:bg-blue-50"
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              View Transcript
+                            </Button>
+                          </Link>
                         </td>
                       </tr>
                     ))}
