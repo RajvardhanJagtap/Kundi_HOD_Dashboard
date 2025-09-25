@@ -296,10 +296,28 @@ export default function ClassTranscriptsPage() {
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
+                        Student ID
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
+                        Names
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
+                        GPA
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
+                        Total Credits
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
+                        Percentage
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Status
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Actions
                       </th>
                     </tr>

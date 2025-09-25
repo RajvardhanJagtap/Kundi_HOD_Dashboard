@@ -1,3 +1,4 @@
+// lib/transcripts/transcript-api.ts - Enhanced with multiple fetch strategies
 import { api, buildApiUrl, buildDirectUrl } from "@/lib/ap-for-proxy";
 
 export interface TranscriptResponse {
@@ -7,53 +8,206 @@ export interface TranscriptResponse {
   timestamp: string;
 }
 
+export interface FetchStrategy {
+  name: string;
+  fetch: () => Promise<Blob>;
+  shouldRetry?: boolean;
+}
+
 export const transcriptApi = {
   /**
-   * Get PDF blob for direct display - FIXED path construction
+   * Enhanced PDF fetching with multiple strategies
    */
   getStudentTranscriptPdf: async (studentId: string, academicYearId: string): Promise<Blob> => {
-    try {
-      // Build the correct endpoint path - FIXED: no double /api/proxy
-      const endpoint = `grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
-      const url = buildApiUrl(endpoint);
-      
-      console.log('Fetching PDF from:', url);
-      
-      const response = await api.get(url, {
-        responseType: 'blob',
-        headers: {
+    const endpoint = `grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
+    
+    // Strategy 1: Proxy with credentials
+    const proxyStrategy: FetchStrategy = {
+      name: 'proxy-with-auth',
+      fetch: async () => {
+        const url = buildApiUrl(endpoint);
+        console.log('Strategy 1: Proxy with auth -', url);
+        
+        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        const headers: HeadersInit = {
           'Accept': 'application/pdf',
           'Cache-Control': 'no-cache',
-        },
-        timeout: 60000,
-      });
+        };
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+          headers['X-Access-Token'] = token;
+        }
 
-      if (response.status !== 200) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers,
+          credentials: 'include',
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.blob();
       }
+    };
 
-      if (!response.data) {
-        throw new Error('No data received from server');
+    // Strategy 2: Direct API call with CORS mode
+    const directStrategy: FetchStrategy = {
+      name: 'direct-cors',
+      fetch: async () => {
+        const directUrl = buildDirectUrl(endpoint);
+        console.log('Strategy 2: Direct CORS -', directUrl);
+        
+        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        const headers: HeadersInit = {
+          'Accept': 'application/pdf',
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+        };
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(directUrl, {
+          method: 'GET',
+          headers,
+          mode: 'cors',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.blob();
       }
+    };
 
-      return response.data;
-    } catch (error: any) {
-      console.error('PDF fetch error:', error);
-      throw error;
+    // Strategy 3: Proxy with token as query parameter
+    const proxyQueryTokenStrategy: FetchStrategy = {
+      name: 'proxy-query-token',
+      fetch: async () => {
+        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        if (!token) throw new Error('No token available for query param strategy');
+        
+        const url = `${buildApiUrl(endpoint)}?token=${encodeURIComponent(token)}`;
+        console.log('Strategy 3: Proxy with query token -', url);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/pdf',
+            'Cache-Control': 'no-cache',
+          },
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.blob();
+      }
+    };
+
+    // Strategy 4: XMLHttpRequest fallback (sometimes handles CORS differently)
+    const xhrStrategy: FetchStrategy = {
+      name: 'xhr-fallback',
+      fetch: async () => {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          const url = buildApiUrl(endpoint);
+          console.log('Strategy 4: XHR fallback -', url);
+          
+          xhr.open('GET', url, true);
+          xhr.responseType = 'blob';
+          xhr.withCredentials = true;
+          
+          const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+          if (token) {
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+          }
+          xhr.setRequestHeader('Accept', 'application/pdf');
+          
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              resolve(xhr.response);
+            } else {
+              reject(new Error(`XHR failed: ${xhr.status} ${xhr.statusText}`));
+            }
+          };
+          
+          xhr.onerror = () => reject(new Error('XHR network error'));
+          xhr.ontimeout = () => reject(new Error('XHR timeout'));
+          xhr.timeout = 60000;
+          
+          xhr.send();
+        });
+      }
+    };
+
+    const strategies = [proxyStrategy, directStrategy, proxyQueryTokenStrategy, xhrStrategy];
+    
+    let lastError: Error | null = null;
+    
+    for (const strategy of strategies) {
+      try {
+        console.log(`Attempting strategy: ${strategy.name}`);
+        const blob = await strategy.fetch();
+        
+        // Validate the PDF
+        const arrayBuffer = await blob.arrayBuffer();
+        const isValidPdf = transcriptApi.validatePdfData(arrayBuffer);
+        
+        if (isValidPdf && blob.size > 0) {
+          console.log(`Success with strategy: ${strategy.name}, size: ${blob.size} bytes`);
+          return blob;
+        } else {
+          console.warn(`Strategy ${strategy.name} returned invalid or empty PDF`);
+          continue;
+        }
+      } catch (error: any) {
+        console.warn(`Strategy ${strategy.name} failed:`, error.message);
+        lastError = error;
+        
+        // For certain errors, skip remaining strategies
+        if (error.message?.includes('401') || error.message?.includes('Authentication')) {
+          console.log('Authentication error - stopping strategy attempts');
+          break;
+        }
+        
+        // Continue to next strategy
+        continue;
+      }
     }
+    
+    // All strategies failed
+    throw lastError || new Error('All PDF fetch strategies failed');
   },
 
   /**
-   * Get PDF URL for iframe fallback - FIXED: use direct URL
+   * Enhanced URL generation for iframe fallback
    */
   getStudentTranscriptUrl: (studentId: string, academicYearId: string): string => {
-    // Always use direct URL for iframe to avoid proxy issues
     const endpoint = `grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
-    return buildDirectUrl(endpoint);
+    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    
+    // Try direct URL first (better for iframe)
+    const directUrl = buildDirectUrl(endpoint);
+    
+    if (token) {
+      // Add token as query parameter for iframe compatibility
+      const url = new URL(directUrl);
+      url.searchParams.set('token', token);
+      return url.toString();
+    }
+    
+    return directUrl;
   },
 
   /**
-   * Download student transcript PDF - FIXED path construction
+   * Enhanced download with retry logic
    */
   downloadStudentTranscriptPdf: async (
     studentId: string, 
@@ -61,24 +215,11 @@ export const transcriptApi = {
     studentName: string
   ): Promise<void> => {
     try {
-      const endpoint = `grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
-      const url = buildApiUrl(endpoint);
+      // First try to get the blob using our enhanced method
+      const blob = await transcriptApi.getStudentTranscriptPdf(studentId, academicYearId);
       
-      const response = await api.get(url, {
-        responseType: 'blob',
-        headers: {
-          'Accept': 'application/pdf',
-          'Cache-Control': 'no-cache',
-        },
-        timeout: 120000,
-      });
-
-      if (!response.data) {
-        throw new Error('No data received for download');
-      }
-
       // Create download
-      const downloadUrl = window.URL.createObjectURL(response.data);
+      const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
       
@@ -102,13 +243,13 @@ export const transcriptApi = {
       }, 100);
       
     } catch (error: any) {
-      console.error('Download error:', error);
+      console.error('Enhanced download error:', error);
       throw new Error(`Failed to download transcript: ${error.message}`);
     }
   },
 
   /**
-   * Validate PDF data
+   * Validate PDF data with enhanced checks
    */
   validatePdfData: (data: ArrayBuffer): boolean => {
     try {
@@ -119,16 +260,49 @@ export const transcriptApi = {
       const uint8Array = new Uint8Array(data);
       const pdfSignature = [0x25, 0x50, 0x44, 0x46]; // %PDF
       
+      // Check PDF signature
       for (let i = 0; i < 4; i++) {
         if (uint8Array[i] !== pdfSignature[i]) {
           return false;
         }
       }
       
-      return true;
+      // Additional validation: check for EOF marker
+      const dataStr = new TextDecoder().decode(uint8Array.slice(0, Math.min(1024, uint8Array.length)));
+      if (dataStr.includes('%PDF-') && data.byteLength > 100) {
+        return true;
+      }
+      
+      return false;
     } catch (error) {
       console.error('Error validating PDF data:', error);
       return false;
+    }
+  },
+
+  /**
+   * Test connection to API
+   */
+  testConnection: async (): Promise<{ success: boolean; method: string; error?: string }> => {
+    const testEndpoint = 'health-check'; // Adjust this to a valid test endpoint
+    
+    try {
+      const response = await fetch(buildApiUrl(testEndpoint), {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+      });
+      
+      return {
+        success: response.ok,
+        method: 'proxy',
+        error: response.ok ? undefined : `${response.status} ${response.statusText}`
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        method: 'proxy',
+        error: error.message
+      };
     }
   },
 };

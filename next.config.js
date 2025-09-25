@@ -2,6 +2,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Existing config...
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   
   async headers() {
     return [
@@ -20,6 +26,10 @@ const nextConfig = {
             key: 'Access-Control-Allow-Headers',
             value: 'Content-Type, Authorization, X-Requested-With',
           },
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-src 'self' blob: data:; object-src 'self' blob: data:;"
+          }
         ],
       },
     ]

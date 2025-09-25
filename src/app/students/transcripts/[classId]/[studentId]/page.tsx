@@ -12,8 +12,8 @@ import { useStudentEnrollments } from "@/hooks/transcripts/useAllGroups"
 import { toast } from "sonner"
 import dynamic from "next/dynamic"
 
-// Use SimplePDFViewer instead of PDFViewer - this fixes the worker issues
-const SimplePDFViewer = dynamic(() => import("@/components/SimplePDFViewer"), {
+// Use SimplePDFViewer - matches your actual component file name
+const SimplePDFViewer = dynamic(() => import("@/components/DirectEmbedPDFViewer"), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center min-h-[400px] border rounded-lg bg-gray-50">
@@ -241,7 +241,7 @@ export default function StudentTranscriptPage() {
           </p>
         </div>
         
-        {/* Always use SimplePDFViewer - it handles both modes intelligently */}
+        {/* Use SimplePDFViewer with the working blob URL approach */}
         <SimplePDFViewer
           pdfData={pdfData}
           pdfUrl={pdfUrl}
