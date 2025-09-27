@@ -6,12 +6,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
 import {
-  Bell,
   ChevronDown,
-  ChevronUp,
   Home,
-  LogOut,
-  Settings,
   Building2,
   BookOpen,
   Users,
@@ -21,7 +17,6 @@ import {
   User,
   MessageSquarePlus,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Collapsible,
   CollapsibleContent,
@@ -31,7 +26,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
