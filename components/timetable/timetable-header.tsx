@@ -116,14 +116,6 @@ export function TimetableHeader({
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-
-          <Button
-            onClick={onAddClass}
-            className="bg-[#026892] hover:bg-[#025a7a] transition-all duration-200"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add schedule
-          </Button>
       </div>
     </div>
   )

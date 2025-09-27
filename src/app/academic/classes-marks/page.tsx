@@ -343,7 +343,7 @@ export default function MarksSubmittedPage() {
             }`}
             onClick={() => setMainActiveTab("mark-submissions")}
           >
-            Group Readiness
+            All Submissions
           </button>
           <button
             className={`px-6 py-2 rounded-md font-medium text-sm border ${
