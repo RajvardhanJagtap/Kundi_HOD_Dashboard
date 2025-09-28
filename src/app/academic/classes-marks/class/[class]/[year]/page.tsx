@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, CheckCircle, Send } from "lucide-react";
+import { ChevronLeft, CheckCircle, Send, Download } from "lucide-react";
 import { toast } from "react-hot-toast";
 import ExcelMarksPage from "@/components/marks/over-all";
 import RepeatersComponent from "@/components/marks/repeaters";
@@ -71,14 +71,19 @@ export default function ClassMarksPage() {
     const {
         isApprovingOverall,
         isSubmittingToDean,
+        isDownloadingOverall,
         approvalError,
         submissionError,
+        downloadError,
         approvalSuccess,
         submissionSuccess,
+        downloadSuccess,
         approveOverallMarks,
         submitGroupToDean,
+        downloadOverallSheet,
         resetApprovalState,
-        resetSubmissionState
+        resetSubmissionState,
+        resetDownloadState
     } = useMarksSubmission();
 
     useEffect(() => {
@@ -122,6 +127,22 @@ export default function ClassMarksPage() {
         localStorage.setItem("selectedSemester", semesterId);
     };
     
+    // Handle download overall marks
+    const handleDownloadOverall = async () => {
+        if (!academicYearId || !groupId) {
+            toast.error("Missing academic year or group information");
+            return;
+        }
+
+        const fileName = `${className}_Overall_Marks_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        const success = await downloadOverallSheet(academicYearId, groupId, fileName);
+        
+        if (success) {
+            toast.success("Overall marks downloaded successfully!");
+        } else if (downloadError) {
+            toast.error(downloadError);
+        }
+    };
 
     // Handle submit to dean
     const handleSubmitToDean = async () => {
@@ -163,6 +184,12 @@ export default function ClassMarksPage() {
         }
     }, [submissionSuccess, resetSubmissionState]);
 
+    useEffect(() => {
+        if (downloadSuccess) {
+            setTimeout(() => resetDownloadState(), 3000);
+        }
+    }, [downloadSuccess, resetDownloadState]);
+
     return (
         <AcademicContextProvider
             academicYears={years || []}
@@ -202,6 +229,24 @@ export default function ClassMarksPage() {
                             <p className="text-sm text-gray-600">Review and approve all marks before submitting to dean</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                            <Button
+                                onClick={handleDownloadOverall}
+                                disabled={isDownloadingOverall}
+                                variant="outline"
+                                className="whitespace-nowrap border-[#026892] text-[#026892] hover:bg-[#026892]/10"
+                            >
+                                {isDownloadingOverall ? (
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 border-2 border-[#026892] border-t-transparent rounded-full animate-spin"></div>
+                                        Downloading...
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <Download className="h-4 w-4" />
+                                        Download Overall
+                                    </div>
+                                )}
+                            </Button>
 
                             <Button
                                 onClick={handleSubmitToDean}
@@ -236,19 +281,20 @@ export default function ClassMarksPage() {
                     </div>
                     
                     {/* Status Messages */}
-                    {(approvalError || submissionError) && (
+                    {(approvalError || submissionError || downloadError) && (
                         <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                             <p className="text-sm text-red-700">
-                                {approvalError || submissionError}
+                                {approvalError || submissionError || downloadError}
                             </p>
                         </div>
                     )}
                     
-                    {(approvalSuccess || submissionSuccess) && (
+                    {(approvalSuccess || submissionSuccess || downloadSuccess) && (
                         <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                             <p className="text-sm text-green-700">
                                 {approvalSuccess && "Marks approved successfully!"}
                                 {submissionSuccess && "Marks submitted to dean successfully!"}
+                                {downloadSuccess && "Overall marks downloaded successfully!"}
                             </p>
                         </div>
                     )}

@@ -178,9 +178,6 @@ export default function SimplePDFViewer({
             <AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
             <p className="text-gray-600 mb-4">Unable to display PDF in browser</p>
             <div className="space-y-2 text-center">
-              <p className="text-sm text-gray-500">
-                The PDF couldn't be displayed inline due to browser security settings, but you can still access it:
-              </p>
               <div className="flex space-x-2 justify-center">
                 <Button size="sm" onClick={openInNewTab} className="bg-blue-600 hover:bg-blue-700">
                   <ExternalLink className="w-4 h-4 mr-1" />

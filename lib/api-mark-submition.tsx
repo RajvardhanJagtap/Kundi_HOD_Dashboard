@@ -96,6 +96,13 @@ export interface SubmitToDeanResponse {
   timestamp: string;
 }
 
+// Interface for download overall response
+export interface DownloadOverallResponse {
+  success: boolean;
+  message: string;
+  timestamp: string;
+}
+
 /**
  * Fetch pending group submissions for officer review
  * @returns Promise<GroupSubmissionsResponse>
@@ -171,6 +178,30 @@ export const submitToDean = async (submitData: SubmitToDeanRequest): Promise<Sub
     return response.data;
   } catch (error) {
     console.error('Error submitting to dean:', error);
+    throw error;
+  }
+};
+
+/**
+ * Download overall marks sheet for a group and academic year
+ * @param academicYearId - The academic year ID
+ * @param groupId - The group ID
+ * @returns Promise<Blob> - The Excel file as a blob
+ */
+export const downloadOverallMarks = async (
+  academicYearId: string,
+  groupId: string
+): Promise<Blob> => {
+  try {
+    const response = await api.get(
+      `/grading/overall-sheets/generate-year-combined-sheet/${academicYearId}/group/${groupId}/excel`,
+      {
+        responseType: 'blob', // Important for file downloads
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error downloading overall marks:', error);
     throw error;
   }
 };
