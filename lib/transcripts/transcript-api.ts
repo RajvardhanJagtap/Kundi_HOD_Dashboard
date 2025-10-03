@@ -192,18 +192,18 @@ export const transcriptApi = {
   getStudentTranscriptUrl: (studentId: string, academicYearId: string): string => {
     const endpoint = `grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
     const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-    
-    // Try direct URL first (better for iframe)
-    const directUrl = buildDirectUrl(endpoint);
-    
-    if (token) {
-      // Add token as query parameter for iframe compatibility
-      const url = new URL(directUrl);
-      url.searchParams.set('token', token);
-      return url.toString();
+
+    // Important: Use our same-origin proxy for iframe/tab viewing to avoid
+    // X-Frame-Options and cross-origin auth header issues on the backend domain.
+    // We append the token as a query parameter so the proxy can forward it.
+    const proxyBase = buildApiUrl(endpoint); // e.g. /api/proxy/grading/...
+
+    if (!token) {
+      return proxyBase;
     }
-    
-    return directUrl;
+
+    const separator = proxyBase.includes('?') ? '&' : '?';
+    return `${proxyBase}${separator}token=${encodeURIComponent(token)}`;
   },
 
   /**
