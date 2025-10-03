@@ -196,14 +196,20 @@ export const transcriptApi = {
     // Important: Use our same-origin proxy for iframe/tab viewing to avoid
     // X-Frame-Options and cross-origin auth header issues on the backend domain.
     // We append the token as a query parameter so the proxy can forward it.
-    const proxyBase = buildApiUrl(endpoint); // e.g. /api/proxy/grading/...
+    // Force using same-origin proxy path for iframe/new-tab to avoid Next routing
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
+    const proxyBase = `/api/proxy/${cleanEndpoint}`; // e.g. /api/proxy/grading/...
+
+    // Always return an absolute URL to avoid Next routing this as a page
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    const base = origin ? `${origin}${proxyBase}` : proxyBase
 
     if (!token) {
-      return proxyBase;
+      return base;
     }
 
-    const separator = proxyBase.includes('?') ? '&' : '?';
-    return `${proxyBase}${separator}token=${encodeURIComponent(token)}`;
+    const separator = base.includes('?') ? '&' : '?';
+    return `${base}${separator}token=${encodeURIComponent(token)}`;
   },
 
   /**
