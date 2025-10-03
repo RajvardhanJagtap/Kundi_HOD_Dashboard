@@ -1,7 +1,7 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Existing config...
+  // ignore ESLint and TypeScript errors during builds for now
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -24,7 +24,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization, X-Requested-With',
+            value: 'Content-Type, Authorization, X-Requested-With, X-Access-Token',
           },
           {
             key: 'Content-Security-Policy',
