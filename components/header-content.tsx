@@ -46,6 +46,26 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
     if (storedSemester) setSelectedSemesterState(storedSemester);
   }, []);
 
+  // Auto-select first academic year when available and none selected yet
+  useEffect(() => {
+    if (!yearsLoading && Array.isArray(years) && years.length > 0 && !selectedYear) {
+      const firstYearId = years[0]?.id;
+      if (firstYearId) {
+        setSelectedYear(firstYearId);
+      }
+    }
+  }, [yearsLoading, years, selectedYear]);
+
+  // After year is selected and semesters fetched, auto-select first semester if none
+  useEffect(() => {
+    if (!semestersLoading && Array.isArray(semesters) && semesters.length > 0 && selectedYear && !selectedSemester) {
+      const firstSemesterId = semesters[0]?.id;
+      if (firstSemesterId) {
+        setSelectedSemester(firstSemesterId);
+      }
+    }
+  }, [semestersLoading, semesters, selectedYear, selectedSemester]);
+
   const handleDropdownLogout = () => {
     logout();
     router.push('/login');
