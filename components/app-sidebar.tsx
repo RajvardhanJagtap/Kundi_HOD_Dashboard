@@ -135,12 +135,26 @@ export function AppSidebar() {
     null
   ); // State to track which collapsible is open
 
+  // Ensure the parent collapsible that contains the current pathname is opened
+  React.useEffect(() => {
+    // Find first navigation group that contains a subitem matching current path
+    const activeParent = hodNavigation.find((item) =>
+      item.items
+        ? item.items.some((subItem) => pathname.startsWith(subItem.url))
+        : false
+    );
+
+    if (activeParent) {
+      setOpenCollapsible(activeParent.title);
+    }
+  }, [pathname]);
+
   // Handle collapsible toggle
   const handleCollapsibleToggle = (title: string) => {
     setOpenCollapsible(openCollapsible === title ? null : title);
   };
 
-  // Function to check if any sub-item of a parent is active
+  // Check if parent has active route or direct url match
   const isParentActive = (parentItem: (typeof hodNavigation)[0]) => {
     if (parentItem.url && pathname === parentItem.url) return true; // Direct link is active
     if (parentItem.items) {
@@ -187,7 +201,9 @@ export function AppSidebar() {
                     }`}
                   >
                     {item.icon && <item.icon className="h-4 w-4" />}
-                    <span className="font-bold text-sm text-gray-700">{item.title}</span>
+                    <span className="font-bold text-sm text-gray-700">
+                      {item.title}
+                    </span>
                     <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180 text-black" />
                   </CollapsibleTrigger>
                 </SidebarGroupLabel>
@@ -200,13 +216,7 @@ export function AppSidebar() {
                             <Link
                               href={subItem.url}
                               className={`flex w-full items-center gap-2 p-2 rounded-md text-sm transition-colors ${
-                                (
-                                  subItem.url === "/academic/marks-submitted"
-                                    ? pathname.startsWith(
-                                        "/academic/marks-submitted"
-                                      )
-                                    : pathname === subItem.url
-                                )
+                                pathname.startsWith(subItem.url)
                                   ? "bg-[#ECFDF5] text-[#026892] font-medium"
                                   : "text-gray-600 hover:text-[#026892] hover:bg-[#ECFDF5]"
                               }`}
@@ -232,7 +242,9 @@ export function AppSidebar() {
                     }`}
                   >
                     {item.icon && <item.icon className="h-4 w-4" />}
-                    <span className="font-bold text-sm text-gray-700">{item.title}</span>
+                    <span className="font-bold text-sm text-gray-700">
+                      {item.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarGroupLabel>

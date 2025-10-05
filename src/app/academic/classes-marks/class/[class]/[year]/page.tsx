@@ -10,6 +10,7 @@ import RepeatersComponent from "@/components/marks/repeaters";
 import SummaryPage from "@/components/marks/summary";
 import { AcademicContextProvider } from '@/app/academicContext';
 import { useAcademicYears } from "@/hooks/academic-year-and-semesters/useAcademicYears";
+import { moduleAssignmentsApi } from '@/lib/modules/moduleAssignmentsApi';
 import { useSemesters } from "@/hooks/academic-year-and-semesters/useSemesters";
 import { useMarksSubmission } from "@/hooks/overall-marks-submission/useMarksSubmission";
 
@@ -109,6 +110,35 @@ export default function ClassMarksPage() {
         setIsApproved(approvalStatus);
         setIsSubmittedToDean(submissionStatus);
     }, [searchParams]);
+
+        // When groupId and semesterId are available, fetch server-side readiness
+        useEffect(() => {
+            const fetchGroupStatus = async () => {
+                if (!groupId || !semesterId) return;
+                try {
+                    const resp = await moduleAssignmentsApi.getDepartmentGroupReadiness(semesterId);
+                    const groups = resp.data.groups || [];
+                    const g = groups.find((gg) => gg.groupId === groupId || gg.groupName === decodeURIComponent(className));
+                    if (g) {
+                        // canBeSubmittedToDean indicates readiness/approval to submit
+                        setIsApproved(Boolean(g.canBeSubmittedToDean));
+                        setIsSubmittedToDean(Boolean(g.isSubmittedToDean));
+                        // Persist these to localStorage for compatibility with existing logic
+                        try {
+                            localStorage.setItem(`marks_approved_${groupId}_${semesterId}`, String(Boolean(g.canBeSubmittedToDean)));
+                            localStorage.setItem(`marks_submitted_${groupId}_${semesterId}`, String(Boolean(g.isSubmittedToDean)));
+                        } catch (e) {
+                            // ignore storage errors
+                        }
+                    }
+                } catch (err) {
+                    // don't block UI on fetch errors; keep local state
+                    console.warn('Failed to fetch group readiness for class page', err);
+                }
+            };
+
+            fetchGroupStatus();
+        }, [groupId, semesterId]);
 
     const className = decodeURIComponent(params.class as string);
     const year = params.year as string;
