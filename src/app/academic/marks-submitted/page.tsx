@@ -453,9 +453,6 @@ export default function MarksSubmittedPage() {
                           <TableCell className="text-gray-700 text-sm">
                             <div>
                               <div className="font-medium">{row.lecturer}</div>
-                              <div className="text-xs text-gray-500">
-                                ID: {row.lecturerId}
-                              </div>
                             </div>
                           </TableCell>
                           <TableCell className="text-gray-700 text-sm">
