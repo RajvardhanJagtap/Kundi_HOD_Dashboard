@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { HeaderContent } from "@/components/header-content";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -23,11 +24,13 @@ export function ConditionalLayout({ children, defaultOpen }: ConditionalLayoutPr
     return <>{children}</>;
   }
 
-  // Render with sidebar and header for authenticated routes
+  // Render with sidebar and header for authenticated routes (guarded)
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar />
-      <HeaderContent>{children}</HeaderContent>
-    </SidebarProvider>
+    <ProtectedRoute>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <HeaderContent>{children}</HeaderContent>
+      </SidebarProvider>
+    </ProtectedRoute>
   );
 }
