@@ -1,8 +1,7 @@
 import type React from "react";
 import { cookies } from "next/headers";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
-import QueryProvider from "@/components/providers/QueryProvider"
+import ClientProviders from '@/components/ClientProviders'
 import "./globals.css";
 import { Inter } from "next/font/google";
 
@@ -19,13 +18,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <QueryProvider>
-        <AuthProvider>
+        <ClientProviders>
           <ConditionalLayout defaultOpen={defaultOpen}>
             {children}
           </ConditionalLayout>
-        </AuthProvider>
-        </QueryProvider>
+        </ClientProviders>
       </body>
     </html>
   );
