@@ -3,8 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, ChevronDown, User, Settings, HelpCircle, LogOut } from "lucide-react";
+import { AlertTriangle, Bell, Calendar, ChevronDown, Clock, FileText, User, Settings, HelpCircle, LogOut, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -24,6 +25,7 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = React.useState("HOD");
   const roles = ["Lecturer", "HOD", "Dean", "DTLE"];
+  const [notifications] = useState(5);
 
   // Academic year and semester dropdown state
   const { years, isLoading: yearsLoading } =
@@ -162,17 +164,133 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative rounded-full hover:bg-gray-100"
-          >
-            <Bell className="h-5 w-5 text-gray-700" />
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#d32f2f] text-xs text-white font-bold">
-              5
-            </span>
-            <span className="sr-only">Notifications</span>
-          </Button>
+          {/* Notifications */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative rounded-full hover:bg-gray-100"
+              >
+                <Bell className="h-5 w-5 text-gray-700" />
+                {notifications > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full pl-1 text-xs bg-red-500 text-white border-2 border-white">
+                    {notifications}
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Notifications</span>
+                  <Badge variant="secondary" className="text-xs">
+                    {notifications} new
+                  </Badge>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              {/* Notification Items */}
+              <div className="max-h-80 overflow-y-auto">
+                <DropdownMenuItem className="cursor-pointer p-3 hover:bg-gray-50">
+                  <div className="flex items-start gap-3 w-full">
+                    <div className="p-2 bg-red-100 rounded-lg shrink-0">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        Low attendance alert
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Computer Science - 3 students below 75%
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
+                    </div>
+                    <div className="w-2 h-2 bg-red-500 rounded-full shrink-0 mt-2"></div>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="cursor-pointer p-3 hover:bg-gray-50">
+                  <div className="flex items-start gap-3 w-full">
+                    <div className="p-2 bg-orange-100 rounded-lg shrink-0">
+                      <Clock className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        Grade submission deadline
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Mathematics - Due in 2 hours
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">1 hour ago</p>
+                    </div>
+                    <div className="w-2 h-2 bg-orange-500 rounded-full shrink-0 mt-2"></div>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="cursor-pointer p-3 hover:bg-gray-50">
+                  <div className="flex items-start gap-3 w-full">
+                    <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                      <FileText className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        New lecturer application
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Dr. Sarah Wilson - Computer Science
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
+                    </div>
+                    <div className="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2"></div>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="cursor-pointer p-3 hover:bg-gray-50">
+                  <div className="flex items-start gap-3 w-full">
+                    <div className="p-2 bg-green-100 rounded-lg shrink-0">
+                      <Users className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        Department meeting scheduled
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Tomorrow at 10:00 AM - Conference Room A
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">4 hours ago</p>
+                    </div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full shrink-0 mt-2"></div>
+                  </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="cursor-pointer p-3 hover:bg-gray-50">
+                  <div className="flex items-start gap-3 w-full">
+                    <div className="p-2 bg-purple-100 rounded-lg shrink-0">
+                      <Calendar className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        Exam schedule approved
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Final exams for all departments
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">1 day ago</p>
+                    </div>
+                  </div>
+                </DropdownMenuItem>
+              </div>
+
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer justify-center text-center p-3 text-[#026892] hover:bg-[#026892]/10">
+                <Link href="/notifications/inbox" className="w-full text-center">
+                  View all notifications
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
