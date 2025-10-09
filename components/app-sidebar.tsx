@@ -167,7 +167,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="bg-white border-none">
-      <SidebarHeader className="app-sidebar border-b border-gray-300">
+      <SidebarHeader className="app-sidebar border-b border-gray-300 h-16">
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/dashboard" className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export function AppSidebar() {
                     }`}
                   >
                     {item.icon && <item.icon className="h-4 w-4" />}
-                    <span className="font-bold text-sm text-gray-700">
+                    <span className="font-medium text-sm text-black">
                       {item.title}
                     </span>
                     <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180 text-black" />
@@ -242,7 +242,7 @@ export function AppSidebar() {
                     }`}
                   >
                     {item.icon && <item.icon className="h-4 w-4" />}
-                    <span className="font-bold text-sm text-gray-700">
+                    <span className="font-medium text-sm text-black">
                       {item.title}
                     </span>
                   </Link>

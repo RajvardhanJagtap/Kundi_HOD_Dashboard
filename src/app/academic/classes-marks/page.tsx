@@ -467,51 +467,51 @@ export default function MarksSubmittedPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="text-gray-700 font-semibold">
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Group
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Program
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Year Level
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Progress
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Modules
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Status
-                      </TableHead>
-                      <TableHead className="text-right text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-gray-900 tracking-wider">
                         Actions
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {paginatedGroups.length === 0 ? (
-                      <TableRow>
-                        <TableCell
+                      <tr>
+                        <td
                           colSpan={7}
-                          className="text-center py-8 text-gray-500"
+                          className="px-4 py-8 text-center text-gray-500"
                         >
                           {groupsLoading
                             ? "Loading..."
                             : moduleSearch || statusFilter !== "All Status"
                             ? "No matching results found"
                             : "No groups found"}
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ) : (
                       paginatedGroups.map((group) => (
-                        <TableRow key={group.groupId}>
-                          <TableCell className="text-gray-700 text-sm">
+                        <tr key={group.groupId} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">
                                 {group.groupName}
@@ -520,8 +520,8 @@ export default function MarksSubmittedPage() {
                                 {group.groupCode}
                               </div>
                             </div>
-                          </TableCell>
-                          <TableCell className="text-gray-700 text-sm">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">
                                 {group.programName}
@@ -530,11 +530,11 @@ export default function MarksSubmittedPage() {
                                 {group.programCode}
                               </div>
                             </div>
-                          </TableCell>
-                          <TableCell className="text-gray-700 text-sm">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             Year {group.yearLevel}
-                          </TableCell>
-                          <TableCell className="text-gray-700 text-sm">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div className="flex items-center gap-2">
                               <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div
@@ -548,12 +548,13 @@ export default function MarksSubmittedPage() {
                                 {group.progressPercentage}%
                               </span>
                             </div>
-                          </TableCell>
-                          <TableCell className="text-gray-700 text-sm">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             {group.completedModules}/{group.totalModules}
-                          </TableCell>
-                          <TableCell>{renderStatusBadge(group)}</TableCell>
-                          <TableCell className="text-right flex gap-2 justify-end">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{renderStatusBadge(group)}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                            <div className="flex gap-2 justify-end">
                             <button
                               className="flex items-center gap-1 text-[#0891b2] bg-[#e0f2fe] hover:bg-[#bae6fd] px-3 py-1 rounded-md text-sm font-medium"
                               onClick={() => {
@@ -607,12 +608,13 @@ export default function MarksSubmittedPage() {
                                     : "Submit to Dean"}
                                 </button>
                               )}
-                          </TableCell>
-                        </TableRow>
+                            </div>
+                          </td>
+                        </tr>
                       ))
                     )}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </div>
               {/* Pagination Controls */}
               <div className="flex justify-between items-center mt-4">

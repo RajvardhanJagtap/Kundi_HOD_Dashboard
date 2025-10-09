@@ -476,54 +476,54 @@ export default function MarksSubmissionDeadlinesPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="text-gray-700 font-semibold">
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       Module
-                    </TableHead>
-                    <TableHead className="text-gray-700 font-semibold">
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       Lecturer
-                    </TableHead>
-                    <TableHead className="text-gray-700 font-semibold">
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       Department
-                    </TableHead>
-                    <TableHead className="text-gray-700 font-semibold">
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       Students
-                    </TableHead>
-                    <TableHead className="text-gray-700 font-semibold">
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       CAT Status
-                    </TableHead>
-                    <TableHead className="text-gray-700 font-semibold">
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       EXAM Status
-                    </TableHead>
-                    <TableHead className="text-gray-700 font-semibold">
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
                   {paginatedData.length === 0 ? (
-                    <TableRow>
-                      <TableCell
+                    <tr>
+                      <td
                         colSpan={7}
-                        className="text-center py-8 text-gray-500"
+                        className="px-4 py-8 text-center text-gray-500"
                       >
                         {moduleSearch ||
                         departmentFilter !== "All Departments" ||
                         semesterFilter !== "All Semesters"
                           ? "No matching modules found"
                           : "No modules found"}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ) : (
                     paginatedData.map((assignment) => {
                       const submissionData = moduleSubmissions[assignment.id];
 
                       return (
-                        <TableRow key={assignment.id}>
-                          <TableCell className="text-gray-700 text-sm">
+                        <tr key={assignment.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">
                                 {assignment.moduleCode}
@@ -532,9 +532,9 @@ export default function MarksSubmissionDeadlinesPage() {
                                 {assignment.moduleName}
                               </div>
                             </div>
-                          </TableCell>
+                          </td>
 
-                          <TableCell className="text-gray-700 text-sm">
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">
                                 {assignment.instructorName}
@@ -543,9 +543,9 @@ export default function MarksSubmissionDeadlinesPage() {
                                 {assignment.instructorEmail}
                               </div>
                             </div>
-                          </TableCell>
+                          </td>
 
-                          <TableCell className="text-gray-700 text-sm">
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">
                                 {assignment.departmentName}
@@ -554,28 +554,28 @@ export default function MarksSubmissionDeadlinesPage() {
                                 {assignment.semesterName}
                               </div>
                             </div>
-                          </TableCell>
+                          </td>
 
-                          <TableCell className="text-gray-700 text-sm">
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             {assignment.currentEnrollment}/
                             {assignment.maxStudents}
-                          </TableCell>
+                          </td>
 
-                          <TableCell>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             {getStatusBadge(
                               submissionData?.catSubmission?.status,
                               submissionData?.catSubmission?.deadline
                             )}
-                          </TableCell>
+                          </td>
 
-                          <TableCell>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             {getStatusBadge(
                               submissionData?.examSubmission?.status,
                               submissionData?.examSubmission?.deadline
                             )}
-                          </TableCell>
+                          </td>
 
-                          <TableCell>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <button
                               onClick={() => handleOpenModal(assignment)}
                               disabled={isCreatingSubmissions}
@@ -584,13 +584,13 @@ export default function MarksSubmissionDeadlinesPage() {
                               <Settings className="h-3 w-3" />
                               Set Deadlines
                             </button>
-                          </TableCell>
-                        </TableRow>
+                          </td>
+                        </tr>
                       );
                     })
                   )}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
 
             {/* Pagination Controls */}

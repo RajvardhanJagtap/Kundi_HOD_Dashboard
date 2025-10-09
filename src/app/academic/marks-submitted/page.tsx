@@ -406,56 +406,56 @@ export default function MarksSubmittedPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="text-gray-700 font-semibold">
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Lecturer
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Module
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Group
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         CAT Status
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         EXAM Status
-                      </TableHead>
-                      <TableHead className="text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Overall Status
-                      </TableHead>
-                      <TableHead className="text-right text-gray-700 font-semibold">
+                      </th>
+                      <th className="px-4 py-3 text-right text-sm font-medium text-gray-900 tracking-wider">
                         Actions
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {modulePaginatedData.length === 0 ? (
-                      <TableRow>
-                        <TableCell
+                      <tr>
+                        <td
                           colSpan={7}
-                          className="text-center py-8 text-gray-500"
+                          className="px-4 py-8 text-center text-gray-500"
                         >
                           {loading
                             ? "Loading..."
                             : moduleSearch || statusFilter !== "All Status"
                             ? "No matching results found"
                             : "No module assignments found"}
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     ) : (
                       modulePaginatedData.map((row) => (
-                        <TableRow key={row.id}>
-                          <TableCell className="text-gray-700 text-sm">
+                        <tr key={row.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">{row.lecturer}</div>
                             </div>
-                          </TableCell>
-                          <TableCell className="text-gray-700 text-sm">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">
                                 {row.moduleCode}
@@ -467,16 +467,16 @@ export default function MarksSubmittedPage() {
                                 {row.semester}
                               </div>
                             </div>
-                          </TableCell>
-                          <TableCell className="text-gray-700 text-sm">
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <div>
                               <div className="font-medium">{row.groupName}</div>
                               <div className="text-xs text-gray-500">
                                 {row.groupCode}
                               </div>
                             </div>
-                          </TableCell>
-                          <TableCell>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <Badge
                               variant={
                                 row.catSubmission.isSubmitted
@@ -498,8 +498,8 @@ export default function MarksSubmittedPage() {
                                 ).toLocaleDateString()}
                               </div>
                             )}
-                          </TableCell>
-                          <TableCell>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <Badge
                               variant={
                                 row.examSubmission.isSubmitted
@@ -521,8 +521,8 @@ export default function MarksSubmittedPage() {
                                 ).toLocaleDateString()}
                               </div>
                             )}
-                          </TableCell>
-                          <TableCell>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
                             <Badge
                               variant={
                                 row.overallSubmission.status === "APPROVED"
@@ -539,47 +539,49 @@ export default function MarksSubmittedPage() {
                             >
                               {row.overallStatus}
                             </Badge>
-                          </TableCell>
-                          <TableCell className="text-right flex gap-2 justify-end">
-                            {(row.canViewCat || row.canViewExam) && (
-                              <button
-                                className="flex items-center gap-1 text-[#0891b2] bg-[#e0f2fe] hover:bg-[#bae6fd] px-3 py-1 rounded-md text-sm font-medium"
-                                onClick={() =>
-                                  router.push(
-                                    `/academic/marks-submitted/results?moduleId=${encodeURIComponent(
-                                      row.id
-                                    )}`
-                                  )
-                                }
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={1.5}
-                                  stroke="currentColor"
-                                  className="w-4 h-4"
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                            <div className="flex gap-2 justify-end">
+                              {(row.canViewCat || row.canViewExam) && (
+                                <button
+                                  className="flex items-center gap-1 text-[#0891b2] bg-[#e0f2fe] hover:bg-[#bae6fd] px-3 py-1 rounded-md text-sm font-medium"
+                                  onClick={() =>
+                                    router.push(
+                                      `/academic/marks-submitted/results?moduleId=${encodeURIComponent(
+                                        row.id
+                                      )}`
+                                    )
+                                  }
                                 >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                </svg>
-                                View Marks
-                              </button>
-                            )}
-                          </TableCell>
-                        </TableRow>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-4 h-4"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                                    />
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
+                                  </svg>
+                                  View Marks
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
                       ))
                     )}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </div>
               {/* Pagination Controls */}
               <div className="flex justify-between items-center mt-4">

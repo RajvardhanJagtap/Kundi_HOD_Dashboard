@@ -36,61 +36,63 @@ export default function ExamsPage() {
           </Button>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="text-gray-800 font-semibold">Module</TableHead>
-                <TableHead className="text-gray-800 font-semibold">Date</TableHead>
-                <TableHead className="text-gray-800 font-semibold">Time</TableHead>
-                <TableHead className="text-gray-800 font-semibold">Venue</TableHead>
-                <TableHead className="text-right text-gray-800 font-semibold">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="text-gray-800">CSC101</TableCell>
-                <TableCell className="text-gray-700">2024-12-10</TableCell>
-                <TableCell className="text-gray-700">09:00 AM</TableCell>
-                <TableCell className="text-gray-700">Exam Hall 1</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="text-gray-800">MTH203</TableCell>
-                <TableCell className="text-gray-700">2024-12-12</TableCell>
-                <TableCell className="text-gray-700">02:00 PM</TableCell>
-                <TableCell className="text-gray-700">Exam Hall 2</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="text-gray-800">ENG101</TableCell>
-                <TableCell className="text-gray-700">2024-12-15</TableCell>
-                <TableCell className="text-gray-700">10:00 AM</TableCell>
-                <TableCell className="text-gray-700">Lecture Hall 3</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Module</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Date</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Time</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Venue</th>
+                  <th className="px-4 py-3 text-right text-sm font-medium text-gray-900 tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">CSC101</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">2024-12-10</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">09:00 AM</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">Exam Hall 1</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+                <tr className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">MTH203</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">2024-12-12</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">02:00 PM</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">Exam Hall 2</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+                <tr className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">ENG101</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">2024-12-15</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">10:00 AM</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">Lecture Hall 3</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
 

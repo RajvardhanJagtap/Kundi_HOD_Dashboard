@@ -260,37 +260,38 @@ export default function AttendancePage() {
                 </div>
               </div>
 
-              <Table>
-                <TableHeader className="bg-gray-50">
-                  <TableRow>
-                    <TableHead className="text-gray-700 font-semibold">Module</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Lecturer</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Students</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Total Classes</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Average Attendance</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Status</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Last Updated</TableHead>
-                    <TableHead className="text-gray-700 font-semibold">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {attendanceOverview.map((module, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-gray-700 text-sm">{module.module}</TableCell>
-                      <TableCell className="text-gray-700 text-sm">{module.lecturer}</TableCell>
-                      <TableCell className="text-gray-700 text-sm">{module.studentsCount}</TableCell>
-                      <TableCell className="text-gray-700 text-sm">{module.totalClasses}</TableCell>
-                      <TableCell>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Module</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Lecturer</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Students</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Total Classes</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Average Attendance</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Last Updated</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {attendanceOverview.map((module, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-600">{module.module}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{module.lecturer}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{module.studentsCount}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{module.totalClasses}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
                         <div className="flex items-center space-x-2">
                           <span className={`font-semibold ${getAttendanceColor(module.averageAttendance)}`}>
                             {module.averageAttendance}%
                           </span>
                           <Progress value={module.averageAttendance} className="w-16 h-2" />
                         </div>
-                      </TableCell>
-                      <TableCell className="text-gray-700 text-sm">{getStatusBadge(module.status)}</TableCell>
-                      <TableCell className="text-gray-700 text-sm">{module.lastUpdated}</TableCell>
-                      <TableCell>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{getStatusBadge(module.status)}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{module.lastUpdated}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button variant="outline" size="sm">
@@ -335,11 +336,12 @@ export default function AttendancePage() {
                             </div>
                           </DialogContent>
                         </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -373,43 +375,45 @@ export default function AttendancePage() {
                 </div>
               </div>
 
-              <Table>
-                <TableHeader className="bg-blue-50">
-                  <TableRow>
-                    <TableHead>Student ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Classes Attended</TableHead>
-                    <TableHead>Total Classes</TableHead>
-                    <TableHead>Attendance %</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {studentAttendanceDetails.map((student) => (
-                    <TableRow key={student.studentId}>
-                      <TableCell className="font-medium">{student.studentId}</TableCell>
-                      <TableCell>{student.name}</TableCell>
-                      <TableCell>{student.attended}</TableCell>
-                      <TableCell>{student.totalClasses}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <span className={`font-semibold ${getAttendanceColor(student.percentage)}`}>
-                            {student.percentage}%
-                          </span>
-                          <Progress value={student.percentage} className="w-16 h-2" />
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(student.status)}</TableCell>
-                      <TableCell>
-                        <Button variant="outline" size="sm">
-                          View History
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Student ID</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Name</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Classes Attended</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Total Classes</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Attendance %</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Status</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {studentAttendanceDetails.map((student) => (
+                      <tr key={student.studentId} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{student.studentId}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{student.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{student.attended}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{student.totalClasses}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <span className={`font-semibold ${getAttendanceColor(student.percentage)}`}>
+                              {student.percentage}%
+                            </span>
+                            <Progress value={student.percentage} className="w-16 h-2" />
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{getStatusBadge(student.status)}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          <Button variant="outline" size="sm">
+                            View History
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -421,45 +425,47 @@ export default function AttendancePage() {
               <CardDescription>Track daily attendance patterns and trends</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader className="bg-blue-50">
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Total Students</TableHead>
-                    <TableHead>Present</TableHead>
-                    <TableHead>Absent</TableHead>
-                    <TableHead>Attendance %</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {dailyAttendance.map((day, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{day.date}</TableCell>
-                      <TableCell>{day.totalStudents}</TableCell>
-                      <TableCell className="text-green-600">{day.present}</TableCell>
-                      <TableCell className="text-red-600">{day.absent}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <span className={`font-semibold ${getAttendanceColor(day.percentage)}`}>
-                            {day.percentage}%
-                          </span>
-                          <Progress value={day.percentage} className="w-16 h-2" />
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {day.percentage >= 90 ? (
-                          <Badge className="bg-green-100 text-green-800">Excellent</Badge>
-                        ) : day.percentage >= 80 ? (
-                          <Badge className="bg-blue-100 text-blue-800">Good</Badge>
-                        ) : (
-                          <Badge className="bg-yellow-100 text-yellow-800">Needs Attention</Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Date</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Total Students</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Present</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Absent</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Attendance %</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {dailyAttendance.map((day, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">{day.date}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{day.totalStudents}</td>
+                        <td className="px-4 py-3 text-sm text-green-600">{day.present}</td>
+                        <td className="px-4 py-3 text-sm text-red-600">{day.absent}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          <div className="flex items-center space-x-2">
+                            <span className={`font-semibold ${getAttendanceColor(day.percentage)}`}>
+                              {day.percentage}%
+                            </span>
+                            <Progress value={day.percentage} className="w-16 h-2" />
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {day.percentage >= 90 ? (
+                            <Badge className="bg-green-100 text-green-800">Excellent</Badge>
+                          ) : day.percentage >= 80 ? (
+                            <Badge className="bg-blue-100 text-blue-800">Good</Badge>
+                          ) : (
+                            <Badge className="bg-yellow-100 text-yellow-800">Needs Attention</Badge>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

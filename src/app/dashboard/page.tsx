@@ -259,63 +259,65 @@ export default function HODDashboardPage() {
             </Button>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50 text-black font-semibold">
-                  <TableHead className="text-black font-semibold">Item</TableHead>
-                  <TableHead className="text-black font-semibold">Type</TableHead>
-                  <TableHead className="hidden md:table-cell text-black font-semibold">Submitted By</TableHead>
-                  <TableHead className="hidden md:table-cell text-black font-semibold">Date</TableHead>
-                  <TableHead className="text-right text-black font-semibold">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow className="">
-                  <TableCell className="font-medium text-gray-800">Teaching Plan - Module ABC101</TableCell>
-                  <TableCell className="text-gray-700">Teaching Plan</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">Dr. Alice Smith</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">2024-07-20</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                      Review
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-800">Leave Request - John Doe</TableCell>
-                  <TableCell className="text-gray-700">Leave Request</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">John Doe</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">2024-07-19</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                      Approve
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-800">Grade Submission - CSC203</TableCell>
-                  <TableCell className="text-gray-700">Grade Approval</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">Prof. Bob Johnson</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">2024-07-18</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                      Approve
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow className="hover:bg-gray-50">
-                  <TableCell className="font-medium text-gray-800">New Module Proposal - AI Ethics</TableCell>
-                  <TableCell className="text-gray-700">Curriculum</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">Dr. Emily White</TableCell>
-                  <TableCell className="hidden md:table-cell text-gray-700">2024-07-17</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
-                      Review
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Item</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">Type</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider hidden md:table-cell">Submitted By</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider hidden md:table-cell">Date</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-900 tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">Teaching Plan - Module ABC101</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Teaching Plan</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">Dr. Alice Smith</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-20</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                        Review
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">Leave Request - John Doe</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Leave Request</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">John Doe</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-19</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                        Approve
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">Grade Submission - CSC203</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Grade Approval</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">Prof. Bob Johnson</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-18</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                        Approve
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">New Module Proposal - AI Ethics</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">Curriculum</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">Dr. Emily White</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-17</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                        Review
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>
