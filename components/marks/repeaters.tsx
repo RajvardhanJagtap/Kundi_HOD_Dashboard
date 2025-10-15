@@ -153,7 +153,7 @@ const RepeatersComponent: React.FC<RepeatersComponentProps> = ({ className, year
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <RefreshCw className="h-4 w-4 animate-spin text-blue-600" />
+                <RefreshCw className="h-4 w-4 animate-spin text-[#026892]" />
                 <span className="text-sm font-medium">Loading retakers sheet preview...</span>
               </div>
               <div className="space-y-2">

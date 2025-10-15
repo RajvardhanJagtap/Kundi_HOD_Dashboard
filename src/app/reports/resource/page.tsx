@@ -14,7 +14,7 @@ export default function ResourceReportsPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Available Reports</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <FileText className="h-4 w-4" />
             Generate New Report
           </Button>
@@ -22,25 +22,25 @@ export default function ResourceReportsPage() {
         <CardContent className="grid gap-4">
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Equipment Inventory Report (Current)</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" /> Download
             </Button>
           </div>
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Software License Usage (Annual)</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" /> Download
             </Button>
           </div>
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Room Utilization Report (Last Semester)</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" /> Download
             </Button>
           </div>
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Budget Expenditure Report (YTD)</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" /> Download
             </Button>
           </div>
@@ -73,7 +73,7 @@ export default function ResourceReportsPage() {
             <Label htmlFor="resource-time-period">Time Period</Label>
             <Input id="resource-time-period" type="text" placeholder="e.g., Current, Annual, Last Semester" />
           </div>
-          <Button className="bg-samps-blue-600 hover:bg-samps-blue-700 text-white">Generate Report</Button>
+          <Button className="bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">Generate Report</Button>
         </CardContent>
       </Card>
     </div>

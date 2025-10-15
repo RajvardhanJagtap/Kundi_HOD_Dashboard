@@ -67,7 +67,7 @@ export default function DepartmentOverviewPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200">
-                <Users className="h-6 w-6 text-samps-blue-600" />
+                <Users className="h-6 w-6 text-samps-[#026892]" />
                 <div>
                   <div className="text-xs text-gray-600">Total Lecturers</div>
                   <div className="text-xl font-bold text-samps-blue-900">
@@ -103,7 +103,7 @@ export default function DepartmentOverviewPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200">
-                <LineChart className="h-6 w-6 text-samps-blue-600" />
+                <LineChart className="h-6 w-6 text-samps-[#026892]" />
                 <div>
                   <div className="text-xs text-gray-600">
                     Research Publications (Last Year)
@@ -135,7 +135,7 @@ export default function DepartmentOverviewPage() {
             </CardTitle>
             <Button
               size="sm"
-              className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white"
+              className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white"
             >
               <PlusCircle className="h-4 w-4" />
               Add Activity
@@ -166,7 +166,7 @@ export default function DepartmentOverviewPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-samps-blue-600 hover:bg-samps-blue-50"
+                      className="text-samps-[#026892] hover:bg-samps-blue-50"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -191,7 +191,7 @@ export default function DepartmentOverviewPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-samps-blue-600 hover:bg-samps-blue-50"
+                      className="text-samps-[#026892] hover:bg-samps-blue-50"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -216,7 +216,7 @@ export default function DepartmentOverviewPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-samps-blue-600 hover:bg-samps-blue-50"
+                      className="text-samps-[#026892] hover:bg-samps-blue-50"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -241,7 +241,7 @@ export default function DepartmentOverviewPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-samps-blue-600 hover:bg-samps-blue-50"
+                      className="text-samps-[#026892] hover:bg-samps-blue-50"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -274,7 +274,7 @@ export default function DepartmentOverviewPage() {
             config={{
               "Pass Rate": {
                 label: "Pass Rate",
-                color: "hsl(var(--samps-blue-600))",
+                color: "hsl(var(--samps-[#026892]))",
               },
               "Completion Rate": {
                 label: "Completion Rate",

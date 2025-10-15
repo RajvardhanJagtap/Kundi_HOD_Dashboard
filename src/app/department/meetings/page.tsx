@@ -33,7 +33,7 @@ export default function MeetingsPage() {
           </CardTitle>
           <Button
             size="sm"
-            className="gap-1 bg-samps-blue-600 hover:bg-[#026892]/90 text-white"
+            className="gap-1 bg-samps-[#026892] hover:bg-[#026892]/90 text-white"
           >
             <PlusCircle className="h-4 w-4" />
             Add Meeting
@@ -68,7 +68,7 @@ export default function MeetingsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-samps-blue-600 hover:bg-samps-blue-50"
+                    className="text-samps-[#026892] hover:bg-samps-blue-50"
                   >
                     <FileText className="h-4 w-4" /> Minutes
                   </Button>
@@ -86,7 +86,7 @@ export default function MeetingsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-samps-blue-600 hover:bg-samps-blue-50"
+                    className="text-samps-[#026892] hover:bg-samps-blue-50"
                   >
                     <FileText className="h-4 w-4" /> Minutes
                   </Button>
@@ -104,7 +104,7 @@ export default function MeetingsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-samps-blue-600 hover:bg-samps-blue-50"
+                    className="text-samps-[#026892] hover:bg-samps-blue-50"
                   >
                     <FileText className="h-4 w-4" /> Minutes
                   </Button>

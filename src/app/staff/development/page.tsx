@@ -102,7 +102,7 @@ const developmentByCategory = [
 ]
 
 const PROGRAM_TYPE_COLORS = {
-  Workshop: 'bg-blue-50 text-blue-700 border-blue-200',
+  Workshop: 'bg-blue-50 text-[#026892]/90 border-blue-200',
   Course: 'bg-green-50 text-green-700 border-green-200',
   Conference: 'bg-purple-50 text-purple-700 border-purple-200',
   Certification: 'bg-orange-50 text-orange-700 border-orange-200',
@@ -111,7 +111,7 @@ const PROGRAM_TYPE_COLORS = {
 
 const STATUS_COLORS = {
   Planning: 'bg-gray-50 text-gray-700',
-  Ongoing: 'bg-blue-50 text-blue-700',
+  Ongoing: 'bg-blue-50 text-[#026892]/90',
   Completed: 'bg-green-50 text-green-700',
   Cancelled: 'bg-red-50 text-red-700'
 }
@@ -156,7 +156,7 @@ export default function DevelopmentPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">{ongoingCount}</div>
-            <p className="text-xs text-blue-600">Currently running</p>
+            <p className="text-xs text-[#026892]">Currently running</p>
           </CardContent>
         </Card>
         

@@ -225,7 +225,7 @@ export default function MarksSubmissionDeadlinesPage() {
 
     const statusConfig: Record<string, { className: string; label: string }> = {
       DRAFT: { className: "bg-yellow-100 text-yellow-700", label: "Draft" },
-      SUBMITTED: { className: "bg-blue-100 text-blue-700", label: "Submitted" },
+      SUBMITTED: { className: "bg-blue-100 text-[#026892]/90", label: "Submitted" },
       APPROVED: { className: "bg-green-100 text-green-700", label: "Approved" },
       REJECTED: { className: "bg-red-100 text-red-700", label: "Rejected" },
       OVERDUE: { className: "bg-red-100 text-red-700", label: "Overdue" },
@@ -690,10 +690,10 @@ export default function MarksSubmissionDeadlinesPage() {
                       </h3>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="font-medium text-blue-700">
+                          <span className="font-medium text-[#026892]/90">
                             CAT Deadline:
                           </span>
-                          <p className="text-blue-600">
+                          <p className="text-[#026892]">
                             {formatDateForDisplay(
                               modalData?.currentCatDeadline || ""
                             )}
@@ -703,7 +703,7 @@ export default function MarksSubmissionDeadlinesPage() {
                               modalData?.catStatus === "APPROVED"
                                 ? "bg-green-100 text-green-700"
                                 : modalData?.catStatus === "SUBMITTED"
-                                ? "bg-blue-100 text-blue-700"
+                                ? "bg-blue-100 text-[#026892]/90"
                                 : modalData?.catStatus === "DRAFT"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-gray-100 text-gray-700"
@@ -713,10 +713,10 @@ export default function MarksSubmissionDeadlinesPage() {
                           </span>
                         </div>
                         <div>
-                          <span className="font-medium text-blue-700">
+                          <span className="font-medium text-[#026892]/90">
                             EXAM Deadline:
                           </span>
-                          <p className="text-blue-600">
+                          <p className="text-[#026892]">
                             {formatDateForDisplay(
                               modalData?.currentExamDeadline || ""
                             )}
@@ -726,7 +726,7 @@ export default function MarksSubmissionDeadlinesPage() {
                               modalData?.examStatus === "APPROVED"
                                 ? "bg-green-100 text-green-700"
                                 : modalData?.examStatus === "SUBMITTED"
-                                ? "bg-blue-100 text-blue-700"
+                                ? "bg-blue-100 text-[#026892]/90"
                                 : modalData?.examStatus === "DRAFT"
                                 ? "bg-yellow-100 text-yellow-700"
                                 : "bg-gray-100 text-gray-700"

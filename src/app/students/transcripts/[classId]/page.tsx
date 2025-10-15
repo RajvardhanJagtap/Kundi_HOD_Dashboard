@@ -190,10 +190,10 @@ export default function ClassTranscriptsPage() {
                   <p className="text-2xl font-bold text-gray-800">
                     {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : stats.totalStudents}
                   </p>
-                  <p className="text-xs text-blue-600">Active: {stats.activeEnrollments}</p>
+                  <p className="text-xs text-[#026892]">Active: {stats.activeEnrollments}</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Users className="w-6 h-6 text-blue-600" />
+                  <Users className="w-6 h-6 text-[#026892]" />
                 </div>
               </div>
             </CardContent>
@@ -353,7 +353,7 @@ export default function ClassTranscriptsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-blue-600 hover:text-blue-700 bg-transparent hover:bg-blue-50"
+                              className="text-[#026892] hover:text-[#026892]/90 bg-transparent hover:bg-blue-50"
                             >
                               <Eye className="w-4 h-4 mr-1" />
                               View Transcript

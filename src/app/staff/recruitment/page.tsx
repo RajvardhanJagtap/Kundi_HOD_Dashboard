@@ -101,7 +101,7 @@ const recruitmentPipelineData = [
 ]
 
 const POSITION_TYPE_COLORS = {
-  Academic: 'bg-blue-50 text-blue-700 border-blue-200',
+  Academic: 'bg-blue-50 text-[#026892]/90 border-blue-200',
   Research: 'bg-green-50 text-green-700 border-green-200',
   Administrative: 'bg-purple-50 text-purple-700 border-purple-200',
   Technical: 'bg-orange-50 text-orange-700 border-orange-200'
@@ -109,7 +109,7 @@ const POSITION_TYPE_COLORS = {
 
 const STATUS_COLORS = {
   Open: 'bg-green-50 text-green-700',
-  Screening: 'bg-blue-50 text-blue-700',
+  Screening: 'bg-blue-50 text-[#026892]/90',
   Interviewing: 'bg-yellow-50 text-yellow-700',
   Offer: 'bg-purple-50 text-purple-700',
   Closed: 'bg-gray-50 text-gray-700',
@@ -156,7 +156,7 @@ export default function RecruitmentPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">{openPositions}</div>
-            <p className="text-xs text-blue-600">Currently recruiting</p>
+            <p className="text-xs text-[#026892]">Currently recruiting</p>
           </CardContent>
         </Card>
         
@@ -297,7 +297,7 @@ export default function RecruitmentPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm" className="text-blue-600 hover:bg-blue-50">
+                      <Button variant="ghost" size="sm" className="text-[#026892] hover:bg-blue-50">
                         <FileText className="h-3 w-3 mr-1" />
                         {position.status === 'Closed' ? 'View Details' : 'Manage'}
                       </Button>

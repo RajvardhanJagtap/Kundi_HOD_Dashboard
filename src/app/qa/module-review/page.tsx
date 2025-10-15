@@ -22,7 +22,7 @@ export default function ModuleReviewPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Modules for Review</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <CheckSquare className="h-4 w-4" />
             Finalize Reviews
           </Button>
@@ -45,7 +45,7 @@ export default function ModuleReviewPage() {
                 <TableCell className="text-gray-700">2023-09-01</TableCell>
                 <TableCell className="text-gray-700">Dr. Alice Smith</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> Start Review
                   </Button>
                 </TableCell>
@@ -56,7 +56,7 @@ export default function ModuleReviewPage() {
                 <TableCell className="text-gray-700">2023-09-01</TableCell>
                 <TableCell className="text-gray-700">Prof. Bob Johnson</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> Start Review
                   </Button>
                 </TableCell>
@@ -67,7 +67,7 @@ export default function ModuleReviewPage() {
                 <TableCell className="text-gray-700">2023-08-20</TableCell>
                 <TableCell className="text-gray-700">Dr. Jane Doe</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> Start Review
                   </Button>
                 </TableCell>

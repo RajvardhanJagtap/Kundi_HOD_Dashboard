@@ -177,7 +177,7 @@ function NotificationsInboxContent() {
   // Get color classes for notification types
   const getColorClasses = (color: string) => {
     const colorMap = {
-      blue: { bg: "bg-blue-100", text: "text-blue-600", border: "border-blue-200" },
+      blue: { bg: "bg-blue-100", text: "text-[#026892]", border: "border-blue-200" },
       orange: { bg: "bg-orange-100", text: "text-orange-600", border: "border-orange-200" },
       green: { bg: "bg-green-100", text: "text-green-600", border: "border-green-200" },
       purple: { bg: "bg-purple-100", text: "text-purple-600", border: "border-purple-200" },
@@ -208,7 +208,7 @@ function NotificationsInboxContent() {
               Total Notifications
             </CardTitle>
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Bell className="h-4 w-4 text-blue-600" />
+              <Bell className="h-4 w-4 text-[#026892]" />
             </div>
           </CardHeader>
           <CardContent>

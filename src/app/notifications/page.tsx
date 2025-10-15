@@ -64,7 +64,7 @@ export default function NotificationsPage() {
                 required
               />
             </div>
-            <Button type="submit" disabled={isPending} className="bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+            <Button type="submit" disabled={isPending} className="bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
               {isPending ? "Sending..." : "Send Notification"}
             </Button>
             {state && (

@@ -11,7 +11,7 @@ export default function PoliciesPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Policy Documents</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <PlusCircle className="h-4 w-4" />
             Upload Policy
           </Button>
@@ -22,7 +22,7 @@ export default function PoliciesPage() {
               <FileText className="h-5 w-5 text-gray-600" />
               <span className="font-medium text-gray-800">Academic Integrity Policy.pdf</span>
             </div>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" />
             </Button>
           </div>
@@ -31,7 +31,7 @@ export default function PoliciesPage() {
               <FileText className="h-5 w-5 text-gray-600" />
               <span className="font-medium text-gray-800">Staff Leave Policy.pdf</span>
             </div>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" />
             </Button>
           </div>
@@ -40,7 +40,7 @@ export default function PoliciesPage() {
               <FileText className="h-5 w-5 text-gray-600" />
               <span className="font-medium text-gray-800">Student Grievance Procedure.pdf</span>
             </div>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" />
             </Button>
           </div>
@@ -49,7 +49,7 @@ export default function PoliciesPage() {
               <FileText className="h-5 w-5 text-gray-600" />
               <span className="font-medium text-gray-800">Research Ethics Guidelines.pdf</span>
             </div>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <Download className="h-4 w-4" />
             </Button>
           </div>

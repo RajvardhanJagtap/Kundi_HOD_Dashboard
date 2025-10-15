@@ -32,7 +32,7 @@ export default function PersonalPage() {
             <p>
               Employee ID: <span className="font-medium">EMP001</span>
             </p>
-            <Button size="sm" className="mt-4 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+            <Button size="sm" className="mt-4 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
               <User className="h-4 w-4 mr-2" /> Edit Profile
             </Button>
           </CardContent>

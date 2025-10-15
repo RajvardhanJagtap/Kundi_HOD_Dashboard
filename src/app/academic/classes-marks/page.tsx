@@ -278,7 +278,7 @@ export default function MarksSubmittedPage() {
     const getStatusConfig = () => {
       if (group.isSubmittedToDean) {
         return {
-          className: "bg-blue-100 text-blue-700",
+          className: "bg-blue-100 text-[#026892]/90",
           icon: <CheckSquare className="h-4 w-4" />,
           text: "Submitted to Dean",
         };
@@ -334,22 +334,22 @@ export default function MarksSubmittedPage() {
       </p>
 
       <div className="flex items-center justify-between mb-4 mt-4">
-        <div className="flex gap-2 w-full">
+        <div className="flex items-end gap-6 w-full border-b border-gray-200">
           <button
-            className={`px-6 py-2 rounded-md font-medium text-sm border ${
+            className={`inline-flex items-center whitespace-nowrap px-2 py-3 text-sm font-medium transition-colors ${
               mainActiveTab === "mark-submissions"
-                ? "bg-[#026892] text-white border-gray-200 hover:bg-[#026892]/90"
-                : "bg-white text-black border-gray-200 hover:bg-gray-100"
+                ? "text-[#026892] border-b-2 border-[#026892]"
+                : "text-gray-600"
             }`}
             onClick={() => setMainActiveTab("mark-submissions")}
           >
             All Submissions
           </button>
           <button
-            className={`px-6 py-2 rounded-md font-medium text-sm border ${
+            className={`inline-flex items-center whitespace-nowrap px-2 py-3 text-sm font-medium transition-colors ${
               mainActiveTab === "analytics"
-                ? "bg-[#026892] text-white border-gray-200 hover:bg-[#026892]/90"
-                : "bg-white text-black border-gray-200 hover:bg-gray-100"
+                ? "text-[#026892] border-b-2 border-[#026892]"
+                : "text-gray-600"
             }`}
             onClick={() => setMainActiveTab("analytics")}
           >
@@ -400,8 +400,6 @@ export default function MarksSubmittedPage() {
           </div>
         </div>
       )}
-
-      
 
       {/* Group Readiness Tab */}
       {mainActiveTab === "mark-submissions" && (
@@ -538,7 +536,7 @@ export default function MarksSubmittedPage() {
                             <div className="flex items-center gap-2">
                               <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div
-                                  className="bg-blue-600 h-2 rounded-full"
+                                  className="bg-[#026892] h-2 rounded-full"
                                   style={{
                                     width: `${group.progressPercentage}%`,
                                   }}
@@ -552,62 +550,64 @@ export default function MarksSubmittedPage() {
                           <td className="px-4 py-3 text-sm text-gray-600">
                             {group.completedModules}/{group.totalModules}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-600">{renderStatusBadge(group)}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
+                            {renderStatusBadge(group)}
+                          </td>
                           <td className="px-4 py-3 text-sm text-gray-600 text-right">
                             <div className="flex gap-2 justify-end">
-                            <button
-                              className="flex items-center gap-1 text-[#0891b2] bg-[#e0f2fe] hover:bg-[#bae6fd] px-3 py-1 rounded-md text-sm font-medium"
-                              onClick={() => {
-                                // Navigate to group details page
-                                router.push(
-                                  `/academic/classes-marks/class/${encodeURIComponent(
-                                    group.groupName
-                                  )}/${group.semesterId}?groupId=${
-                                    group.groupId
-                                  }&semesterId=${group.semesterId}`
-                                );
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
+                              <button
+                                className="flex items-center gap-1 text-[#0891b2] bg-[#e0f2fe] hover:bg-[#bae6fd] px-3 py-1 rounded-md text-sm font-medium"
+                                onClick={() => {
+                                  // Navigate to group details page
+                                  router.push(
+                                    `/academic/classes-marks/class/${encodeURIComponent(
+                                      group.groupName
+                                    )}/${group.semesterId}?groupId=${
+                                      group.groupId
+                                    }&semesterId=${group.semesterId}`
+                                  );
+                                }}
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              View Details
-                            </button>
-                            {group.readinessStatus === "READY" &&
-                              group.canBeSubmittedToDean &&
-                              !group.isSubmittedToDean && (
-                                <button
-                                  className="flex items-center gap-1 text-white bg-[#026892] hover:bg-[#026892]/90 disabled:bg-[#026892]/40 px-3 py-1 rounded-md text-sm font-medium"
-                                  onClick={() =>
-                                    handleApproveSubmission(
-                                      group.groupId,
-                                      group.semesterId,
-                                      group.groupCode
-                                    )
-                                  }
-                                  disabled={approvingIds.has(group.groupId)}
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
                                 >
-                                  {approvingIds.has(group.groupId) ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                  ) : (
-                                    <CheckCircle className="h-4 w-4" />
-                                  )}
-                                  {approvingIds.has(group.groupId)
-                                    ? "Submitting..."
-                                    : "Submit to Dean"}
-                                </button>
-                              )}
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                View Details
+                              </button>
+                              {group.readinessStatus === "READY" &&
+                                group.canBeSubmittedToDean &&
+                                !group.isSubmittedToDean && (
+                                  <button
+                                    className="flex items-center gap-1 text-white bg-[#026892] hover:bg-[#026892]/90 disabled:bg-[#026892]/40 px-3 py-1 rounded-md text-sm font-medium"
+                                    onClick={() =>
+                                      handleApproveSubmission(
+                                        group.groupId,
+                                        group.semesterId,
+                                        group.groupCode
+                                      )
+                                    }
+                                    disabled={approvingIds.has(group.groupId)}
+                                  >
+                                    {approvingIds.has(group.groupId) ? (
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : (
+                                      <CheckCircle className="h-4 w-4" />
+                                    )}
+                                    {approvingIds.has(group.groupId)
+                                      ? "Submitting..."
+                                      : "Submit to Dean"}
+                                  </button>
+                                )}
                             </div>
                           </td>
                         </tr>
@@ -684,7 +684,7 @@ export default function MarksSubmittedPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Submitted to Dean:</span>
-                <span className="font-semibold text-blue-600">
+                <span className="font-semibold text-[#026892]">
                   {analyticsData.submissionStats.submitted}
                 </span>
               </div>

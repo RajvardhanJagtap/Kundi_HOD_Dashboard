@@ -614,7 +614,7 @@ export default function ResultsPage() {
                 <Button
                   onClick={handleApprovalSubmit}
                   disabled={isSubmitting || !approvalComments.trim()}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-[#026892] hover:bg-[#026892]/90"
                 >
                   {isSubmitting ? (
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />

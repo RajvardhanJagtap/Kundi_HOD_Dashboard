@@ -158,7 +158,7 @@ export default function IndividualPerformancePage() {
 
   const getRatingColor = (rating: number) => {
     if (rating >= 4.5) return "text-green-600 bg-green-50"
-    if (rating >= 4.0) return "text-blue-600 bg-blue-50"
+    if (rating >= 4.0) return "text-[#026892] bg-blue-50"
     if (rating >= 3.5) return "text-orange-600 bg-orange-50"
     return "text-red-600 bg-red-50"
   }
@@ -233,7 +233,7 @@ export default function IndividualPerformancePage() {
           <div className="mt-4 flex items-center gap-4 text-sm text-gray-600">
             <span>Showing {filteredAndSortedLecturers.length} of {lecturersData.length} staff members</span>
             {filterBy !== "All" && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+              <Badge variant="outline" className="bg-blue-50 text-[#026892]/90">
                 Filter: {filterBy}
               </Badge>
             )}
@@ -279,7 +279,7 @@ export default function IndividualPerformancePage() {
               {/* Performance Metrics */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-lg font-semibold text-blue-600">{lecturer.teachingRating.toFixed(1)}</div>
+                  <div className="text-lg font-semibold text-[#026892]">{lecturer.teachingRating.toFixed(1)}</div>
                   <div className="text-sm text-gray-600">Teaching</div>
                   <Progress value={(lecturer.teachingRating / 5) * 100} className="mt-1 h-2" />
                 </div>

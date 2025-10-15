@@ -23,7 +23,7 @@ export default function ResourcesPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Resource Library</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <PlusCircle className="h-4 w-4" />
             Upload Resource
           </Button>
@@ -46,7 +46,7 @@ export default function ResourcesPage() {
                 <TableCell className="text-gray-700">Admin</TableCell>
                 <TableCell className="text-gray-700">2024-07-15</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
@@ -60,7 +60,7 @@ export default function ResourcesPage() {
                 <TableCell className="text-gray-700">Dr. Emily White</TableCell>
                 <TableCell className="text-gray-700">2024-07-20</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
@@ -74,7 +74,7 @@ export default function ResourcesPage() {
                 <TableCell className="text-gray-700">IT Support</TableCell>
                 <TableCell className="text-gray-700">2024-07-10</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">

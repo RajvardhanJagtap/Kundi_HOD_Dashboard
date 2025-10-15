@@ -23,7 +23,7 @@ export default function StudentProgressPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Student Performance Overview</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <TrendingUp className="h-4 w-4" />
             View Trends
           </Button>
@@ -48,7 +48,7 @@ export default function StudentProgressPage() {
                 <TableCell className="text-gray-700">3.8</TableCell>
                 <TableCell className="text-samps-green-600">On Track</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     View Details
                   </Button>
                 </TableCell>
@@ -60,7 +60,7 @@ export default function StudentProgressPage() {
                 <TableCell className="text-gray-700">2.5</TableCell>
                 <TableCell className="text-samps-orange-600">At Risk</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     View Details
                   </Button>
                 </TableCell>
@@ -72,7 +72,7 @@ export default function StudentProgressPage() {
                 <TableCell className="text-gray-700">3.9</TableCell>
                 <TableCell className="text-samps-green-600">On Track</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     View Details
                   </Button>
                 </TableCell>

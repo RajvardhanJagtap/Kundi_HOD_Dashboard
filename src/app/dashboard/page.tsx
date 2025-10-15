@@ -214,7 +214,7 @@ export default function HODDashboardPage() {
           <CardContent className="grid gap-3">
             <Link
               href="/academic/teaching-plans"
-              className="flex items-center gap-3 p-3 rounded-md bg-samps-blue-50 text-samps-blue-700 hover:bg-samps-blue-100 transition-colors"
+              className="flex items-center gap-3 p-3 rounded-md bg-samps-blue-50 text-samps-[#026892]/90 hover:bg-samps-blue-100 transition-colors"
             >
               <FileText className="h-5 w-5" />
               <span className="font-medium">Approve Teaching Plans</span>
@@ -277,7 +277,7 @@ export default function HODDashboardPage() {
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">Dr. Alice Smith</td>
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-20</td>
                     <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                         Review
                       </Button>
                     </td>
@@ -288,7 +288,7 @@ export default function HODDashboardPage() {
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">John Doe</td>
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-19</td>
                     <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                         Approve
                       </Button>
                     </td>
@@ -299,7 +299,7 @@ export default function HODDashboardPage() {
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">Prof. Bob Johnson</td>
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-18</td>
                     <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                         Approve
                       </Button>
                     </td>
@@ -310,7 +310,7 @@ export default function HODDashboardPage() {
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">Dr. Emily White</td>
                     <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">2024-07-17</td>
                     <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                      <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                      <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                         Review
                       </Button>
                     </td>
@@ -330,7 +330,7 @@ export default function HODDashboardPage() {
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-samps-blue-50 text-samps-blue-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-samps-blue-50 text-samps-[#026892]">
                 <Activity className="h-4 w-4" />
               </div>
               <div className="grid gap-0.5">

@@ -117,7 +117,7 @@ export default function SimplePDFViewer({
     return (
       <div className={`flex items-center justify-center min-h-[500px] border rounded-lg bg-gray-50 ${className}`}>
         <div className="flex flex-col items-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
           <span className="text-sm text-gray-600">Loading transcript...</span>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function SimplePDFViewer({
         {isIframeLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
             <div className="flex flex-col items-center space-y-3">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-[#026892]" />
               <span className="text-sm text-gray-600">Loading PDF...</span>
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function SimplePDFViewer({
             <p className="text-gray-600 mb-4">Unable to display PDF in browser</p>
             <div className="space-y-2 text-center">
               <div className="flex space-x-2 justify-center">
-                <Button size="sm" onClick={openInNewTab} className="bg-blue-600 hover:bg-blue-700">
+                <Button size="sm" onClick={openInNewTab} className="bg-[#026892] hover:bg-[#026892]/90">
                   <ExternalLink className="w-4 h-4 mr-1" />
                   Open in New Tab
                 </Button>

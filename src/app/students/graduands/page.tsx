@@ -22,7 +22,7 @@ export default function GraduandsPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Graduation Candidates</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <CheckSquare className="h-4 w-4" />
             Finalize List
           </Button>
@@ -45,7 +45,7 @@ export default function GraduandsPage() {
                 <TableCell className="text-gray-700">B.Sc. Computer Science</TableCell>
                 <TableCell className="text-samps-green-600">Eligible</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> View Transcript
                   </Button>
                 </TableCell>
@@ -56,7 +56,7 @@ export default function GraduandsPage() {
                 <TableCell className="text-gray-700">M.Sc. Data Science</TableCell>
                 <TableCell className="text-samps-orange-600">Pending Review</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> View Transcript
                   </Button>
                 </TableCell>
@@ -67,7 +67,7 @@ export default function GraduandsPage() {
                 <TableCell className="text-gray-700">B.Sc. Computer Science</TableCell>
                 <TableCell className="text-samps-green-600">Eligible</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> View Transcript
                   </Button>
                 </TableCell>

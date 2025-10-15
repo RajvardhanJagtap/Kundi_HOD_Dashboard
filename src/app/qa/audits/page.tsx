@@ -23,7 +23,7 @@ export default function AuditsPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Audit Schedule</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <PlusCircle className="h-4 w-4" />
             Schedule Audit
           </Button>
@@ -46,7 +46,7 @@ export default function AuditsPage() {
                 <TableCell className="text-samps-orange-600">Scheduled</TableCell>
                 <TableCell className="text-gray-700">QA Committee</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> View Plan
                   </Button>
                 </TableCell>
@@ -57,7 +57,7 @@ export default function AuditsPage() {
                 <TableCell className="text-samps-green-600">Completed</TableCell>
                 <TableCell className="text-gray-700">External Body</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> View Report
                   </Button>
                 </TableCell>
@@ -68,7 +68,7 @@ export default function AuditsPage() {
                 <TableCell className="text-samps-green-600">Completed</TableCell>
                 <TableCell className="text-gray-700">Internal Auditor</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> View Report
                   </Button>
                 </TableCell>

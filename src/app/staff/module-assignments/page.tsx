@@ -469,7 +469,7 @@ export default function ModuleAssignmentsPage() {
                 </p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-blue-600" />
+                <BookOpen className="w-6 h-6 text-[#026892]" />
               </div>
             </div>
           </CardContent>
@@ -657,7 +657,7 @@ export default function ModuleAssignmentsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-[#026892] hover:text-[#026892]/90"
                         >
                           View Details
                         </Button>

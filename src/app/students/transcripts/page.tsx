@@ -127,10 +127,10 @@ export default function TranscriptsPage() {
                   <p className="text-2xl font-bold text-gray-800">
                     {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : groups.length}
                   </p>
-                  <p className="text-xs text-blue-600">Active groups: {activeGroups}</p>
+                  <p className="text-xs text-[#026892]">Active groups: {activeGroups}</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
+                  <BookOpen className="w-6 h-6 text-[#026892]" />
                 </div>
               </div>
             </CardContent>
@@ -308,7 +308,7 @@ export default function TranscriptsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-blue-600 hover:text-blue-700 bg-transparent hover:cursor-pointer border hover:bg-blue-100 flex items-center"
+                              className="text-[#026892] hover:text-[#026892]/90 bg-transparent hover:cursor-pointer border hover:bg-blue-100 flex items-center"
                             >
                               <Eye className="w-4 h-4 mr-1" />
                               View

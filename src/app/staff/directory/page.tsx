@@ -23,7 +23,7 @@ export default function StaffDirectoryPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Department Staff</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <PlusCircle className="h-4 w-4" />
             Add New Staff
           </Button>
@@ -46,10 +46,10 @@ export default function StaffDirectoryPage() {
                 <TableCell className="text-gray-700">alice.s@example.com</TableCell>
                 <TableCell className="text-gray-700">123-456-7890</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Mail className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Phone className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -60,10 +60,10 @@ export default function StaffDirectoryPage() {
                 <TableCell className="text-gray-700">bob.j@example.com</TableCell>
                 <TableCell className="text-gray-700">098-765-4321</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Mail className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Phone className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -74,10 +74,10 @@ export default function StaffDirectoryPage() {
                 <TableCell className="text-gray-700">carol.w@example.com</TableCell>
                 <TableCell className="text-gray-700">555-123-4567</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Mail className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <Phone className="h-4 w-4" />
                   </Button>
                 </TableCell>

@@ -18,7 +18,7 @@ const SimplePDFViewer = dynamic(() => import("@/components/DirectEmbedPDFViewer"
   loading: () => (
     <div className="flex items-center justify-center min-h-[400px] border rounded-lg bg-gray-50">
       <div className="flex flex-col items-center space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
         <span className="text-sm text-gray-600">Loading PDF Viewer...</span>
       </div>
     </div>
@@ -104,7 +104,7 @@ export default function StudentTranscriptPage() {
   if (!isInitialized) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
         <span className="ml-3 text-lg">Initializing...</span>
       </div>
     )

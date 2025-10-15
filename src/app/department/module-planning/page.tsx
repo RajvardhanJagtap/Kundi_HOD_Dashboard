@@ -1,10 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -12,13 +25,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import {
   PlusCircle,
   CalendarIcon,
@@ -32,39 +51,39 @@ import {
   Eye,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react"
+} from "lucide-react";
 
 interface Module {
-  id: number
-  code: string
-  name: string
-  semester: string
-  lecturer: string
-  capacity: number
-  enrolled: number
-  status: string
-  startDate: string
-  endDate: string
-  schedule: string
-  room: string
-  credits: number
-  prerequisites: string[]
-  description: string
+  id: number;
+  code: string;
+  name: string;
+  semester: string;
+  lecturer: string;
+  capacity: number;
+  enrolled: number;
+  status: string;
+  startDate: string;
+  endDate: string;
+  schedule: string;
+  room: string;
+  credits: number;
+  prerequisites: string[];
+  description: string;
 }
 
 interface Lecturer {
-  id: number
-  name: string
-  department: string
-  maxLoad: number
-  currentLoad: number
+  id: number;
+  name: string;
+  department: string;
+  maxLoad: number;
+  currentLoad: number;
 }
 
 export default function ModulePlanningPage() {
-  const [selectedView, setSelectedView] = useState("calendar")
-  const [selectedSemester, setSelectedSemester] = useState("fall-2024")
-  const [currentMonth, setCurrentMonth] = useState(new Date(2024, 8)) // September 2024
-  const [selectedModule, setSelectedModule] = useState<Module | null>(null)
+  const [selectedView, setSelectedView] = useState("calendar");
+  const [selectedSemester, setSelectedSemester] = useState("fall-2024");
+  const [currentMonth, setCurrentMonth] = useState(new Date(2024, 8)); // September 2024
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
 
   const modules: Module[] = [
     {
@@ -152,125 +171,171 @@ export default function ModulePlanningPage() {
       prerequisites: ["CS101"],
       description: "HTML, CSS, JavaScript, and modern web frameworks",
     },
-  ]
+  ];
 
   const lecturers: Lecturer[] = [
-    { id: 1, name: "Dr. Smith", department: "Computer Science", maxLoad: 12, currentLoad: 9 },
-    { id: 2, name: "Prof. Johnson", department: "Computer Science", maxLoad: 15, currentLoad: 12 },
-    { id: 3, name: "Ms. Davis", department: "Computer Science", maxLoad: 12, currentLoad: 6 },
-    { id: 4, name: "Dr. Brown", department: "Computer Science", maxLoad: 12, currentLoad: 8 },
-    { id: 5, name: "Dr. Wilson", department: "Computer Science", maxLoad: 12, currentLoad: 3 },
-  ]
+    {
+      id: 1,
+      name: "Dr. Smith",
+      department: "Computer Science",
+      maxLoad: 12,
+      currentLoad: 9,
+    },
+    {
+      id: 2,
+      name: "Prof. Johnson",
+      department: "Computer Science",
+      maxLoad: 15,
+      currentLoad: 12,
+    },
+    {
+      id: 3,
+      name: "Ms. Davis",
+      department: "Computer Science",
+      maxLoad: 12,
+      currentLoad: 6,
+    },
+    {
+      id: 4,
+      name: "Dr. Brown",
+      department: "Computer Science",
+      maxLoad: 12,
+      currentLoad: 8,
+    },
+    {
+      id: 5,
+      name: "Dr. Wilson",
+      department: "Computer Science",
+      maxLoad: 12,
+      currentLoad: 3,
+    },
+  ];
 
   const semesters = [
-    { value: "fall-2024", label: "Fall 2024", startDate: "2024-09-02", endDate: "2024-12-15" },
-    { value: "spring-2025", label: "Spring 2025", startDate: "2025-01-15", endDate: "2025-05-10" },
-    { value: "summer-2025", label: "Summer 2025", startDate: "2025-06-01", endDate: "2025-08-15" },
-  ]
+    {
+      value: "fall-2024",
+      label: "Fall 2024",
+      startDate: "2024-09-02",
+      endDate: "2024-12-15",
+    },
+    {
+      value: "spring-2025",
+      label: "Spring 2025",
+      startDate: "2025-01-15",
+      endDate: "2025-05-10",
+    },
+    {
+      value: "summer-2025",
+      label: "Summer 2025",
+      startDate: "2025-06-01",
+      endDate: "2025-08-15",
+    },
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       case "planned":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       case "cancelled":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "active":
-        return <CheckCircle className="h-4 w-4" />
+        return <CheckCircle className="h-4 w-4" />;
       case "planned":
-        return <CalendarIcon className="h-4 w-4" />
+        return <CalendarIcon className="h-4 w-4" />;
       case "pending":
-        return <AlertTriangle className="h-4 w-4" />
+        return <AlertTriangle className="h-4 w-4" />;
       default:
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
     }
-  }
+  };
 
   const generateCalendarDays = () => {
-    const year = currentMonth.getFullYear()
-    const month = currentMonth.getMonth()
-    const firstDay = new Date(year, month, 1)
-    const lastDay = new Date(year, month + 1, 0)
-    const startDate = new Date(firstDay)
-    startDate.setDate(startDate.getDate() - firstDay.getDay())
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-    const days = []
-    const currentDate = new Date(startDate)
+    const days = [];
+    const currentDate = new Date(startDate);
 
     for (let i = 0; i < 42; i++) {
       const dayModules = modules.filter((module) => {
-        const moduleStart = new Date(module.startDate)
-        const moduleEnd = new Date(module.endDate)
+        const moduleStart = new Date(module.startDate);
+        const moduleEnd = new Date(module.endDate);
         return (
           currentDate >= moduleStart &&
           currentDate <= moduleEnd &&
           module.semester.toLowerCase().includes(selectedSemester.split("-")[0])
-        )
-      })
+        );
+      });
 
       days.push({
         date: new Date(currentDate),
         isCurrentMonth: currentDate.getMonth() === month,
         modules: dayModules,
-      })
-      currentDate.setDate(currentDate.getDate() + 1)
+      });
+      currentDate.setDate(currentDate.getDate() + 1);
     }
 
-    return days
-  }
+    return days;
+  };
 
-  const calendarDays = generateCalendarDays()
+  const calendarDays = generateCalendarDays();
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-  ]
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   const navigateMonth = (direction: number) => {
     setCurrentMonth((prev) => {
-      const newMonth = new Date(prev)
-      newMonth.setMonth(prev.getMonth() + direction)
-      return newMonth
-    })
-  }
+      const newMonth = new Date(prev);
+      newMonth.setMonth(prev.getMonth() + direction);
+      return newMonth;
+    });
+  };
 
   const filteredModules = modules.filter(
-    (module) => selectedSemester === "all" || module.semester.toLowerCase().replace(" ", "-") === selectedSemester,
-  )
+    (module) =>
+      selectedSemester === "all" ||
+      module.semester.toLowerCase().replace(" ", "-") === selectedSemester
+  );
 
   return (
     <div className="flex-1 p-1 md:p-2 grid gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-black">Module Planning</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage module schedules, assignments, and academic planning</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Manage module schedules, assignments, and academic planning
+          </p>
         </div>
         <div className="flex gap-2">
-          <Select value={selectedSemester} onValueChange={setSelectedSemester}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Select semester" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Semesters</SelectItem>
-              {semesters.map((semester) => (
-                <SelectItem key={semester.value} value={semester.value}>
-                  {semester.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+              <Button className="bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add New Module
               </Button>
@@ -278,7 +343,9 @@ export default function ModulePlanningPage() {
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Add New Module</DialogTitle>
-                <DialogDescription>Create a new module for the academic schedule</DialogDescription>
+                <DialogDescription>
+                  Create a new module for the academic schedule
+                </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -297,7 +364,10 @@ export default function ModulePlanningPage() {
                 </div>
                 <div>
                   <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" placeholder="Module description..." />
+                  <Textarea
+                    id="description"
+                    placeholder="Module description..."
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -308,7 +378,10 @@ export default function ModulePlanningPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {semesters.map((semester) => (
-                          <SelectItem key={semester.value} value={semester.value}>
+                          <SelectItem
+                            key={semester.value}
+                            value={semester.value}
+                          >
                             {semester.label}
                           </SelectItem>
                         ))}
@@ -324,7 +397,8 @@ export default function ModulePlanningPage() {
                       <SelectContent>
                         {lecturers.map((lecturer) => (
                           <SelectItem key={lecturer.id} value={lecturer.name}>
-                            {lecturer.name} ({lecturer.currentLoad}/{lecturer.maxLoad} credits)
+                            {lecturer.name} ({lecturer.currentLoad}/
+                            {lecturer.maxLoad} credits)
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -344,15 +418,21 @@ export default function ModulePlanningPage() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline">Cancel</Button>
-                <Button className="bg-samps-blue-600 hover:bg-samps-blue-700">Create Module</Button>
+                <Button className="bg-samps-[#026892] hover:bg-samps-[#026892]/90">
+                  Create Module
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      <Tabs value={selectedView} onValueChange={setSelectedView} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs
+        value={selectedView}
+        onValueChange={setSelectedView}
+        className="w-full"
+      >
+        <TabsList className="flex items-end gap-6">
           <TabsTrigger value="calendar">Calendar View</TabsTrigger>
           <TabsTrigger value="modules">Module List</TabsTrigger>
           <TabsTrigger value="lecturers">Lecturer Load</TabsTrigger>
@@ -364,17 +444,30 @@ export default function ModulePlanningPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-black mb-2">Academic Calendar</CardTitle>
-                  <CardDescription>Visual overview of module schedules and important dates</CardDescription>
+                  <CardTitle className="text-black mb-2">
+                    Academic Calendar
+                  </CardTitle>
+                  <CardDescription>
+                    Visual overview of module schedules and important dates
+                  </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => navigateMonth(-1)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateMonth(-1)}
+                  >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <span className="text-lg font-semibold min-w-[200px] text-center">
-                    {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                    {monthNames[currentMonth.getMonth()]}{" "}
+                    {currentMonth.getFullYear()}
                   </span>
-                  <Button variant="outline" size="sm" onClick={() => navigateMonth(1)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateMonth(1)}
+                  >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -382,11 +475,16 @@ export default function ModulePlanningPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-7 gap-1 mb-4">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                  <div key={day} className="p-2 text-center font-semibold text-gray-600 text-sm">
-                    {day}
-                  </div>
-                ))}
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                  (day) => (
+                    <div
+                      key={day}
+                      className="p-2 text-center font-semibold text-gray-600 text-sm"
+                    >
+                      {day}
+                    </div>
+                  )
+                )}
               </div>
               <div className="grid grid-cols-7 gap-1">
                 {calendarDays.map((day, index) => (
@@ -394,10 +492,16 @@ export default function ModulePlanningPage() {
                     key={index}
                     className={`min-h-[100px] p-2 border rounded-lg ${
                       day.isCurrentMonth ? "bg-white" : "bg-gray-50"
-                    } ${day.date.toDateString() === new Date().toDateString() ? "ring-2 ring-samps-blue-500" : ""}`}
+                    } ${
+                      day.date.toDateString() === new Date().toDateString()
+                        ? "ring-2 ring-samps-blue-500"
+                        : ""
+                    }`}
                   >
                     <div
-                      className={`text-sm font-medium mb-1 ${day.isCurrentMonth ? "text-gray-900" : "text-gray-400"}`}
+                      className={`text-sm font-medium mb-1 ${
+                        day.isCurrentMonth ? "text-gray-900" : "text-gray-400"
+                      }`}
                     >
                       {day.date.getDate()}
                     </div>
@@ -412,7 +516,9 @@ export default function ModulePlanningPage() {
                         </div>
                       ))}
                       {day.modules.length > 2 && (
-                        <div className="text-xs text-gray-500">+{day.modules.length - 2} more</div>
+                        <div className="text-xs text-gray-500">
+                          +{day.modules.length - 2} more
+                        </div>
                       )}
                     </div>
                   </div>
@@ -450,7 +556,9 @@ export default function ModulePlanningPage() {
           <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-black mb-2">Module Overview</CardTitle>
-              <CardDescription>Comprehensive list of all modules with detailed information</CardDescription>
+              <CardDescription>
+                Comprehensive list of all modules with detailed information
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -470,14 +578,20 @@ export default function ModulePlanningPage() {
                       <TableCell>
                         <div>
                           <div className="font-medium">{module.code}</div>
-                          <div className="text-sm text-gray-600">{module.name}</div>
-                          <div className="text-xs text-gray-500">{module.credits} credits</div>
+                          <div className="text-sm text-gray-600">
+                            {module.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {module.credits} credits
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">{module.lecturer}</div>
-                          <div className="text-sm text-gray-600">{module.room}</div>
+                          <div className="text-sm text-gray-600">
+                            {module.room}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -493,7 +607,10 @@ export default function ModulePlanningPage() {
                           <span className="text-sm">
                             {module.enrolled}/{module.capacity}
                           </span>
-                          <Progress value={(module.enrolled / module.capacity) * 100} className="w-16 h-2" />
+                          <Progress
+                            value={(module.enrolled / module.capacity) * 100}
+                            className="w-16 h-2"
+                          />
                         </div>
                       </TableCell>
                       <TableCell>
@@ -532,42 +649,59 @@ export default function ModulePlanningPage() {
         <TabsContent value="lecturers" className="space-y-6">
           <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-black mb-2">Lecturer Teaching Load</CardTitle>
-              <CardDescription>Monitor and balance teaching assignments across faculty</CardDescription>
+              <CardTitle className="text-black mb-2">
+                Lecturer Teaching Load
+              </CardTitle>
+              <CardDescription>
+                Monitor and balance teaching assignments across faculty
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
                 {lecturers.map((lecturer) => {
-                  const loadPercentage = (lecturer.currentLoad / lecturer.maxLoad) * 100
-                  const assignedModules = modules.filter((m) => m.lecturer === lecturer.name)
+                  const loadPercentage =
+                    (lecturer.currentLoad / lecturer.maxLoad) * 100;
+                  const assignedModules = modules.filter(
+                    (m) => m.lecturer === lecturer.name
+                  );
 
                   return (
                     <div key={lecturer.id} className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between mb-3">
                         <div>
                           <h3 className="font-semibold">{lecturer.name}</h3>
-                          <p className="text-sm text-gray-600">{lecturer.department}</p>
+                          <p className="text-sm text-gray-600">
+                            {lecturer.department}
+                          </p>
                         </div>
                         <div className="text-right">
                           <div className="text-sm font-medium">
                             {lecturer.currentLoad}/{lecturer.maxLoad} credits
                           </div>
-                          <div className="text-xs text-gray-500">{Math.round(loadPercentage)}% capacity</div>
+                          <div className="text-xs text-gray-500">
+                            {Math.round(loadPercentage)}% capacity
+                          </div>
                         </div>
                       </div>
                       <Progress value={loadPercentage} className="mb-3" />
                       <div className="flex flex-wrap gap-2">
                         {assignedModules.map((module) => (
-                          <Badge key={module.id} variant="outline" className="text-xs">
+                          <Badge
+                            key={module.id}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {module.code} ({module.credits}cr)
                           </Badge>
                         ))}
                         {assignedModules.length === 0 && (
-                          <span className="text-sm text-gray-500">No modules assigned</span>
+                          <span className="text-sm text-gray-500">
+                            No modules assigned
+                          </span>
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </CardContent>
@@ -578,20 +712,28 @@ export default function ModulePlanningPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="bg-white shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-samps-blue-800">Total Modules</CardTitle>
+                <CardTitle className="text-lg text-samps-blue-800">
+                  Total Modules
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-samps-blue-600">{modules.length}</div>
+                <div className="text-3xl font-bold text-samps-[#026892]">
+                  {modules.length}
+                </div>
                 <div className="flex items-center gap-2 mt-2">
                   <BookOpen className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Across all semesters</span>
+                  <span className="text-sm text-gray-600">
+                    Across all semesters
+                  </span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="bg-white shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-samps-blue-800">Total Enrollment</CardTitle>
+                <CardTitle className="text-lg text-samps-blue-800">
+                  Total Enrollment
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-samps-green-600">
@@ -599,22 +741,36 @@ export default function ModulePlanningPage() {
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <Users className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Students enrolled</span>
+                  <span className="text-sm text-gray-600">
+                    Students enrolled
+                  </span>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="bg-white shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-samps-blue-800">Avg. Capacity</CardTitle>
+                <CardTitle className="text-lg text-samps-blue-800">
+                  Avg. Capacity
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-samps-yellow-600">
-                  {Math.round((modules.reduce((sum, m) => sum + m.enrolled / m.capacity, 0) / modules.length) * 100)}%
+                  {Math.round(
+                    (modules.reduce(
+                      (sum, m) => sum + m.enrolled / m.capacity,
+                      0
+                    ) /
+                      modules.length) *
+                      100
+                  )}
+                  %
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <AlertTriangle className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Utilization rate</span>
+                  <span className="text-sm text-gray-600">
+                    Utilization rate
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -622,26 +778,37 @@ export default function ModulePlanningPage() {
 
           <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-black-500">Department Insights</CardTitle>
-              <CardDescription>Key metrics and recommendations for module planning</CardDescription>
+              <CardTitle className="text-black-500">
+                Department Insights
+              </CardTitle>
+              <CardDescription>
+                Key metrics and recommendations for module planning
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold mb-3">Module Status Distribution</h4>
+                  <h4 className="font-semibold mb-3">
+                    Module Status Distribution
+                  </h4>
                   <div className="space-y-2">
                     {["active", "planned", "pending"].map((status) => {
-                      const count = modules.filter((m) => m.status === status).length
-                      const percentage = (count / modules.length) * 100
+                      const count = modules.filter(
+                        (m) => m.status === status
+                      ).length;
+                      const percentage = (count / modules.length) * 100;
                       return (
-                        <div key={status} className="flex items-center justify-between">
+                        <div
+                          key={status}
+                          className="flex items-center justify-between"
+                        >
                           <span className="capitalize text-sm">{status}</span>
                           <div className="flex items-center gap-2">
                             <Progress value={percentage} className="w-20 h-2" />
                             <span className="text-sm font-medium">{count}</span>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </div>
@@ -651,15 +818,21 @@ export default function ModulePlanningPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                      <span>CS105 Web Development needs lecturer assignment</span>
+                      <span>
+                        CS105 Web Development needs lecturer assignment
+                      </span>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="h-4 w-4 text-green-500 mt-0.5" />
-                      <span>Dr. Wilson has capacity for additional modules</span>
+                      <span>
+                        Dr. Wilson has capacity for additional modules
+                      </span>
                     </div>
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                      <span>Prof. Johnson approaching maximum teaching load</span>
+                      <span>
+                        Prof. Johnson approaching maximum teaching load
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -671,13 +844,18 @@ export default function ModulePlanningPage() {
 
       {/* Module Detail Dialog */}
       {selectedModule && (
-        <Dialog open={!!selectedModule} onOpenChange={() => setSelectedModule(null)}>
+        <Dialog
+          open={!!selectedModule}
+          onOpenChange={() => setSelectedModule(null)}
+        >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
                 {selectedModule.code} - {selectedModule.name}
               </DialogTitle>
-              <DialogDescription>Module details and management options</DialogDescription>
+              <DialogDescription>
+                Module details and management options
+              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
@@ -692,7 +870,9 @@ export default function ModulePlanningPage() {
               </div>
               <div>
                 <Label className="text-sm font-medium">Description</Label>
-                <p className="text-sm text-gray-600">{selectedModule.description}</p>
+                <p className="text-sm text-gray-600">
+                  {selectedModule.description}
+                </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -713,7 +893,9 @@ export default function ModulePlanningPage() {
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Status</Label>
-                  <Badge className={getStatusColor(selectedModule.status)}>{selectedModule.status}</Badge>
+                  <Badge className={getStatusColor(selectedModule.status)}>
+                    {selectedModule.status}
+                  </Badge>
                 </div>
               </div>
               {selectedModule.prerequisites.length > 0 && (
@@ -733,11 +915,13 @@ export default function ModulePlanningPage() {
               <Button variant="outline" onClick={() => setSelectedModule(null)}>
                 Close
               </Button>
-              <Button className="bg-samps-blue-600 hover:bg-samps-blue-700">Edit Module</Button>
+              <Button className="bg-samps-[#026892] hover:bg-samps-[#026892]/90">
+                Edit Module
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
       )}
     </div>
-  )
+  );
 }

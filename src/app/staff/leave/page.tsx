@@ -92,7 +92,7 @@ const leaveRequests: LeaveRequest[] = [
 ]
 
 const LEAVE_TYPE_COLORS = {
-  Annual: 'bg-blue-50 text-blue-700 border-blue-200',
+  Annual: 'bg-blue-50 text-[#026892]/90 border-blue-200',
   Sick: 'bg-red-50 text-red-700 border-red-200',
   Emergency: 'bg-orange-50 text-orange-700 border-orange-200',
   Conference: 'bg-purple-50 text-purple-700 border-purple-200',

@@ -55,7 +55,7 @@ interface Event {
 }
 
 const eventTypes = {
-  meeting: { color: "bg-blue-500", label: "Meeting", textColor: "text-blue-700" },
+  meeting: { color: "bg-blue-500", label: "Meeting", textColor: "text-[#026892]/90" },
   deadline: { color: "bg-red-500", label: "Deadline", textColor: "text-red-700" },
   academic: { color: "bg-green-500", label: "Academic", textColor: "text-green-700" },
   social: { color: "bg-purple-500", label: "Social", textColor: "text-purple-700" },
@@ -190,7 +190,7 @@ export default function DepartmentCalendarPage() {
     return (
       <div className="grid grid-cols-7 gap-1 p-4">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="p-2 text-center font-semibold text-samps-blue-700 border-b">
+          <div key={day} className="p-2 text-center font-semibold text-samps-[#026892]/90 border-b">
             {day}
           </div>
         ))}
@@ -210,7 +210,7 @@ export default function DepartmentCalendarPage() {
               <div
                 className={`text-sm font-medium mb-1 ${
                   isCurrentDay
-                    ? "text-samps-blue-600 font-bold"
+                    ? "text-samps-[#026892] font-bold"
                     : isSameMonth(day, currentDate)
                       ? "text-gray-900"
                       : "text-gray-400"
@@ -253,7 +253,7 @@ export default function DepartmentCalendarPage() {
         <div className="flex items-center gap-2">
           <Dialog open={showAddEvent} onOpenChange={setShowAddEvent}>
             <DialogTrigger asChild>
-              <Button className="bg-samps-blue-600 hover:bg-[#026892]/90 text-white">
+              <Button className="bg-samps-[#026892] hover:bg-[#026892]/90 text-white">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Event
               </Button>
@@ -305,7 +305,7 @@ export default function DepartmentCalendarPage() {
                   <Button variant="outline" onClick={() => setShowAddEvent(false)}>
                     Cancel
                   </Button>
-                  <Button className="bg-samps-blue-600 hover:bg-samps-blue-700">Create Event</Button>
+                  <Button className="bg-samps-[#026892] hover:bg-samps-[#026892]/90">Create Event</Button>
                 </div>
               </div>
             </DialogContent>
@@ -315,7 +315,7 @@ export default function DepartmentCalendarPage() {
 
       {/* Quick Stats - Moved to top as requested */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-[#026892] from-blue-500 to-blue-600 text-white">
+        <Card className="bg-[#026892] from-blue-500 to-[#026892] text-white">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -400,7 +400,7 @@ export default function DepartmentCalendarPage() {
                 variant={viewMode === "month" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setViewMode("month")}
-                className={viewMode === "month" ? "bg-samps-blue-600 hover:bg-[#026892]/90" : ""}
+                className={viewMode === "month" ? "bg-samps-[#026892] hover:bg-[#026892]/90" : ""}
               >
                 Month
               </Button>
@@ -408,7 +408,7 @@ export default function DepartmentCalendarPage() {
                 variant={viewMode === "week" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setViewMode("week")}
-                className={viewMode === "week" ? "bg-samps-blue-600 hover:bg-[#026892]/90" : ""}
+                className={viewMode === "week" ? "bg-samps-[#026892] hover:bg-[#026892]/90" : ""}
               >
                 Week
               </Button>
@@ -416,7 +416,7 @@ export default function DepartmentCalendarPage() {
                 variant={viewMode === "day" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setViewMode("day")}
-                className={viewMode === "day" ? "bg-samps-blue-600 hover:bg-[#026892]/90" : ""}
+                className={viewMode === "day" ? "bg-samps-[#026892] hover:bg-[#026892]/90" : ""}
               >
                 Day
               </Button>
@@ -475,7 +475,7 @@ export default function DepartmentCalendarPage() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-samps-blue-700">{event.title}</h4>
+                          <h4 className="font-semibold text-samps-[#026892]/90">{event.title}</h4>
                           <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
                             <Clock className="h-3 w-3" />
                             {event.time} {event.endTime && `- ${event.endTime}`}
@@ -620,7 +620,7 @@ export default function DepartmentCalendarPage() {
                 <Button variant="outline" onClick={() => setSelectedEvent(null)}>
                   Close
                 </Button>
-                <Button className="bg-samps-blue-600 hover:bg-hover:bg-[#026892]/90">Edit Event</Button>
+                <Button className="bg-samps-[#026892] hover:bg-hover:bg-[#026892]/90">Edit Event</Button>
               </div>
             </div>
           </DialogContent>

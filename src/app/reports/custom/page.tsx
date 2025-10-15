@@ -15,7 +15,7 @@ export default function CustomReportsPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">My Custom Reports</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <PlusCircle className="h-4 w-4" />
             Create New Custom Report
           </Button>
@@ -23,19 +23,19 @@ export default function CustomReportsPage() {
         <CardContent className="grid gap-4">
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Module Enrollment by Year (2020-2024)</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <FileText className="h-4 w-4" /> View Report
             </Button>
           </div>
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Staff Publication Count by Research Area</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <FileText className="h-4 w-4" /> View Report
             </Button>
           </div>
           <div className="flex items-center justify-between border-b pb-2">
             <span className="font-medium text-gray-800">Student GPA Distribution by Program</span>
-            <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+            <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
               <FileText className="h-4 w-4" /> View Report
             </Button>
           </div>
@@ -74,7 +74,7 @@ export default function CustomReportsPage() {
             <Label htmlFor="fields">Fields to Include (comma-separated)</Label>
             <Textarea id="fields" placeholder="e.g., Student ID, Name, GPA, Program" />
           </div>
-          <Button className="bg-samps-blue-600 hover:bg-samps-blue-700 text-white">Generate Custom Report</Button>
+          <Button className="bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">Generate Custom Report</Button>
         </CardContent>
       </Card>
     </div>

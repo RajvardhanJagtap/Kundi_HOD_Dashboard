@@ -24,7 +24,7 @@ export default function FeedbackPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Recent Feedback</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-samps-blue-700 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-samps-[#026892]/90 text-white">
             <CheckSquare className="h-4 w-4" />
             Mark as Reviewed
           </Button>
@@ -47,7 +47,7 @@ export default function FeedbackPage() {
                 <TableCell className="text-gray-700">2024-07-23</TableCell>
                 <TableCell className="text-samps-orange-600">New</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <MessageSquare className="h-4 w-4" /> View Feedback
                   </Button>
                 </TableCell>
@@ -58,7 +58,7 @@ export default function FeedbackPage() {
                 <TableCell className="text-gray-700">2024-07-21</TableCell>
                 <TableCell className="text-samps-green-600">Reviewed</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <MessageSquare className="h-4 w-4" /> View Feedback
                   </Button>
                 </TableCell>
@@ -69,7 +69,7 @@ export default function FeedbackPage() {
                 <TableCell className="text-gray-700">2024-07-20</TableCell>
                 <TableCell className="text-samps-orange-600">New</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                  <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <MessageSquare className="h-4 w-4" /> View Feedback
                   </Button>
                 </TableCell>

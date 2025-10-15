@@ -30,7 +30,7 @@ export default function ExamsPage() {
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-semibold text-gray-900">Exam Schedule</CardTitle>
-          <Button size="sm" className="gap-1 bg-samps-blue-600 hover:bg-bg-[#026892]/90 text-white">
+          <Button size="sm" className="gap-1 bg-samps-[#026892] hover:bg-bg-[#026892]/90 text-white">
             <PlusCircle className="h-4 w-4" />
             Add Exam
           </Button>
@@ -54,7 +54,7 @@ export default function ExamsPage() {
                   <td className="px-4 py-3 text-sm text-gray-600">09:00 AM</td>
                   <td className="px-4 py-3 text-sm text-gray-600">Exam Hall 1</td>
                   <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                    <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
@@ -68,7 +68,7 @@ export default function ExamsPage() {
                   <td className="px-4 py-3 text-sm text-gray-600">02:00 PM</td>
                   <td className="px-4 py-3 text-sm text-gray-600">Exam Hall 2</td>
                   <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                    <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">
@@ -82,7 +82,7 @@ export default function ExamsPage() {
                   <td className="px-4 py-3 text-sm text-gray-600">10:00 AM</td>
                   <td className="px-4 py-3 text-sm text-gray-600">Lecture Hall 3</td>
                   <td className="px-4 py-3 text-sm text-gray-600 text-right">
-                    <Button variant="ghost" size="sm" className="text-samps-blue-600 hover:bg-samps-blue-50">
+                    <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="sm" className="text-samps-red-600 hover:bg-samps-red-50">

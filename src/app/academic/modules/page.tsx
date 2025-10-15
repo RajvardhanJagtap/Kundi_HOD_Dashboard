@@ -189,7 +189,7 @@ export default function AcademicModulesPage() {
                     {module.name}
                   </CardDescription>
                 </div>
-                <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                <Badge variant="outline" className="bg-blue-50 text-[#026892]/90">
                   {module.credits} credits
                 </Badge>
               </div>
@@ -215,7 +215,7 @@ export default function AcademicModulesPage() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="flex-1 text-blue-600 border-blue-200 hover:bg-blue-50"
+                  className="flex-1 text-[#026892] border-blue-200 hover:bg-blue-50"
                   onClick={() => handleModuleClick(module, 'marks')}
                 >
                   <FileText className="h-3 w-3 mr-1" />

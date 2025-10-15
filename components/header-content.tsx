@@ -232,7 +232,7 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
                 <DropdownMenuItem className="cursor-pointer p-3 hover:bg-gray-50">
                   <div className="flex items-start gap-3 w-full">
                     <div className="p-2 bg-blue-100 rounded-lg shrink-0">
-                      <FileText className="h-4 w-4 text-blue-600" />
+                      <FileText className="h-4 w-4 text-[#026892]" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">
