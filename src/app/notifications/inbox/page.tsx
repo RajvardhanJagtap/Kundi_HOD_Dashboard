@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -40,6 +40,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // HOD-specific notification data
 const notificationsData = [
@@ -141,21 +150,166 @@ const notificationsData = [
   },
 ];
 
+// NotificationsList component for rendering notifications
+interface NotificationsListProps {
+  notifications: typeof notificationsData;
+  getColorClasses: (color: string) => any;
+  getPriorityBadge: (priority: string) => any;
+  markAsRead: (id: number) => void;
+  deleteNotification: (id: number) => void;
+  openDropdown: number | null;
+  setOpenDropdown: (id: number | null) => void;
+}
+
+function NotificationsList({
+  notifications,
+  getColorClasses,
+  getPriorityBadge,
+  markAsRead,
+  deleteNotification,
+  openDropdown,
+  setOpenDropdown,
+}: NotificationsListProps) {
+  if (notifications.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <Bell className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+        <p>No notifications found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {notifications.map((notification) => {
+        const colorClasses = getColorClasses(notification.color);
+        const priorityBadge = getPriorityBadge(notification.priority);
+        const IconComponent = notification.icon;
+
+        return (
+          <div
+            key={notification.id}
+            className={`border rounded-lg p-4 transition-colors hover:bg-gray-50 ${
+              !notification.isRead ? "bg-blue-50/50 border-blue-200" : "bg-white"
+            }`}
+          >
+            <div className="flex items-start gap-4">
+              {/* Icon */}
+              <div className={`p-2 ${colorClasses.bg} rounded-lg shrink-0`}>
+                <IconComponent className={`h-5 w-5 ${colorClasses.text}`} />
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className={`font-medium ${!notification.isRead ? "text-gray-900" : "text-gray-700"}`}>
+                        {notification.title}
+                      </h3>
+                      {!notification.isRead && (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {notification.description}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <span>{notification.timestamp}</span>
+                      <span>•</span>
+                      <span>{notification.department}</span>
+                      <Badge className={priorityBadge.className}>
+                        {priorityBadge.label}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="relative notification-actions">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setOpenDropdown(openDropdown === notification.id ? null : notification.id)}
+                      className="hover:cursor-pointer"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                    
+                    {openDropdown === notification.id && (
+                      <div 
+                        className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-[9999]"
+                        style={{ zIndex: 9999 }}
+                      >
+                        <div className="py-1">
+                          {!notification.isRead && (
+                            <div 
+                              className="cursor-pointer px-3 py-2 hover:bg-gray-50 flex items-center text-sm"
+                              onClick={() => {
+                                markAsRead(notification.id);
+                                setOpenDropdown(null);
+                              }}
+                            >
+                              <Eye className="mr-2 h-4 w-4" />
+                              Mark as Read
+                            </div>
+                          )}
+                          <div 
+                            className="cursor-pointer px-3 py-2 hover:bg-gray-50 flex items-center text-sm text-red-600"
+                            onClick={() => {
+                              deleteNotification(notification.id);
+                              setOpenDropdown(null);
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function NotificationsInboxContent() {
   const [notifications, setNotifications] = useState(notificationsData);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // Filter notifications based on type and search term
+  // Filter notifications based on type, search term, and tab
   const filteredNotifications = notifications.filter((notification) => {
     const matchesFilter = filter === "all" || notification.type === filter;
     const matchesSearch = 
       notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       notification.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       notification.department.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTab = 
+      activeTab === "all" || 
+      (activeTab === "unread" && !notification.isRead) ||
+      (activeTab === "read" && notification.isRead);
     
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesSearch && matchesTab;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedNotifications = filteredNotifications.slice(startIndex, startIndex + itemsPerPage);
+
+  // Reset to first page when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchTerm, activeTab]);
 
   // Mark notification as read
   const markAsRead = (id: number) => {
@@ -173,6 +327,21 @@ function NotificationsInboxContent() {
   const markAllAsRead = () => {
     setNotifications(notifications.map(notif => ({ ...notif, isRead: true })));
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.notification-actions')) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Get color classes for notification types
   const getColorClasses = (color: string) => {
@@ -200,77 +369,93 @@ function NotificationsInboxContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              Total Notifications
-            </CardTitle>
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Bell className="h-4 w-4 text-[#026892]" />
+      {/* Header Stats - Dashboard Style */}
+      <div className="grid grid-cols-4 gap-6 mb-8">
+        <Card className="">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Notifications
+                </p>
+                <p className="text-2xl font-bold text-gray-800">{notifications.length}</p>
+                <p className="text-xs text-green-600">
+                  All time
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <Bell className="w-6 h-6 text-[#026892]" />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{notifications.length}</div>
-            <p className="text-xs text-gray-600 mt-1">All time</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              Unread
-            </CardTitle>
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
+        <Card className="">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Unread
+                </p>
+                <p className="text-2xl font-bold text-gray-800">{unreadCount}</p>
+                <p className="text-xs text-orange-600">
+                  Require attention
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-orange-600" />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{unreadCount}</div>
-            <p className="text-xs text-gray-600 mt-1">Require attention</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              This Week
-            </CardTitle>
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Calendar className="h-4 w-4 text-green-600" />
+        <Card className="">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  This Week
+                </p>
+                <p className="text-2xl font-bold text-gray-800">15</p>
+                <p className="text-xs text-green-600">
+                  Recent activity
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-green-600" />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">15</div>
-            <p className="text-xs text-gray-600 mt-1">Recent activity</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">
-              High Priority
-            </CardTitle>
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <CheckCircle className="h-4 w-4 text-purple-600" />
+        <Card className="">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  High Priority
+                </p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {notifications.filter(n => n.priority === "high" || n.priority === "urgent").length}
+                </p>
+                <p className="text-xs text-purple-600">
+                  Need immediate action
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-purple-600" />
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">
-              {notifications.filter(n => n.priority === "high" || n.priority === "urgent").length}
-            </div>
-            <p className="text-xs text-gray-600 mt-1">Need immediate action</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters and Actions */}
+      {/* Notifications with Tabs and Pagination */}
       <Card className="bg-white shadow-sm border border-gray-200">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-semibold text-gray-900">All Notifications</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-900">Notifications</CardTitle>
               <CardDescription className="text-sm text-gray-600">
                 Manage and view all your HOD notifications
               </CardDescription>
@@ -322,88 +507,74 @@ function NotificationsInboxContent() {
             </Select>
           </div>
 
-          {/* Notifications List */}
-          <div className="space-y-3">
-            {filteredNotifications.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Bell className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-                <p>No notifications found</p>
-              </div>
-            ) : (
-              filteredNotifications.map((notification) => {
-                const colorClasses = getColorClasses(notification.color);
-                const priorityBadge = getPriorityBadge(notification.priority);
-                const IconComponent = notification.icon;
-
-                return (
-                  <div
-                    key={notification.id}
-                    className={`border rounded-lg p-4 transition-colors hover:bg-gray-50 ${
-                      !notification.isRead ? "bg-blue-50/50 border-blue-200" : "bg-white"
-                    }`}
-                  >
-                    <div className="flex items-start gap-4">
-                      {/* Icon */}
-                      <div className={`p-2 ${colorClasses.bg} rounded-lg shrink-0`}>
-                        <IconComponent className={`h-5 w-5 ${colorClasses.text}`} />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className={`font-medium ${!notification.isRead ? "text-gray-900" : "text-gray-700"}`}>
-                                {notification.title}
-                              </h3>
-                              {!notification.isRead && (
-                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                              )}
-                            </div>
-                            <p className="text-sm text-gray-600 mb-2">
-                              {notification.description}
-                            </p>
-                            <div className="flex items-center gap-4 text-xs text-gray-500">
-                              <span>{notification.timestamp}</span>
-                              <span>•</span>
-                              <span>{notification.department}</span>
-                              <Badge className={priorityBadge.className}>
-                                {priorityBadge.label}
-                              </Badge>
-                            </div>
-                          </div>
-
-                          {/* Actions */}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              {!notification.isRead && (
-                                <DropdownMenuItem onClick={() => markAsRead(notification.id)}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Mark as Read
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem 
-                                onClick={() => deleteNotification(notification.id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
+          {/* Custom Underline Navigation */}
+          <div className="border-b border-gray-200 mb-6">
+            <nav className="flex space-x-8">
+              {[
+                { id: "all", label: `All (${notifications.length})` },
+                { id: "unread", label: `Unread (${unreadCount})` },
+                { id: "read", label: `Read (${notifications.length - unreadCount})` },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? "border-[#026892] text-[#026892] hover:cursor-pointer"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:cursor-pointer"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
           </div>
+
+          {/* Notifications List */}
+          <NotificationsList 
+            notifications={paginatedNotifications}
+            getColorClasses={getColorClasses}
+            getPriorityBadge={getPriorityBadge}
+            markAsRead={markAsRead}
+            deleteNotification={deleteNotification}
+            openDropdown={openDropdown}
+            setOpenDropdown={setOpenDropdown}
+          />
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={currentPage === page}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
