@@ -63,7 +63,6 @@ const hodNavigation = [
       //{ title: "Assessment", url: "/academic/assessment" },
       { title: "Timetables", url: "/academic/timetables" },
       { title: "Deadlines", url: "/academic/deadlines" },
-      { title: "Exams", url: "/academic/exams" },
       { title: "Marks Submitted", url: "/academic/marks-submitted" },
       { title: "Classes Marks", url: "/academic/classes-marks" },
       { title: "Attendance", url: "/academic/attendance" },
@@ -93,17 +92,17 @@ const hodNavigation = [
       { title: "Student Transcripts", url: "/students/transcripts" },
     ],
   },
-  {
-    title: "Quality Assurance",
-    icon: Award,
-    items: [
-      { title: "Metrics", url: "/qa/metrics" },
-      { title: "Module Review", url: "/qa/module-review" },
-      { title: "Feedback", url: "/qa/feedback" },
-      { title: "Improvements", url: "/qa/improvements" },
-      { title: "Audits", url: "/qa/audits" },
-    ],
-  },
+  // {
+  //   title: "Quality Assurance",
+  //   icon: Award,
+  //   items: [
+  //     { title: "Metrics", url: "/qa/metrics" },
+  //     { title: "Module Review", url: "/qa/module-review" },
+  //     { title: "Feedback", url: "/qa/feedback" },
+  //     { title: "Improvements", url: "/qa/improvements" },
+  //     { title: "Audits", url: "/qa/audits" },
+  //   ],
+  // },
   {
     title: "Reports",
     icon: LineChart,
