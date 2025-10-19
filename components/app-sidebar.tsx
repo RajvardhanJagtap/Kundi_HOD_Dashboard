@@ -60,7 +60,6 @@ const hodNavigation = [
     title: "Academic",
     icon: BookOpen,
     items: [
-      //{ title: "Assessment", url: "/academic/assessment" },
       { title: "Timetables", url: "/academic/timetables" },
       { title: "Deadlines", url: "/academic/deadlines" },
       { title: "Marks Submitted", url: "/academic/marks-submitted" },

@@ -1,0 +1,33 @@
+services:
+  hod-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: samps-hod-portal
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=production
+      - PORT=3006
+      - HOSTNAME=0.0.0.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3006 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      # Mount any additional volumes if needed
+      - ./logs:/app/logs
+    networks:
+      - hod-network
+
+networks:
+  hod-network:
+    driver: bridge
+    name: hod-portal-network
+
+volumes:
+  hod-logs:
+    driver: local
