@@ -1,6 +1,7 @@
 "use client";
-import { FiEye } from "react-icons/fi";
-import { useState } from "react";
+
+import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -36,165 +37,143 @@ export default function HODLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden">
-                <div className="flex">
-                    {/* Left Side - Image and Branding */}
-                    <div className="hidden md:flex md:w-2/5 relative">
-                        <div 
-                            className="w-full h-full bg-cover bg-center bg-no-repeat min-h-[600px] relative"
-                            style={{
-                                backgroundImage: "url('/img/ur-headquater.webp')"
-                            }}
-                        >
-                            {/* Dark overlay for better text readability */}
-                            <div className="absolute inset-0 bg-black bg-opacity-50" />
-                            
-                            {/* Content */}
-                            <div className="relative z-10 flex flex-col justify-between h-full p-8 text-white">
-                                {/* Top - Logo and Title */}
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                                        <img
-                                            src="/img/logo.jpeg"
-                                            alt="SAMPS UR Logo"
-                                            className="w-8 h-8 object-contain"
-                                        />
-                                    </div>
-                                    <span className="text-xl font-bold">SAMPS UR</span>
-                                </div>
+        <div className="min-h-fit flex m-20">
+            <div className="w-full max-w-5xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden flex">
+            <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden bg-gray-900 rounded-l-lg">
+                {/* single responsive image that covers the panel */}
+                <img
+                    src="/img/ur-hq.png"
+                    alt="Decorative background"
+                    className="absolute inset-0 h-full w-full object-cover object-left opacity-95"
+                    loading="lazy"
+                    decoding="async"
+                />
 
-                                {/* Bottom - Quote */}
-                                <div className="space-y-4">
-                                    <blockquote className="text-2xl font-light leading-relaxed">
-                                        "Empowering education through innovative technology and seamless academic management."
-                                    </blockquote>
+                {/* subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-                                </div>
-                            </div>
+                <div className="relative z-10 p-8 flex flex-col justify-between text-white w-full">
+                    <div className="flex items-center gap-2">
+                        <div className="flex gap-1">
+                            <img src="/img/logo.jpeg" alt="SAMPS UR Logo" className="h-8 w-8  rounded-md" />
                         </div>
+                        <span className="text-xl font-semibold">SAMPS UR</span>
                     </div>
 
-                    {/* Right Side - Login Form */}
-                    <div className="w-full md:w-3/5 flex items-center justify-center p-8 md:p-12">
-                        <div className="w-full max-w-lg">
-                            {/* Mobile Logo - Only shown on small screens */}
-                            <div className="md:hidden text-center mb-8">
-                                <div className="w-16 h-16 bg-white rounded-lg shadow-md flex items-center justify-center mx-auto mb-4">
-                                    <img
-                                        src="/img/logo.jpeg"
-                                        alt="SAMPS UR Logo"
-                                        className="w-12 h-12 object-contain"
-                                    />
-                                </div>
-                                <h1 className="text-2xl font-bold text-[#026892]">SAMPS UR</h1>
-                            </div>
+                    <div>
+                        <p className="text-lg font-bold mb-6 leading-tight">
+                            "Empowering education through innovative technology and seamless  <br />academic management."
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-                            {/* Welcome Header */}
-                            <div className="mb-8">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back to SAMPS</h2>
-                                <p className="text-gray-600 text-sm">
-                                    Student Academic Management Platform
-                                </p>
-                            </div>
+            {/* Right Panel - Login Form */}
+            <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
+                <div className="w-full max-w-md">
+                    {/* Mobile Logo */}
+                    <div className="lg:hidden flex items-center gap-2 mb-8">
+                        <div className="flex gap-1">
+                            <img src="/img/logo.jpeg" alt="SAMPS UR Logo" className="h-8 w-8  rounded-full" />
+                        </div>
+                        <span className="text-xl font-semibold text-gray-900">SAMPS UR</span>
+                    </div>
 
-                            {/* Error Message */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                            Welcome back to HOD Portal
+                        </h1>
+                        <p className="text-gray-500">
+                            Student Academic Management Platform
+                        </p>
+                    </div>
+
+                    {/* Error Message */}
                             {error && (
                                 <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
                                     {error}
                                 </div>
                             )}
 
-                            {/* Login Form */}
-                            <form className="space-y-6" onSubmit={handleLogin}>
-                                <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Email
-                                    </label>
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        type="text"
-                                        autoComplete="email"
-                                        required
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#026892] focus:border-[#026892] text-gray-900 placeholder-gray-400 transition-colors"
-                                        placeholder="example@gmail.com"
-                                        value={usernameOrEmail}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        disabled={isLoading}
-                                    />
-                                </div>
+                    <form onSubmit={handleLogin} className="space-y-5">
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                Email or Username
+                            </label>
+                            <input
+                                type="text"
+                                id="email"
+                                name="email"
+                                value={usernameOrEmail}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                placeholder="hod@ur.ac.rw"
+                                required
+                                disabled={isLoading}
+                            />
+                        </div>
 
-                                <div>
-                                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Password
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="password"
-                                            name="password"
-                                            type={showPassword ? "text" : "password"}
-                                            autoComplete="current-password"
-                                            required
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#026892] focus:border-[#026892] text-gray-900 placeholder-gray-400 transition-colors pr-12"
-                                            placeholder="••••••••"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            disabled={isLoading}
-                                        />
-                                        <button
-                                            type="button"
-                                            className="absolute inset-y-0 right-0 pr-4 flex items-center"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
-                                            <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="text-right">
-                                    <a href="#" className="text-sm text-[#026892] hover:text-[#035a6d] font-medium">
-                                        Forgot password?
-                                    </a>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <input
-                                            id="remember-me"
-                                            name="remember-me"
-                                            type="checkbox"
-                                            className="h-4 w-4 text-[#026892] focus:ring-[#026892] border-gray-300 rounded"
-                                            checked={rememberMe}
-                                            onChange={(e) => setRememberMe(e.target.checked)}
-                                        />
-                                        <label htmlFor="remember-me" className="ml-2 text-sm text-gray-600">
-                                            Remember sign in details
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    id="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-3 border border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                    placeholder="••••••••"
                                     disabled={isLoading}
-                                    className="w-full py-3 px-4 bg-[#026892] hover:bg-[#035a6d] text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#026892] disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                 >
-                                    {isLoading ? "Signing in..." : "Log in"}
+                                    {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5 hover:cursor-pointer" />}
                                 </button>
-                            </form>
-
-                            {/* Help Section */}
-                            <div className="mt-8 text-center">
-                                <p className="text-sm text-gray-500">
-                                    Don't have an account?{" "}
-                                    <a href="#" className="text-[#026892] hover:text-[#035a6d] font-medium">
-                                        Contact IT Support
-                                    </a>
-                                </p>
                             </div>
                         </div>
-                    </div>
+
+                        <div className="flex items-center justify-between">
+                            <button
+                                type="button"
+                                className="text-sm text-[#026892] hover:text-purple-700 font-medium"
+                            >
+                                Forgot password?
+                            </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-700">Remember sign in details</span>
+                            <button
+                                type="button"
+                                onClick={() => setRememberMe(!rememberMe)}
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors hover:cursor-pointer ${
+                                    rememberMe ? 'bg-[#026892]' : 'bg-gray-300'
+                                }`}
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                        rememberMe ? 'translate-x-6' : 'translate-x-1'
+                                    }`}
+                                />
+                            </button>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full bg-[#026892] text-white py-3 rounded-lg font-medium hover:bg-[#026892]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
+                        >
+                            {isLoading ? "Signing in..." : "Log in"}
+                        </button>
+                    </form>
                 </div>
+            </div>
             </div>
         </div>
     );
