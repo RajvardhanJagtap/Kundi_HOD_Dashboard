@@ -37,12 +37,12 @@ export default function HODLogin() {
     };
 
     return (
-        <div className="min-h-fit flex m-20">
-            <div className="w-full max-w-5xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden flex">
-            <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden bg-gray-900 rounded-l-lg">
+        <div className="min-h-screen flex">
+            <div className="w-full h-screen bg-white overflow-hidden flex">
+            <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden bg-gray-900 min-h-screen">
                 {/* single responsive image that covers the panel */}
                 <img
-                    src="/img/ur-hq.png"
+                    src="/img/graduated.jpg"
                     alt="Decorative background"
                     className="absolute inset-0 h-full w-full object-cover object-left opacity-95"
                     loading="lazy"
@@ -55,24 +55,23 @@ export default function HODLogin() {
                 <div className="relative z-10 p-8 flex flex-col justify-between text-white w-full">
                     <div className="flex items-center gap-2">
                         <div className="flex gap-1">
-                            <img src="/img/logo.jpeg" alt="SAMPS UR Logo" className="h-8 w-8  rounded-md" />
+                            <img src="/img/logo.jpeg" alt="SAMPS UR Logo" className="h-14 w-14  rounded-full" />
                         </div>
-                        <span className="text-xl font-semibold">SAMPS UR</span>
                     </div>
 
                     <div>
                         <p className="text-lg font-bold mb-6 leading-tight">
-                            "Empowering education through innovative technology and seamless  <br />academic management."
+                            "To be a leading University that develops highly enterprising graduates prepared and dedicated to building a more just and sustainable society locally, nationally and globally, with appropriate innovations that advance quality of life."
                         </p>
                     </div>
                 </div>
             </div>
 
             {/* Right Panel - Login Form */}
-            <div className="flex-1 flex items-center justify-center p-8 bg-gray-50">
+            <div className="flex-1 flex items-center justify-center p-8 bg-gray-50 min-h-screen">
                 <div className="w-full max-w-md">
                     {/* Mobile Logo */}
-                    <div className="lg:hidden flex items-center gap-2 mb-8">
+                    <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">
                         <div className="flex gap-1">
                             <img src="/img/logo.jpeg" alt="SAMPS UR Logo" className="h-8 w-8  rounded-full" />
                         </div>
@@ -81,7 +80,7 @@ export default function HODLogin() {
 
                     <div className="text-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Welcome back to HOD Portal
+                            Welcome back to <br/>HOD Portal
                         </h1>
                         <p className="text-gray-500">
                             Student Academic Management Platform
@@ -106,7 +105,7 @@ export default function HODLogin() {
                                 name="email"
                                 value={usernameOrEmail}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#026892] focus:border-transparent transition"
                                 placeholder="hod@ur.ac.rw"
                                 required
                                 disabled={isLoading}
@@ -123,7 +122,7 @@ export default function HODLogin() {
                                     id="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3 border border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#026892] focus:border-transparent transition"
                                     placeholder="••••••••"
                                     disabled={isLoading}
                                 />
