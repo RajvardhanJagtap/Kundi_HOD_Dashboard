@@ -45,14 +45,16 @@ export default function StudentTranscriptPage() {
   const searchParams = useSearchParams();
 
   const [academicYearId, setAcademicYearId] = useState<string>("");
+  const [semesterId, setSemesterId] = useState<string>("");
   const [studentInfo, setStudentInfo] = useState<any>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Get academic year from localStorage
+  // Get academic year and semester from localStorage
   useEffect(() => {
     const paramYear =
       searchParams?.get?.("yearId") || searchParams?.get?.("academicYearId");
+    const paramSemester = searchParams?.get?.("semesterId");
 
     // Helper to safely read storage with fallbacks
     const readStorage = (key: string) => {
@@ -77,11 +79,30 @@ export default function StudentTranscriptPage() {
       setAcademicYearId(storedAcademicYearId.trim());
     }
 
+    // Get semester ID
+    const storedSemesterId =
+      paramSemester ||
+      readStorage("selectedSemesterId") ||
+      readStorage("selectedSemester");
+    if (storedSemesterId && storedSemesterId.trim().length > 0) {
+      setSemesterId(storedSemesterId.trim());
+    }
+
+    console.log('Student page initialized with:', {
+      academicYearId: storedAcademicYearId,
+      semesterId: storedSemesterId,
+      classId,
+      studentId
+    });
+
     setIsInitialized(true);
-  }, [searchParams]);
+  }, [searchParams, classId, studentId]);
 
   // Get student enrollments to find student info
-  const { enrollments } = useStudentEnrollments({ groupId: classId });
+  const { enrollments, isLoading: enrollmentsLoading, error: enrollmentsError } = useStudentEnrollments({ 
+    groupId: classId, 
+    semesterId: semesterId 
+  });
 
   // Get specific student info
   useEffect(() => {
@@ -145,8 +166,8 @@ export default function StudentTranscriptPage() {
     );
   }
 
-  // Show error if academic year is not found after initialization
-  if (isInitialized && !academicYearId) {
+  // Show error if academic year or semester is not found after initialization
+  if (isInitialized && (!academicYearId || !semesterId)) {
     return (
       <div className="space-y-6 p-6">
         <div className="flex items-center space-x-4">
@@ -163,7 +184,12 @@ export default function StudentTranscriptPage() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Academic Year ID is not set. Please select an academic year first.
+            {!academicYearId && !semesterId 
+              ? "Academic Year ID and Semester ID are not set. Please select an academic year and semester first."
+              : !academicYearId 
+              ? "Academic Year ID is not set. Please select an academic year first."
+              : "Semester ID is not set. Please select a semester first."
+            }
           </AlertDescription>
         </Alert>
 
@@ -187,7 +213,16 @@ export default function StudentTranscriptPage() {
           </Button>
 
           <div>
-            {studentInfo ? (
+            {enrollmentsError ? (
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Student Transcript
+                </h1>
+                <p className="text-red-600 text-sm">
+                  Error loading student information: {enrollmentsError}
+                </p>
+              </div>
+            ) : studentInfo ? (
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   {studentInfo.studentFullName || "Student Transcript"}
@@ -196,13 +231,23 @@ export default function StudentTranscriptPage() {
                   {studentInfo.programName}
                 </p>
               </div>
+            ) : enrollmentsLoading ? (
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Student Transcript
+                </h1>
+                <p className="text-gray-600 text-sm flex items-center">
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Loading student information...
+                </p>
+              </div>
             ) : (
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   Student Transcript
                 </h1>
                 <p className="text-gray-600 text-sm">
-                  Loading student information...
+                  Student not found in this class
                 </p>
               </div>
             )}
@@ -284,6 +329,16 @@ export default function StudentTranscriptPage() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Enrollment Error Display */}
+      {enrollmentsError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load student enrollments: {enrollmentsError}
+          </AlertDescription>
         </Alert>
       )}
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { transcriptsApi, AcademicGroup, StudentEnrollment } from "@/lib/transcripts/all-groups-api";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -96,19 +96,25 @@ interface UseStudentEnrollmentsReturn {
 
 interface UseStudentEnrollmentsParams {
   groupId: string;
+  semesterId: string;
 }
 
-export const useStudentEnrollments = ({ groupId }: UseStudentEnrollmentsParams): UseStudentEnrollmentsReturn => {
+export const useStudentEnrollments = ({ groupId, semesterId }: UseStudentEnrollmentsParams): UseStudentEnrollmentsReturn => {
   const [enrollments, setEnrollments] = useState<StudentEnrollment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEnrollments = async () => {
+  const fetchEnrollments = useCallback(async () => {
+    console.log('Fetching enrollments with:', { groupId, semesterId });
     try {
       setIsLoading(true);
       setError(null);
 
-      const response = await transcriptsApi.getStudentEnrollmentsByGroup(groupId);
+      if (!semesterId) {
+        throw new Error("Semester ID is required");
+      }
+
+      const response = await transcriptsApi.getStudentEnrollmentsByGroup(groupId, semesterId);
       
       if (response.success) {
         setEnrollments(response.data);
@@ -122,13 +128,16 @@ export const useStudentEnrollments = ({ groupId }: UseStudentEnrollmentsParams):
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [groupId, semesterId]);
 
   useEffect(() => {
-    if (groupId) {
+    if (groupId && semesterId) {
       fetchEnrollments();
+    } else {
+      setIsLoading(false);
+      setEnrollments([]);
     }
-  }, [groupId]);
+  }, [groupId, semesterId, fetchEnrollments]);
 
   const refetch = async () => {
     await fetchEnrollments();

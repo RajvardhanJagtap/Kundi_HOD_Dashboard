@@ -191,13 +191,14 @@ export const transcriptsApi = {
   },
 
   /**
-   * Get student enrollments for a specific group
+   * Get student enrollments for a specific group and semester
    * @param groupId - The group ID
+   * @param semesterId - The semester ID
    * @returns Promise<StudentEnrollmentsResponse>
    */
-  getStudentEnrollmentsByGroup: async (groupId: string): Promise<StudentEnrollmentsResponse> => {
+  getStudentEnrollmentsByGroup: async (groupId: string, semesterId: string): Promise<StudentEnrollmentsResponse> => {
     const response = await api.get<StudentEnrollmentsResponse>(
-      `/academics/student-enrollments/group/${groupId}`
+      `/academics/student-enrollments/group/${groupId}?semesterId=${semesterId}`
     );
     return response.data;
   },
