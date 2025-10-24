@@ -68,13 +68,17 @@ export default function SummaryPage({ groupId, academicYearId }: SummaryPageProp
     hasAutoLoaded.current = true
 
     if (academicYearId && groupId) {
+      console.log('Summary component - Loading preview with:', { academicYearId, groupId });
       void loadPreview()
+    } else {
+      console.warn('Summary component - Missing required IDs:', { academicYearId, groupId });
     }
   }, []) // Remove dependencies to ensure it runs on mount
 
   // Also trigger loading when props change
   useEffect(() => {
     if (academicYearId && groupId && !isPreviewLoading && !previewData) {
+      console.log('Summary component - Props changed, loading preview:', { academicYearId, groupId });
       void loadPreview()
     }
   }, [academicYearId, groupId])

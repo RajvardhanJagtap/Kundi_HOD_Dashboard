@@ -70,7 +70,10 @@ const RepeatersComponent: React.FC<RepeatersComponentProps> = ({ className, year
     hasAutoLoaded.current = true;
     
     if (sheetInfo.yearId && sheetInfo.groupId) {
+      console.log('Repeaters component - Loading preview with:', { yearId: sheetInfo.yearId, groupId: sheetInfo.groupId });
       void loadPreview();
+    } else {
+      console.warn('Repeaters component - Missing required IDs:', { yearId: sheetInfo.yearId, groupId: sheetInfo.groupId });
     }
   }, [sheetInfo.yearId, sheetInfo.groupId]);
 

@@ -1,6 +1,8 @@
 // src/lib/api-retakers.ts
 // Dedicated API utility for managing retakers and repeaters data and Excel file operations
 
+import { api } from './api';
+
 /**
  * Parameters for retakers/repeaters sheet generation
  */
@@ -75,54 +77,37 @@ export interface RetakersSummary {
  * @returns Promise with blob data and suggested filename
  */
 export async function fetchRetakersExcelSheet(params: RetakersSheetParams): Promise<RetakersSheetResponse> {
-  const token = localStorage.getItem('accessToken');
+  // Validate parameters
+  validateRetakersSheetParams(params);
   
-  if (!token) {
-    throw new Error('Authentication token not found. Please log in again.');
-  }
-
-  const endpoint = `https://ursmartmonitoring.ur.ac.rw/api/v1/grading/overall-sheets/generate-year-retake-sheet/${params.yearId}/group/${params.groupId}/excel`;
+  console.log('Fetching retakers sheet with params:', params);
   
-  console.log('Fetching retakers sheet from:', endpoint);
-  
-  const response = await fetch(endpoint, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    },
-  });
-
-  if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-    
-    // Try to get more detailed error from response
-    try {
-      const errorData = await response.json();
-      if (errorData.message) {
-        errorMessage = errorData.message;
-      } else if (errorData.error) {
-        errorMessage = errorData.error;
+  try {
+    // Use the correct API endpoint for retakers (same as regular grading sheet)
+    const response = await api.get(
+      `/grading/overall-sheets/generate-year-regular-sheet/${params.yearId}/group/${params.groupId}/excel`,
+      {
+        responseType: 'blob', // Important for file downloads
       }
-    } catch {
-      // If response is not JSON, use the status text
-    }
+    );
+
+    const blob = response.data;
     
+    // Generate filename based on parameters
+    const shortYearId = params.yearId.slice(0, 8);
+    const shortGroupId = params.groupId.slice(0, 8);
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const filename = `retakers-sheet-${shortYearId}-${shortGroupId}-${timestamp}.xlsx`;
+
+    return {
+      blob,
+      filename
+    };
+  } catch (error: any) {
+    console.error('Error fetching retakers sheet:', error);
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch retakers sheet';
     throw new Error(`Failed to fetch retakers sheet: ${errorMessage}`);
   }
-
-  const blob = await response.blob();
-  
-  // Generate filename based on parameters
-  const shortYearId = params.yearId.slice(0, 8);
-  const shortGroupId = params.groupId.slice(0, 8);
-  const timestamp = new Date().toISOString().slice(0, 10);
-  const filename = `retakers-sheet-${shortYearId}-${shortGroupId}-${timestamp}.xlsx`;
-
-  return {
-    blob,
-    filename
-  };
 }
 
 /**
@@ -251,31 +236,16 @@ export function validateRetakersSheetParams(params: RetakersSheetParams): void {
  * @returns Promise with list of retaker students
  */
 export async function fetchRetakersList(params: RetakersSheetParams): Promise<RetakerStudent[]> {
-  const token = localStorage.getItem('accessToken');
+  console.log('Fetching retakers list with params:', params);
   
-  if (!token) {
-    throw new Error('Authentication token not found. Please log in again.');
+  try {
+    const response = await api.get(`/retakers/${params.yearId}/group/${params.groupId}`);
+    return response.data.retakers || [];
+  } catch (error: any) {
+    console.error('Error fetching retakers list:', error);
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch retakers list';
+    throw new Error(`Failed to fetch retakers list: ${errorMessage}`);
   }
-
-  const API_BASE_URL = 'https://ursmartmonitoring.ur.ac.rw/api/v1';
-  const endpoint = `${API_BASE_URL}/retakers/${params.yearId}/group/${params.groupId}`;
-  
-  console.log('Fetching retakers list from:', endpoint);
-  
-  const response = await fetch(endpoint, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch retakers list: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.retakers || [];
 }
 
 /**
@@ -284,31 +254,16 @@ export async function fetchRetakersList(params: RetakersSheetParams): Promise<Re
  * @returns Promise with summary statistics
  */
 export async function fetchRetakersSummary(params: RetakersSheetParams): Promise<RetakersSummary> {
-  const token = localStorage.getItem('accessToken');
+  console.log('Fetching retakers summary with params:', params);
   
-  if (!token) {
-    throw new Error('Authentication token not found. Please log in again.');
+  try {
+    const response = await api.get(`/retakers/${params.yearId}/group/${params.groupId}/summary`);
+    return response.data;
+  } catch (error: any) {
+    console.error('Error fetching retakers summary:', error);
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch retakers summary';
+    throw new Error(`Failed to fetch retakers summary: ${errorMessage}`);
   }
-
-  const API_BASE_URL = 'https://ursmartmonitoring.ur.ac.rw/api/v1';
-  const endpoint = `${API_BASE_URL}/retakers/${params.yearId}/group/${params.groupId}/summary`;
-  
-  console.log('Fetching retakers summary from:', endpoint);
-  
-  const response = await fetch(endpoint, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch retakers summary: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data;
 }
 
 /**
@@ -323,28 +278,17 @@ export async function updateRetakerStatus(
   status: 'Retaking' | 'Repeating', 
   params: RetakersSheetParams
 ): Promise<void> {
-  const token = localStorage.getItem('accessToken');
+  console.log('Updating retaker status:', { studentId, status, params });
   
-  if (!token) {
-    throw new Error('Authentication token not found. Please log in again.');
-  }
-
-  const API_BASE_URL = 'https://ursmartmonitoring.ur.ac.rw/api/v1';
-  const endpoint = `${API_BASE_URL}/retakers/${params.yearId}/group/${params.groupId}/student/${studentId}/status`;
-  
-  console.log('Updating retaker status:', { studentId, status });
-  
-  const response = await fetch(endpoint, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ status }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to update retaker status: ${response.statusText}`);
+  try {
+    await api.put(
+      `/retakers/${params.yearId}/group/${params.groupId}/student/${studentId}/status`,
+      { status }
+    );
+  } catch (error: any) {
+    console.error('Error updating retaker status:', error);
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update retaker status';
+    throw new Error(`Failed to update retaker status: ${errorMessage}`);
   }
 }
 

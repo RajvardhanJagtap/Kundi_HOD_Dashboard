@@ -93,7 +93,10 @@ export default function ExcelMarksPage({
 
     // Try to load preview automatically; errors are handled inside loadPreview
     if (sheetInfo.yearId && sheetInfo.groupId) {
+      console.log('Overall Marks component - Loading preview with:', { yearId: sheetInfo.yearId, groupId: sheetInfo.groupId });
       void loadPreview();
+    } else {
+      console.warn('Overall Marks component - Missing required IDs:', { yearId: sheetInfo.yearId, groupId: sheetInfo.groupId });
     }
   }, [sheetInfo.yearId, sheetInfo.groupId]);
 

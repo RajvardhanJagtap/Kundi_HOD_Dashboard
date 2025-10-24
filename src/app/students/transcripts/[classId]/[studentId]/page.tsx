@@ -1,92 +1,127 @@
 // src/app/students/transcripts/[classId]/[studentId]/page.tsx
-"use client"
+"use client";
 
-import { useParams, useRouter } from "next/navigation"
-import { useState, useEffect, Suspense } from "react"
-import { ArrowLeft, Download, Loader2, AlertCircle, FileText, RefreshCw } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useTranscript } from "@/hooks/transcripts/useTranscript"
-import { useStudentEnrollments } from "@/hooks/transcripts/useAllGroups"
-import { toast } from "sonner"
-import dynamic from "next/dynamic"
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import {
+  ArrowLeft,
+  Download,
+  Loader2,
+  AlertCircle,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranscript } from "@/hooks/transcripts/useTranscript";
+import { useStudentEnrollments } from "@/hooks/transcripts/useAllGroups";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
 
 // Use SimplePDFViewer - matches your actual component file name
-const SimplePDFViewer = dynamic(() => import("@/components/DirectEmbedPDFViewer"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center min-h-[400px] border rounded-lg bg-gray-50">
-      <div className="flex flex-col items-center space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
-        <span className="text-sm text-gray-600">Loading PDF Viewer...</span>
+const SimplePDFViewer = dynamic(
+  () => import("@/components/DirectEmbedPDFViewer"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center min-h-[400px] border rounded-lg bg-gray-50">
+        <div className="flex flex-col items-center space-y-3">
+          <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
+          <span className="text-sm text-gray-600">Loading PDF Viewer...</span>
+        </div>
       </div>
-    </div>
-  )
-})
+    ),
+  }
+);
 
 export default function StudentTranscriptPage() {
-  const params = useParams()
-  const router = useRouter()
-  const studentId = params.studentId as string
-  const classId = params.classId as string
-  
-  const [academicYearId, setAcademicYearId] = useState<string>("")
-  const [studentInfo, setStudentInfo] = useState<any>(null)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [isDownloading, setIsDownloading] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const studentId = params.studentId as string;
+  const classId = params.classId as string;
+
+  // read search params at top-level (hooks must be called unconditionally)
+  const searchParams = useSearchParams();
+
+  const [academicYearId, setAcademicYearId] = useState<string>("");
+  const [studentInfo, setStudentInfo] = useState<any>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Get academic year from localStorage
   useEffect(() => {
-    const storedAcademicYearId = typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYearId") : ""
-    if (storedAcademicYearId) {
-      setAcademicYearId(storedAcademicYearId)
+    const paramYear =
+      searchParams?.get?.("yearId") || searchParams?.get?.("academicYearId");
+
+    // Helper to safely read storage with fallbacks
+    const readStorage = (key: string) => {
+      try {
+        if (typeof window === "undefined") return "";
+        const v = localStorage.getItem(key);
+        if (v) return v;
+        const s = sessionStorage.getItem(key);
+        if (s) return s;
+        return "";
+      } catch (e) {
+        return "";
+      }
+    };
+
+    // Preference order: query param -> selectedAcademicYearId -> selectedAcademicYear -> sessionStorage
+    const storedAcademicYearId =
+      paramYear ||
+      readStorage("selectedAcademicYearId") ||
+      readStorage("selectedAcademicYear");
+    if (storedAcademicYearId && storedAcademicYearId.trim().length > 0) {
+      setAcademicYearId(storedAcademicYearId.trim());
     }
-    setIsInitialized(true)
-  }, [])
+
+    setIsInitialized(true);
+  }, [searchParams]);
 
   // Get student enrollments to find student info
-  const { enrollments } = useStudentEnrollments({ groupId: classId })
+  const { enrollments } = useStudentEnrollments({ groupId: classId });
 
   // Get specific student info
   useEffect(() => {
     if (enrollments.length > 0) {
-      const student = enrollments.find(e => e.studentId === studentId)
+      const student = enrollments.find((e) => e.studentId === studentId);
       if (student) {
-        setStudentInfo(student)
+        setStudentInfo(student);
       }
     }
-  }, [enrollments, studentId])
+  }, [enrollments, studentId]);
 
   // Use transcript hook
-  const { 
+  const {
     pdfData,
-    pdfUrl, 
-    isLoading, 
-    error, 
+    pdfUrl,
+    isLoading,
+    error,
     useIframe,
-    downloadTranscript, 
-    refetch 
-  } = useTranscript({ 
-    studentId: studentId || "", 
-    academicYearId: academicYearId || ""
-  })
+    downloadTranscript,
+    refetch,
+  } = useTranscript({
+    studentId: studentId || "",
+    academicYearId: academicYearId || "",
+  });
 
   const handleDownload = async () => {
     if (!studentInfo) {
       toast.error("Student information not available");
       return;
     }
-    
+
     try {
       setIsDownloading(true);
-      await downloadTranscript(studentInfo.studentFullName || 'Student')
+      await downloadTranscript(studentInfo.studentFullName || "Student");
     } catch (error) {
       // Error handling is done in the hook
     } finally {
       setIsDownloading(false);
     }
-  }
+  };
 
   const handleRefresh = async () => {
     try {
@@ -94,11 +129,11 @@ export default function StudentTranscriptPage() {
     } catch (error) {
       toast.error("Failed to refresh transcript");
     }
-  }
+  };
 
   const handleBack = () => {
-    router.push(`/students/transcripts/${classId}`)
-  }
+    router.push(`/students/transcripts/${classId}`);
+  };
 
   // Show loading state if not initialized
   if (!isInitialized) {
@@ -107,7 +142,7 @@ export default function StudentTranscriptPage() {
         <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
         <span className="ml-3 text-lg">Initializing...</span>
       </div>
-    )
+    );
   }
 
   // Show error if academic year is not found after initialization
@@ -115,24 +150,26 @@ export default function StudentTranscriptPage() {
     return (
       <div className="space-y-6 p-6">
         <div className="flex items-center space-x-4">
-          <Button variant="outline" onClick={handleBack} className="flex items-center">
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            className="flex items-center"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Class
           </Button>
         </div>
-        
+
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             Academic Year ID is not set. Please select an academic year first.
           </AlertDescription>
         </Alert>
-        
-        <Button onClick={handleBack}>
-          Go Back
-        </Button>
+
+        <Button onClick={handleBack}>Go Back</Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -140,16 +177,20 @@ export default function StudentTranscriptPage() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
-          <Button variant="outline" onClick={handleBack} className="flex items-center">
+          <Button
+            variant="outline"
+            onClick={handleBack}
+            className="flex items-center"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Class
           </Button>
-          
+
           <div>
             {studentInfo ? (
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {studentInfo.studentFullName || 'Student Transcript'}
+                  {studentInfo.studentFullName || "Student Transcript"}
                 </h1>
                 <p className="text-gray-600 text-sm">
                   {studentInfo.programName}
@@ -157,8 +198,12 @@ export default function StudentTranscriptPage() {
               </div>
             ) : (
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Student Transcript</h1>
-                <p className="text-gray-600 text-sm">Loading student information...</p>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Student Transcript
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Loading student information...
+                </p>
               </div>
             )}
           </div>
@@ -171,10 +216,12 @@ export default function StudentTranscriptPage() {
             disabled={isLoading}
             className="flex items-center"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
-          
+
           <Button
             onClick={handleDownload}
             disabled={isLoading || isDownloading || (!pdfData && !pdfUrl)}
@@ -185,7 +232,7 @@ export default function StudentTranscriptPage() {
             ) : (
               <Download className="w-4 h-4 mr-2" />
             )}
-            {isDownloading ? 'Downloading...' : 'Download PDF'}
+            {isDownloading ? "Downloading..." : "Download PDF"}
           </Button>
         </div>
       </div>
@@ -203,19 +250,29 @@ export default function StudentTranscriptPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-600">Full Name</p>
-                <p className="text-sm text-gray-900">{studentInfo.studentFullName || 'N/A'}</p>
+                <p className="text-sm text-gray-900">
+                  {studentInfo.studentFullName || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Email</p>
-                <p className="text-sm text-gray-900">{studentInfo.studentEmail || 'N/A'}</p>
+                <p className="text-sm text-gray-900">
+                  {studentInfo.studentEmail || "N/A"}
+                </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-600">Program</p>
-                <p className="text-sm text-gray-900">{studentInfo.programName}</p>
+                <p className="text-sm text-gray-900">
+                  {studentInfo.programName}
+                </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600">Current Year</p>
-                <p className="text-sm text-gray-900">Year {studentInfo.currentYearLevel}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Current Year
+                </p>
+                <p className="text-sm text-gray-900">
+                  Year {studentInfo.currentYearLevel}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -226,21 +283,23 @@ export default function StudentTranscriptPage() {
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {error}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {/* PDF Viewer Section */}
       <div>
         <div className="mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Academic Transcript</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Academic Transcript
+          </h2>
           <p className="text-sm text-gray-600 mt-1">
-            {isLoading ? "Loading transcript..." : "View and download your transcript"}
+            {isLoading
+              ? "Loading transcript..."
+              : "View and download your transcript"}
           </p>
         </div>
-        
+
         {/* Use SimplePDFViewer with the working blob URL approach */}
         <SimplePDFViewer
           pdfData={pdfData}
@@ -252,5 +311,5 @@ export default function StudentTranscriptPage() {
         />
       </div>
     </div>
-  )
+  );
 }

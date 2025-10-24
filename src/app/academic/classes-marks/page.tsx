@@ -558,13 +558,22 @@ export default function MarksSubmittedPage() {
                               <button
                                 className="flex items-center gap-1 text-[#0891b2] bg-[#e0f2fe] hover:bg-[#bae6fd] px-3 py-1 rounded-md text-sm font-medium"
                                 onClick={() => {
+                                  // Store necessary data in localStorage for the class page
+                                  if (typeof window !== "undefined") {
+                                    localStorage.setItem("selectedGroupId", group.groupId);
+                                    localStorage.setItem("selectedSemesterId", group.semesterId);
+                                    localStorage.setItem("selectedAcademicYearId", currentAcademicYearId);
+                                    localStorage.setItem("selectedAcademicYear", currentAcademicYearId);
+                                    localStorage.setItem("selectedSemester", group.semesterId);
+                                  }
+                                  
                                   // Navigate to group details page
                                   router.push(
                                     `/academic/classes-marks/class/${encodeURIComponent(
                                       group.groupName
                                     )}/${group.semesterId}?groupId=${
                                       group.groupId
-                                    }&semesterId=${group.semesterId}`
+                                    }&semesterId=${group.semesterId}&academicYearId=${currentAcademicYearId}`
                                   );
                                 }}
                               >

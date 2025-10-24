@@ -1,6 +1,8 @@
 // src/lib/api-grading.ts
 // API utility for managing grading data and Excel file operations
 
+import { api } from './api';
+
 // Dynamic import for XLSX to avoid SSR issues
 const getXLSX = async () => {
   if (typeof window === 'undefined') {
@@ -103,56 +105,35 @@ interface GradingSheetResponse {
  * @returns Promise with blob data and suggested filename
  */
 export async function fetchGradingExcelSheet(params: GradingSheetParams): Promise<GradingSheetResponse> {
-  const token = localStorage.getItem('accessToken')
+  // Validate parameters
+  validateGradingSheetParams(params);
   
-  if (!token) {
-    throw new Error('Authentication token not found. Please log in again.')
-  }
+  console.log('Fetching grading sheet with params:', params)
   
-  // Use the actual backend API endpoint
-  const API_BASE_URL = 'https://ursmartmonitoring.ur.ac.rw/api/v1'
-
-  const endpoint = `${API_BASE_URL}/grading/overall-sheets/generate-year-regular-sheet/${params.yearId}/group/${params.groupId}/excel`
-  
-  console.log('Fetching grading sheet from:', endpoint)
-  
-  const response = await fetch(endpoint, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    },
-  })
-
-  if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-    
-    // Try to get more detailed error from response
-    try {
-      const errorData = await response.json()
-      if (errorData.message) {
-        errorMessage = errorData.message
-      } else if (errorData.error) {
-        errorMessage = errorData.error
+  try {
+    const response = await api.get(
+      `/grading/overall-sheets/generate-year-regular-sheet/${params.yearId}/group/${params.groupId}/excel`,
+      {
+        responseType: 'blob', // Important for file downloads
       }
-    } catch {
-      // If response is not JSON, use the status text
-    }
+    );
+
+    const blob = response.data;
     
-    throw new Error(`Failed to fetch grading sheet: ${errorMessage}`)
-  }
+    // Generate filename based on parameters
+    const shortYearId = params.yearId.slice(0, 8)
+    const shortGroupId = params.groupId.slice(0, 8)
+    const timestamp = new Date().toISOString().slice(0, 10)
+    const filename = `grading-sheet-${shortYearId}-${shortGroupId}-${timestamp}.xlsx`
 
-  const blob = await response.blob()
-  
-  // Generate filename based on parameters
-  const shortYearId = params.yearId.slice(0, 8)
-  const shortGroupId = params.groupId.slice(0, 8)
-  const timestamp = new Date().toISOString().slice(0, 10)
-  const filename = `grading-sheet-${shortYearId}-${shortGroupId}-${timestamp}.xlsx`
-
-  return {
-    blob,
-    filename
+    return {
+      blob,
+      filename
+    }
+  } catch (error: any) {
+    console.error('Error fetching grading sheet:', error);
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to fetch grading sheet';
+    throw new Error(`Failed to fetch grading sheet: ${errorMessage}`);
   }
 }
 

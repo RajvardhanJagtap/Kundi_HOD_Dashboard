@@ -398,7 +398,13 @@ export default function TranscriptsPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <Link href={`/students/transcripts/${group.id}`}>
+                        <Link
+                          href={`/students/transcripts/${group.id}${
+                            academicYearId
+                              ? `?yearId=${encodeURIComponent(academicYearId)}`
+                              : ""
+                          }`}
+                        >
                           <Button
                             variant="outline"
                             size="sm"

@@ -91,7 +91,7 @@ export default function ClassMarksPage() {
         // Get group ID and other IDs from URL params or localStorage
         const urlGroupId = searchParams.get('groupId') || (typeof window !== "undefined" ? localStorage.getItem("selectedGroupId") : "");
         const urlSemesterId = searchParams.get('semesterId') || (typeof window !== "undefined" ? localStorage.getItem("selectedSemesterId") : "");
-        const urlAcademicYearId = (typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYearId") : "");
+        const urlAcademicYearId = searchParams.get('academicYearId') || (typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYearId") : "");
         
         // Load stored academic year and semester from localStorage
         const storedYear = typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYear") : "";
@@ -109,7 +109,39 @@ export default function ClassMarksPage() {
         
         setIsApproved(approvalStatus);
         setIsSubmittedToDean(submissionStatus);
+        
+        // Debug logging to help identify issues
+        console.log('Class Marks Page - Loaded IDs:', {
+            groupId: urlGroupId,
+            semesterId: urlSemesterId,
+            academicYearId: urlAcademicYearId,
+            storedYear,
+            storedSemester
+        });
     }, [searchParams]);
+
+    // Set current academic year when years are loaded
+    useEffect(() => {
+        if (years && years.length > 0 && !academicYearId) {
+            // Find the current academic year
+            const currentYear = years.find(
+                (year) =>
+                    year.startDate <= new Date().toISOString() &&
+                    year.endDate >= new Date().toISOString()
+            );
+            const yearToUse = currentYear || years[0];
+            setAcademicYearId(yearToUse.id);
+            setSelectedYear(yearToUse.id);
+            
+            // Store in localStorage for consistency
+            if (typeof window !== "undefined") {
+                localStorage.setItem("selectedAcademicYearId", yearToUse.id);
+                localStorage.setItem("selectedAcademicYear", yearToUse.id);
+            }
+            
+            console.log('Set academic year ID:', yearToUse.id);
+        }
+    }, [years, academicYearId]);
 
         // When groupId and semesterId are available, fetch server-side readiness
         useEffect(() => {
