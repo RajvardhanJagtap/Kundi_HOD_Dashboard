@@ -17,22 +17,29 @@ export const useTranscripts = ({ academicYearId }: UseTranscriptsParams): UseTra
   const [groups, setGroups] = useState<AcademicGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { getDepartmentId } = useAuth();
+  const { getDepartmentId, isLoading: authLoading, isAuthenticated } = useAuth();
 
   const fetchGroups = async () => {
     try {
       setIsLoading(true);
       setError(null);
       
+      // Wait a bit for auth to fully initialize if still loading
+      if (authLoading) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
       const departmentId = getDepartmentId();
       if (!departmentId) {
-        throw new Error("Department ID not found");
+        throw new Error("Department ID not found. Please ensure you are logged in and have proper permissions.");
       }
 
+      console.log("Fetching academic groups with department ID:", departmentId);
       const response = await transcriptsApi.getAcademicGroups(departmentId, academicYearId);
       
       if (response.success) {
         setGroups(response.data);
+        console.log("Successfully fetched academic groups:", response.data.length);
       } else {
         throw new Error(response.message || "Failed to fetch academic groups");
       }
@@ -46,10 +53,27 @@ export const useTranscripts = ({ academicYearId }: UseTranscriptsParams): UseTra
   };
 
   useEffect(() => {
-    if (academicYearId) {
-      fetchGroups();
+    // Only fetch if we have academicYearId and user is authenticated
+    if (!academicYearId) {
+      setIsLoading(false);
+      setError(null);
+      return;
     }
-  }, [academicYearId]);
+    
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      setError("Please log in to access transcripts");
+      return;
+    }
+    
+    // If auth is still loading, wait for it to complete
+    if (authLoading) {
+      setIsLoading(true);
+      return;
+    }
+    
+    fetchGroups();
+  }, [academicYearId, isAuthenticated, authLoading]);
 
   const refetch = async () => {
     await fetchGroups();
