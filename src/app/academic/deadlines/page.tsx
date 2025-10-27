@@ -486,12 +486,7 @@ export default function MarksSubmissionDeadlinesPage() {
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       Lecturer
                     </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                      Department
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                      Students
-                    </th>
+                    
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                       CAT Status
                     </th>
@@ -543,22 +538,6 @@ export default function MarksSubmissionDeadlinesPage() {
                                 {assignment.instructorEmail}
                               </div>
                             </div>
-                          </td>
-
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            <div>
-                              <div className="font-medium">
-                                {assignment.departmentName}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {assignment.semesterName}
-                              </div>
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {assignment.currentEnrollment}/
-                            {assignment.maxStudents}
                           </td>
 
                           <td className="px-4 py-3 text-sm text-gray-600">
