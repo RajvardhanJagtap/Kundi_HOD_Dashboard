@@ -6,7 +6,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
 import {
-  ChevronDown,
   Home,
   Building2,
   BookOpen,
@@ -14,14 +13,18 @@ import {
   GraduationCap,
   Award,
   LineChart,
-  User,
   MessageSquarePlus,
+  Scroll,
+  BookmarkCheck,
+  Calendar,
+  CheckCircle,
+  ClipboardList,
+  FolderKanban,
+  UserSquare2,
+  Clock,
+  BookCheck,
+  CalendarCheck,
 } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 import {
   Sidebar,
@@ -43,124 +46,83 @@ const hodNavigation = [
     url: "/dashboard",
   },
   {
-    title: "Department",
-    icon: Building2,
-    items: [
-      { title: "Overview", url: "/department/overview" },
-      { title: "Module Planning", url: "/department/module-planning" },
-      { title: "Resources", url: "/department/resources" },
-      { title: "Calendar", url: "/department/calendar" },
-      { title: "Policies", url: "/department/policies" },
-      { title: "Meetings", url: "/department/meetings" },
-      { title: "Curriculum", url: "/department/curriculum" },
-      { title: "Teaching Plans", url: "/department/teaching-plans" },
-    ],
+    title: "Resources",
+    icon: FolderKanban,
+    url: "/department/resources",
   },
   {
-    title: "Academic",
-    icon: BookOpen,
-    items: [
-      { title: "Timetables", url: "/academic/timetables" },
-      { title: "Deadlines", url: "/academic/deadlines" },
-      { title: "Marks Submitted", url: "/academic/marks-submitted" },
-      { title: "Classes Marks", url: "/academic/classes-marks" },
-      { title: "Attendance", url: "/academic/attendance" },
-    ],
+    title: "Curriculum",
+    icon: BookCheck,
+    url: "/department/curriculum",
   },
   {
-    title: "Staff",
+    title: "Teaching Plans",
+    icon: ClipboardList,
+    url: "/department/teaching-plans",
+  },
+  {
+    title: "Timetables",
+    icon: Calendar,
+    url: "/academic/timetables",
+  },
+  {
+    title: "Set Submissions",
+    icon: CalendarCheck,
+    url: "/academic/deadlines",
+  },
+  {
+    title: "Marks Submitted",
+    icon: CheckCircle,
+    url: "/academic/marks-submitted",
+  },
+  {
+    title: "Classes Marks",
+    icon: BookmarkCheck,
+    url: "/academic/classes-marks",
+  },
+  {
+    title: "Attendance",
+    icon: Clock,
+    url: "/academic/attendance",
+  },
+  {
+    title: "Module Assignments",
+    icon: UserSquare2,
+    url: "/staff/module-assignments",
+  },
+  {
+    title: "Leave",
     icon: Users,
-    items: [
-      { title: "Directory", url: "/staff/directory" },
-      { title: "Workload", url: "/staff/workload" },
-      { title: "Module Assignments", url: "/staff/module-assignments" },
-      { title: "Performance", url: "/staff/performance" },
-      { title: "Leave", url: "/staff/leave" },
-      { title: "Development", url: "/staff/development" },
-      { title: "Recruitment", url: "/staff/recruitment" },
-    ],
+    url: "/staff/leave",
   },
   {
-    title: "Students",
-    icon: GraduationCap,
-    items: [
-      { title: "Records", url: "/students/records" },
-      { title: "Progress", url: "/students/progress" },
-      { title: "Appeals", url: "/students/appeals" },
-      { title: "Graduands", url: "/students/graduands" },
-      { title: "Student Transcripts", url: "/students/transcripts" },
-    ],
+    title: "Appeals",
+    icon: Award,
+    url: "/students/appeals",
   },
-  // {
-  //   title: "Quality Assurance",
-  //   icon: Award,
-  //   items: [
-  //     { title: "Metrics", url: "/qa/metrics" },
-  //     { title: "Module Review", url: "/qa/module-review" },
-  //     { title: "Feedback", url: "/qa/feedback" },
-  //     { title: "Improvements", url: "/qa/improvements" },
-  //     { title: "Audits", url: "/qa/audits" },
-  //   ],
-  // },
+  {
+    title: "Students Transcripts",
+    icon: Scroll,
+    url: "/students/transcripts",
+  },
   {
     title: "Reports",
     icon: LineChart,
-    items: [
-      { title: "Staff Reports", url: "/reports/staff" },
-      { title: "Student Reports", url: "/reports/student" },
-      { title: "Resource Reports", url: "/reports/resource" },
-      { title: "Quality Reports", url: "/reports/quality" },
-      { title: "Custom Reports", url: "/reports/custom" },
-    ],
+    url: "/reports",
   },
   {
-    title: "Communication", // New group for communication
+    title: "Communication",
     icon: MessageSquarePlus,
-    items: [
-      { title: "Notifications", url: "/notifications" }, // New notifications page
-    ],
-  },
-  {
-    title: "Personal",
-    icon: User,
-    url: "/personal",
+    url: "/notifications",
   },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const [openCollapsible, setOpenCollapsible] = React.useState<string | null>(
-    null
-  ); // State to track which collapsible is open
 
-  // Ensure the parent collapsible that contains the current pathname is opened
-  React.useEffect(() => {
-    // Find first navigation group that contains a subitem matching current path
-    const activeParent = hodNavigation.find((item) =>
-      item.items
-        ? item.items.some((subItem) => pathname.startsWith(subItem.url))
-        : false
-    );
-
-    if (activeParent) {
-      setOpenCollapsible(activeParent.title);
-    }
-  }, [pathname]);
-
-  // Handle collapsible toggle
-  const handleCollapsibleToggle = (title: string) => {
-    setOpenCollapsible(openCollapsible === title ? null : title);
-  };
-
-  // Check if parent has active route or direct url match
-  const isParentActive = (parentItem: (typeof hodNavigation)[0]) => {
-    if (parentItem.url && pathname === parentItem.url) return true; // Direct link is active
-    if (parentItem.items) {
-      return parentItem.items.some((subItem) =>
-        pathname.startsWith(subItem.url)
-      );
-    }
-    return false;
+  // Check if the current path matches the item's URL
+  const isRouteActive = (url: string) => {
+    return pathname.startsWith(url);
   };
 
   return (
@@ -184,69 +146,23 @@ export function AppSidebar() {
       <SidebarContent className="py-2">
         {hodNavigation.map((item) => (
           <SidebarGroup key={item.title} className="px-2 font-small">
-            {item.items ? (
-              <Collapsible
-                open={openCollapsible === item.title}
-                onOpenChange={() => handleCollapsibleToggle(item.title)}
-                className=" submenu  font-semibold"
-              >
-                <SidebarGroupLabel asChild>
-                  <CollapsibleTrigger
-                    className={`w-full flex items-center gap-2 p-2 rounded-md font-medium text-black transition-colors ${
-                      isParentActive(item)
-                        ? "bg-[#ECFDF5] text-[#026892]"
-                        : "hover:text-[#026892] hover:bg-[#ECFDF5]"
-                    }`}
-                  >
-                    {item.icon && <item.icon className="h-4 w-4" />}
-                    <span className="font-medium text-sm text-black">
-                      {item.title}
-                    </span>
-                    <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180 text-black" />
-                  </CollapsibleTrigger>
-                </SidebarGroupLabel>
-                <CollapsibleContent>
-                  <SidebarGroupContent className="py-1 pl-4">
-                    <SidebarMenu className="font-normal">
-                      {item.items.map((subItem) => (
-                        <SidebarMenuItem key={subItem.title}>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              href={subItem.url}
-                              className={`flex w-full items-center gap-2 p-2 rounded-md text-sm transition-colors ${
-                                pathname.startsWith(subItem.url)
-                                  ? "bg-[#ECFDF5] text-[#026892] font-medium"
-                                  : "text-gray-600 hover:text-[#026892] hover:bg-[#ECFDF5]"
-                              }`}
-                            >
-                              {subItem.title}
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </CollapsibleContent>
-              </Collapsible>
-            ) : (
-              <SidebarGroupLabel asChild>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={item.url}
-                    className={`w-full flex items-center gap-2 p-2 rounded-md font-medium text-black transition-colors ${
-                      pathname === item.url
-                        ? "bg-[#ECFDF5] text-[#026892]"
-                        : "hover:text-[#026892] hover:bg-[#ECFDF5]"
-                    }`}
-                  >
-                    {item.icon && <item.icon className="h-4 w-4" />}
-                    <span className="font-medium text-sm text-black">
-                      {item.title}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarGroupLabel>
-            )}
+            <SidebarGroupLabel asChild>
+              <SidebarMenuButton asChild>
+                <Link
+                  href={item.url}
+                  className={`w-full flex items-center gap-2 p-2 rounded-md font-medium text-black transition-colors ${
+                    isRouteActive(item.url)
+                      ? "bg-[#ECFDF5] text-[#026892]"
+                      : "hover:text-[#026892] hover:bg-[#ECFDF5]"
+                  }`}
+                >
+                  {item.icon && <item.icon className="h-4 w-4" />}
+                  <span className="font-medium text-sm text-black">
+                    {item.title}
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarGroupLabel>
           </SidebarGroup>
         ))}
       </SidebarContent>
