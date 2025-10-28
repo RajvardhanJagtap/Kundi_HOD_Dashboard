@@ -40,6 +40,9 @@ import {
   AlertCircle,
   Search,
   Filter,
+  Pencil,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -163,6 +166,11 @@ export default function ModuleAssignmentsPage() {
       return matchesSearch && matchesGroup && matchesLecturer;
     });
   }, [assignments, searchTerm, selectedGroup, selectedLecturer]);
+
+  // Pagination
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
 
   // Statistics
   const statistics = useMemo(() => {
@@ -639,113 +647,76 @@ export default function ModuleAssignmentsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Assignments
-                </p>
-                <p className="text-2xl font-bold text-gray-800">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.totalAssignments
-                  )}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-[#026892]" />
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              Total Assignments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-[#026892]">
+              {isLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                statistics.totalAssignments
+              )}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <BookOpen className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">
+                Total module assignments
+              </span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Modules</p>
-                <p className="text-2xl font-bold text-gray-800">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.uniqueModules
-                  )}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-green-600" />
-              </div>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              Lecturers Involved
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-600">
+              {isLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                statistics.uniqueLecturers
+              )}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <Users className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">Teaching staff</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Lecturers</p>
-                <p className="text-2xl font-bold text-gray-800">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.uniqueLecturers
-                  )}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <UserCheck className="w-6 h-6 text-purple-600" />
-              </div>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              Class Groups
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-[#026892]">
+              {isLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                statistics.uniqueGroups
+              )}
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Groups</p>
-                <p className="text-2xl font-bold text-gray-800">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.uniqueGroups
-                  )}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <Users className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active</p>
-                <p className="text-2xl font-bold text-gray-800">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.activeAssignments
-                  )}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <UserCheck className="w-6 h-6 text-green-600" />
-              </div>
+            <div className="flex items-center gap-2 mt-2">
+              <Users className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">Assigned groups</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
+      {/* Assignments Table with Filters */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="space-y-4 p-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -786,17 +757,6 @@ export default function ModuleAssignmentsPage() {
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Assignments Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Module Assignments ({filteredAssignments.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-8 h-8 animate-spin" />
@@ -812,95 +772,120 @@ export default function ModuleAssignmentsPage() {
                     <TableHead className="text-gray-700">Group</TableHead>
                     <TableHead className="text-gray-700">Semester</TableHead>
                     <TableHead className="text-gray-700">Credits</TableHead>
-                    <TableHead className="text-gray-700">
-                      Contact Hours
-                    </TableHead>
-                    <TableHead className="text-gray-700">Students</TableHead>
                     <TableHead className="text-gray-700">Status</TableHead>
                     <TableHead className="text-gray-700">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredAssignments.map((assignment) => (
-                    <TableRow key={assignment.id} className="hover:bg-gray-50">
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {assignment.moduleCode}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {assignment.moduleName}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {assignment.instructorName}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {assignment.instructorEmail}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {assignment.groupName}
-                          </div>
-                          {/* <div className="text-sm text-gray-600">{assignment.groupCode}</div> */}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">
-                            {assignment.semesterName}
-                          </div>
-                          {/* <div className="text-sm text-gray-600">Semester {assignment.semesterNumber}</div> */}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
-                          {assignment.moduleCredits}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {assignment.contactHours} hrs
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
+                  {filteredAssignments
+                    .slice(
+                      (currentPage - 1) * itemsPerPage,
+                      currentPage * itemsPerPage
+                    )
+                    .map((assignment) => (
+                      <TableRow
+                        key={assignment.id}
+                        className="hover:bg-gray-50"
+                      >
+                        <TableCell>
                           <div>
-                            {assignment.currentEnrollment}/
-                            {assignment.maxStudents}
+                            <div className="font-medium">
+                              {assignment.moduleCode}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {assignment.moduleName}
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            assignment.isActive
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }
-                        >
-                          {assignment.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-[#026892] hover:text-[#026892]/90"
-                        >
-                          View Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">
+                              {assignment.instructorName}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {assignment.instructorEmail}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">
+                              {assignment.groupName}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">
+                              {assignment.semesterName}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">
+                            {assignment.moduleCredits}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={
+                              assignment.isActive
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }
+                          >
+                            {assignment.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-[#026892] hover:text-[#026892]/90"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
+
+              {/* Pagination Controls */}
+              <div className="flex items-center justify-end gap-2 py-4 px-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="gap-1"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "secondary" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  )
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="gap-1"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
 
