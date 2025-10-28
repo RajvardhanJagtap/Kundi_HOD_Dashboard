@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +37,7 @@ import {
   CheckCircle,
   Users,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import {
   Dialog,
@@ -55,7 +57,7 @@ const attendanceOverview = [
     totalClasses: 24,
     averageAttendance: 87.5,
     studentsCount: 45,
-    lastUpdated: "2024-12-15",
+    lastUpdated: "2025-10-28",
     status: "good",
   },
   {
@@ -64,7 +66,7 @@ const attendanceOverview = [
     totalClasses: 22,
     averageAttendance: 92.3,
     studentsCount: 38,
-    lastUpdated: "2024-12-14",
+    lastUpdated: "2025-10-27",
     status: "excellent",
   },
   {
@@ -73,7 +75,7 @@ const attendanceOverview = [
     totalClasses: 20,
     averageAttendance: 65.2,
     studentsCount: 42,
-    lastUpdated: "2024-12-10",
+    lastUpdated: "2025-10-28",
     status: "poor",
   },
   {
@@ -82,7 +84,7 @@ const attendanceOverview = [
     totalClasses: 18,
     averageAttendance: 78.9,
     studentsCount: 35,
-    lastUpdated: "2024-12-16",
+    lastUpdated: "2025-10-26",
     status: "fair",
   },
 ];
@@ -176,6 +178,19 @@ export default function AttendancePage() {
   const [selectedModule, setSelectedModule] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
+  // Pagination states
+  const itemsPerPage = 10;
+  const [page1, setPage1] = useState(1);
+  const [page2, setPage2] = useState(1);
+  const [page3, setPage3] = useState(1);
+  const [page4, setPage4] = useState(1);
+
+  // Total pages for each tab
+  const totalPages1 = Math.ceil((attendanceOverview.length + 2) / itemsPerPage);
+  const totalPages2 = Math.ceil((attendanceOverview.length + 2) / itemsPerPage);
+  const totalPages3 = Math.ceil((attendanceOverview.length + 2) / itemsPerPage);
+  const totalPages4 = Math.ceil((attendanceOverview.length + 2) / itemsPerPage);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "excellent":
@@ -215,10 +230,6 @@ export default function AttendancePage() {
   };
 
   // Handle back to marks from detailed view
-  function handleBackToMarks() {
-    router.back();
-  }
-
   return (
     <div className="flex-1 p-4 md:p-6 grid gap-6">
       <div className="flex items-center justify-between">
@@ -236,196 +247,129 @@ export default function AttendancePage() {
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Statistics Cards - match teaching plans style */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Department Average</p>
-                <p className="text-2xl font-bold text-[#026892]">80.9%</p>
-                <p className="text-xs text-green-600 mt-1">
-                  +2.3% from last month
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-blue-50">
-                <Users className="h-6 w-6 text-blue-500" />
-              </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              Department Average
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-gray-800">80.9%</div>
+            <div className="flex items-center gap-2 mt-2">
+              <Users className="h-4 w-4 text-[#026892]" />
+              <span className="text-sm text-[#026892]">
+                +2.3% from last month
+              </span>
             </div>
           </CardContent>
         </Card>
-
         <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Students</p>
-                <p className="text-2xl font-bold text-gray-900">160</p>
-                <p className="text-xs text-gray-500 mt-1">Across 4 modules</p>
-              </div>
-              <div className="p-3 rounded-full bg-green-50">
-                <Users className="h-6 w-6 text-green-500" />
-              </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              Total Students
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-gray-800">160</div>
+            <div className="flex items-center gap-2 mt-2">
+              <Users className="h-4 w-4 text-samps-green-600" />
+              <span className="text-sm text-samps-green-600">Across 4 modules</span>
             </div>
           </CardContent>
         </Card>
-
         <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">At Risk Students</p>
-                <p className="text-2xl font-bold text-red-600">12</p>
-                <p className="text-xs text-red-600 mt-1">&lt;70% attendance</p>
-              </div>
-              <div className="p-3 rounded-full bg-red-50">
-                <AlertTriangle className="h-6 w-6 text-red-500" />
-              </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              At Risk Students
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-gray-800">12</div>
+            <div className="flex items-center gap-2 mt-2">
+              <AlertTriangle className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-samps-red-600">&lt;70% attendance</span>
             </div>
           </CardContent>
         </Card>
-
         <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Today's Average</p>
-                <p className="text-2xl font-bold text-green-600">93.3%</p>
-                <p className="text-xs text-green-600 mt-1">
-                  Above department avg
-                </p>
-              </div>
-              <div className="p-3 rounded-full bg-green-50">
-                <CheckCircle className="h-6 w-6 text-green-500" />
-              </div>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">
+              Today's Average
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-gray-800">93.3%</div>
+            <div className="flex items-center gap-2 mt-2">
+              <CheckCircle className="h-4 w-4 text-samps-green-600" />
+              <span className="text-sm text-samps-green-600">
+                Above department avg
+              </span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="flex items-end gap-6 w-full bg-gray-50">
-          <TabsTrigger
-            value="overview"
-            className="data-[state=active]:bg-[#026892] data-[state=active]:text-white hover:bg-gray-200 hover:text-black hover:data-[state=active]:bg-[#026892]/90 border border-gray-200 w-[150px] text-center rounded-md "
-          >
-            Module Overview
-          </TabsTrigger>
-          <TabsTrigger
-            value="students"
-            className="data-[state=active]:bg-[#026892] data-[state=active]:text-white hover:bg-gray-100 hover:text-black border border-gray-200 w-[150px] text-center rounded-md"
-          >
-            Student Details
-          </TabsTrigger>
-          <TabsTrigger
-            value="daily"
-            className="data-[state=active]:bg-[#026892] data-[state=active]:text-white hover:bg-hover:bg-gray-100 hover:text-black border border-gray-200 w-[150px] text-center rounded-md"
-          >
-            Daily Tracking
-          </TabsTrigger>
-          <TabsTrigger
-            value="analytics"
-            className="data-[state=active]:bg-[#026892] data-[state=active]:text-white hover:bg-hover:bg-gray-100 hover:text-black border border-gray-200 w-[150px] text-center rounded-md"
-          >
-            Analytics
-          </TabsTrigger>
+      <Tabs defaultValue="year1" className="w-full">
+        <TabsList className="flex items-end gap-6 w-full">
+          <TabsTrigger value="year1">Year 1</TabsTrigger>
+          <TabsTrigger value="year2">Year 2</TabsTrigger>
+          <TabsTrigger value="year3">Year 3</TabsTrigger>
+          <TabsTrigger value="year4">Year 4</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="mt-6">
+        {/* Year 1 Tab */}
+        <TabsContent value="year1" className="mt-6">
           <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-black mb-1">
-                Module Attendance Overview
+                Year 1 Attendance
               </CardTitle>
               <CardDescription>
-                Attendance statistics for all department modules
+                Attendance statistics for Year 1 modules
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4 mb-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="year filter">Year</Label>
-                  <Select
-                    value={selectedSemester}
-                    onValueChange={setSelectedSemester}
-                  >
-                    <SelectTrigger id="year filter" className="w-[180px]">
-                      <SelectValue placeholder="Select Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="year 1">Year 1</SelectItem>
-                      <SelectItem value="year 2">Year 2</SelectItem>
-                      <SelectItem value="year 3">Year 3</SelectItem>
-                      <SelectItem value="year 4">Year 4</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="status-filter">Status</Label>
-                  <Select
-                    value={selectedStatus}
-                    onValueChange={setSelectedStatus}
-                  >
-                    <SelectTrigger id="status-filter" className="w-[180px]">
-                      <SelectValue placeholder="Select Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="excellent">Excellent</SelectItem>
-                      <SelectItem value="good">Good</SelectItem>
-                      <SelectItem value="fair">Fair</SelectItem>
-                      <SelectItem value="poor">Poor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Module
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Lecturer
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Students
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Total Classes
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Average Attendance
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Last Updated
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {attendanceOverview.map((module, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {module.module}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {module.lecturer}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {module.studentsCount}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {module.totalClasses}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Module</TableHead>
+                      <TableHead>Class</TableHead>
+                      <TableHead>Lecturer</TableHead>
+                      <TableHead>Average Attendance</TableHead>
+                      <TableHead>Last Update</TableHead>
+                      <TableHead>Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ...attendanceOverview,
+                      {
+                        module: "COE1111 - Introduction to Programming",
+                        lecturer: "Dr. New Lecturer",
+                        totalClasses: 25,
+                        averageAttendance: 81.2,
+                        studentsCount: 50,
+                        lastUpdated: "2024-12-12",
+                        status: "good",
+                      },
+                      {
+                        module: "COE1112 - Discrete Mathematics",
+                        lecturer: "Prof. Math Genius",
+                        totalClasses: 23,
+                        averageAttendance: 77.5,
+                        studentsCount: 48,
+                        lastUpdated: "2024-12-10",
+                        status: "fair",
+                      },
+                    ].map((module, index) => (
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell>{module.module}</TableCell>
+                        <TableCell>Class A</TableCell>
+                        <TableCell>{module.lecturer}</TableCell>
+                        <TableCell>
                           <div className="flex items-center space-x-2">
                             <span
                               className={`font-semibold ${getAttendanceColor(
@@ -439,396 +383,443 @@ export default function AttendancePage() {
                               className="w-16 h-2"
                             />
                           </div>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {getStatusBadge(module.status)}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {module.lastUpdated}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
-                                <Eye className="w-4 h-4 mr-1" />
-                                View Details
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl">
-                              <DialogHeader>
-                                <DialogTitle>
-                                  Attendance Details - {module.module}
-                                </DialogTitle>
-                                <DialogDescription>
-                                  Detailed attendance records for{" "}
-                                  {module.lecturer}'s class
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="max-h-96 overflow-y-auto">
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead className="text-gray-700 font-semibold">
-                                        Student ID
-                                      </TableHead>
-                                      <TableHead className="text-gray-700 font-semibold">
-                                        Name
-                                      </TableHead>
-                                      <TableHead className="text-gray-700 font-semibold">
-                                        Classes Attended
-                                      </TableHead>
-                                      <TableHead className="text-gray-700 font-semibold">
-                                        Total Classes
-                                      </TableHead>
-                                      <TableHead className="text-gray-700 font-semibold">
-                                        Percentage
-                                      </TableHead>
-                                      <TableHead className="text-gray-700 font-semibold">
-                                        Status
-                                      </TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {studentAttendanceDetails.map((student) => (
-                                      <TableRow key={student.studentId}>
-                                        <TableCell className="text-gray-700 text-sm font-semibold">
-                                          {student.studentId}
-                                        </TableCell>
-                                        <TableCell className="text-gray-700 text-sm">
-                                          {student.name}
-                                        </TableCell>
-                                        <TableCell className="text-gray-700 text-sm">
-                                          {student.attended}
-                                        </TableCell>
-                                        <TableCell className="text-gray-700 text-sm">
-                                          {student.totalClasses}
-                                        </TableCell>
-                                        <TableCell
-                                          className={getAttendanceColor(
-                                            student.percentage
-                                          )}
-                                        >
-                                          {student.percentage}%
-                                        </TableCell>
-                                        <TableCell>
-                                          {getStatusBadge(student.status)}
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
-                        </td>
-                      </tr>
+                        </TableCell>
+                        <TableCell>{module.lastUpdated}</TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/academic/attendance/${encodeURIComponent(
+                              module.module
+                            )}`}
+                            passHref
+                            legacyBehavior
+                          >
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="students" className="mt-6">
-          <Card className="bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-black mb-1">
-                Student Attendance Records
-              </CardTitle>
-              <CardDescription>
-                Individual student attendance across all modules
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4 mb-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="search-student">Search Student</Label>
-                  <Input
-                    id="search-student"
-                    placeholder="Enter student ID or name..."
-                    className="w-[250px]"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="module-filter">Module</Label>
-                  <Select
-                    value={selectedModule}
-                    onValueChange={setSelectedModule}
+                  </TableBody>
+                </Table>
+                <div className="flex items-center justify-end gap-2 py-4 px-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage1(page1 - 1)}
+                    disabled={page1 === 1}
+                    className="gap-1"
                   >
-                    <SelectTrigger id="module-filter" className="w-[200px]">
-                      <SelectValue placeholder="Select Module" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Modules</SelectItem>
-                      <SelectItem value="COE3163">
-                        COE3163 - Software Engineering
-                      </SelectItem>
-                      <SelectItem value="COE3264">
-                        COE3264 - Database Systems
-                      </SelectItem>
-                      <SelectItem value="COE3166">
-                        COE3166 - Web Development
-                      </SelectItem>
-                      <SelectItem value="COE3261">
-                        COE3261 - Machine Learning
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  {Array.from({ length: totalPages1 }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        variant={page1 === page ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => setPage1(page)}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage1(page1 + 1)}
+                    disabled={page1 === totalPages1}
+                    className="gap-1"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Student ID
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Classes Attended
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Total Classes
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Attendance %
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {studentAttendanceDetails.map((student) => (
-                      <tr key={student.studentId} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                          {student.studentId}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {student.name}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {student.attended}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {student.totalClasses}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          <div className="flex items-center space-x-2">
-                            <span
-                              className={`font-semibold ${getAttendanceColor(
-                                student.percentage
-                              )}`}
-                            >
-                              {student.percentage}%
-                            </span>
-                            <Progress
-                              value={student.percentage}
-                              className="w-16 h-2"
-                            />
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {getStatusBadge(student.status)}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          <Button variant="outline" size="sm">
-                            View History
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="daily" className="mt-6">
+        {/* Year 2 Tab */}
+        <TabsContent value="year2" className="mt-6">
           <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-black mb-1">
-                Daily Attendance Tracking
+                Year 2 Attendance
               </CardTitle>
               <CardDescription>
-                Track daily attendance patterns and trends
+                Attendance statistics for Year 2 modules
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Total Students
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Present
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Absent
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Attendance %
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {dailyAttendance.map((day, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                          {day.date}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {day.totalStudents}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-green-600">
-                          {day.present}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-red-600">
-                          {day.absent}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Module</TableHead>
+                      <TableHead>Class</TableHead>
+                      <TableHead>Lecturer</TableHead>
+                      <TableHead>Average Attendance</TableHead>
+                      <TableHead>Last Update</TableHead>
+                      <TableHead>Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ...attendanceOverview,
+                      {
+                        module: "COE2111 - Data Structures",
+                        lecturer: "Dr. Struct Algo",
+                        totalClasses: 22,
+                        averageAttendance: 85.0,
+                        studentsCount: 44,
+                        lastUpdated: "2024-12-13",
+                        status: "good",
+                      },
+                      {
+                        module: "COE2112 - Computer Architecture",
+                        lecturer: "Prof. Chip Logic",
+                        totalClasses: 20,
+                        averageAttendance: 79.8,
+                        studentsCount: 41,
+                        lastUpdated: "2024-12-11",
+                        status: "fair",
+                      },
+                    ].map((module, index) => (
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell>{module.module}</TableCell>
+                        <TableCell>Class B</TableCell>
+                        <TableCell>{module.lecturer}</TableCell>
+                        <TableCell>
                           <div className="flex items-center space-x-2">
                             <span
                               className={`font-semibold ${getAttendanceColor(
-                                day.percentage
+                                module.averageAttendance
                               )}`}
                             >
-                              {day.percentage}%
+                              {module.averageAttendance}%
                             </span>
                             <Progress
-                              value={day.percentage}
+                              value={module.averageAttendance}
                               className="w-16 h-2"
                             />
                           </div>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {day.percentage >= 90 ? (
-                            <Badge className="bg-green-100 text-green-800">
-                              Excellent
-                            </Badge>
-                          ) : day.percentage >= 80 ? (
-                            <Badge className="bg-blue-100 text-blue-800">
-                              Good
-                            </Badge>
-                          ) : (
-                            <Badge className="bg-yellow-100 text-yellow-800">
-                              Needs Attention
-                            </Badge>
-                          )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                        <TableCell>{module.lastUpdated}</TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/academic/attendance/${encodeURIComponent(
+                              module.module
+                            )}`}
+                            passHref
+                            legacyBehavior
+                          >
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
+                <div className="flex items-center justify-end gap-2 py-4 px-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage2(page2 - 1)}
+                    disabled={page2 === 1}
+                    className="gap-1"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  {Array.from({ length: totalPages2 }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        variant={page2 === page ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => setPage2(page)}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage2(page2 + 1)}
+                    disabled={page2 === totalPages2}
+                    className="gap-1"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
+        {/* Year 3 Tab */}
+        <TabsContent value="year3" className="mt-6">
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-black mb-1">
+                Year 3 Attendance
+              </CardTitle>
+              <CardDescription>
+                Attendance statistics for Year 3 modules
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Module</TableHead>
+                      <TableHead>Class</TableHead>
+                      <TableHead>Lecturer</TableHead>
+                      <TableHead>Average Attendance</TableHead>
+                      <TableHead>Last Update</TableHead>
+                      <TableHead>Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ...attendanceOverview,
+                      {
+                        module: "COE3111 - Operating Systems",
+                        lecturer: "Dr. Kernel Boss",
+                        totalClasses: 21,
+                        averageAttendance: 88.2,
+                        studentsCount: 39,
+                        lastUpdated: "2024-12-14",
+                        status: "good",
+                      },
+                      {
+                        module: "COE3112 - Algorithms",
+                        lecturer: "Prof. Algo Master",
+                        totalClasses: 23,
+                        averageAttendance: 82.7,
+                        studentsCount: 37,
+                        lastUpdated: "2024-12-12",
+                        status: "good",
+                      },
+                    ].map((module, index) => (
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell>{module.module}</TableCell>
+                        <TableCell>Class C</TableCell>
+                        <TableCell>{module.lecturer}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span
+                              className={`font-semibold ${getAttendanceColor(
+                                module.averageAttendance
+                              )}`}
+                            >
+                              {module.averageAttendance}%
+                            </span>
+                            <Progress
+                              value={module.averageAttendance}
+                              className="w-16 h-2"
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell>{module.lastUpdated}</TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/academic/attendance/${encodeURIComponent(
+                              module.module
+                            )}`}
+                            passHref
+                            legacyBehavior
+                          >
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="flex items-center justify-end gap-2 py-4 px-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage3(page3 - 1)}
+                    disabled={page3 === 1}
+                    className="gap-1"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  {Array.from({ length: totalPages3 }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        variant={page3 === page ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => setPage3(page)}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage3(page3 + 1)}
+                    disabled={page3 === totalPages3}
+                    className="gap-1"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Year 4 Tab */}
+        <TabsContent value="year4" className="mt-6">
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-black mb-1">
+                Year 4 Attendance
+              </CardTitle>
+              <CardDescription>
+                Attendance statistics for Year 4 modules
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Module</TableHead>
+                      <TableHead>Class</TableHead>
+                      <TableHead>Lecturer</TableHead>
+                      <TableHead>Average Attendance</TableHead>
+                      <TableHead>Last Update</TableHead>
+                      <TableHead>Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      ...attendanceOverview,
+                      {
+                        module: "COE4111 - Artificial Intelligence",
+                        lecturer: "Dr. AI Expert",
+                        totalClasses: 20,
+                        averageAttendance: 90.1,
+                        studentsCount: 36,
+                        lastUpdated: "2024-12-15",
+                        status: "excellent",
+                      },
+                      {
+                        module: "COE4112 - Cloud Computing",
+                        lecturer: "Prof. Cloud Guru",
+                        totalClasses: 19,
+                        averageAttendance: 84.6,
+                        studentsCount: 34,
+                        lastUpdated: "2024-12-13",
+                        status: "good",
+                      },
+                    ].map((module, index) => (
+                      <TableRow key={index} className="hover:bg-gray-50">
+                        <TableCell>{module.module}</TableCell>
+                        <TableCell>Class D</TableCell>
+                        <TableCell>{module.lecturer}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span
+                              className={`font-semibold ${getAttendanceColor(
+                                module.averageAttendance
+                              )}`}
+                            >
+                              {module.averageAttendance}%
+                            </span>
+                            <Progress
+                              value={module.averageAttendance}
+                              className="w-16 h-2"
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell>{module.lastUpdated}</TableCell>
+                        <TableCell>
+                          <Link
+                            href={`/academic/attendance/${encodeURIComponent(
+                              module.module
+                            )}`}
+                            passHref
+                            legacyBehavior
+                          >
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="flex items-center justify-end gap-2 py-4 px-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage4(page4 - 1)}
+                    disabled={page4 === 1}
+                    className="gap-1"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </Button>
+                  {Array.from({ length: totalPages4 }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        variant={page4 === page ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => setPage4(page)}
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage4(page4 + 1)}
+                    disabled={page4 === totalPages4}
+                    className="gap-1"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Students Tab */}
+        <TabsContent value="students" className="mt-6">
+          ...existing code...
+        </TabsContent>
+
+        {/* Daily Tab */}
+        <TabsContent value="daily" className="mt-6">
+          ...existing code...
+        </TabsContent>
+
+        {/* Analytics Tab */}
         <TabsContent value="analytics" className="mt-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-black">Attendance Trends</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>This Week</span>
-                    <span className="font-semibold text-green-600">89.2%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Last Week</span>
-                    <span className="font-semibold">86.7%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>This Month</span>
-                    <span className="font-semibold">87.8%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Last Month</span>
-                    <span className="font-semibold">85.4%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-black">Risk Categories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>Critical (&lt;60%)</span>
-                    <span className="font-semibold text-red-600">
-                      3 students
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>At Risk (60-69%)</span>
-                    <span className="font-semibold text-orange-600">
-                      9 students
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Fair (70-79%)</span>
-                    <span className="font-semibold text-yellow-600">
-                      28 students
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Good (80%+)</span>
-                    <span className="font-semibold text-green-600">
-                      120 students
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-black">Module Comparison</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>Database Systems</span>
-                    <span className="font-semibold text-green-600">92.3%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Software Engineering</span>
-                    <span className="font-semibold text-[#026892]">87.5%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Machine Learning</span>
-                    <span className="font-semibold text-yellow-600">78.9%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Web Development</span>
-                    <span className="font-semibold text-red-600">65.2%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          ...existing code...
         </TabsContent>
       </Tabs>
     </div>
