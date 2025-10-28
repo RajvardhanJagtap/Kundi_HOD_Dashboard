@@ -83,65 +83,67 @@ interface TeachingPlan {
 }
 
 export default function TeachingPlansPage() {
-  const [selectedView, setSelectedView] = useState("overview");
+  const [selectedView, setSelectedView] = useState("pending");
   const [selectedPlan, setSelectedPlan] = useState<TeachingPlan | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Generate more mock data for each status
   const teachingPlans: TeachingPlan[] = [
-    {
-      id: 1,
-      moduleCode: "CS101",
-      moduleName: "Introduction to Programming",
-      lecturer: "Dr. Sarah Johnson",
-      semester: "Fall 2024",
-      submissionDate: "2024-08-15",
+    // Approved
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: i + 1,
+      moduleCode: `CS10${i + 1}`,
+      moduleName: `Approved Module ${i + 1}`,
+      lecturer: `Lecturer ${i + 1}`,
+      semester: i % 2 === 0 ? "Fall 2024" : "Spring 2025",
+      submissionDate: `2024-08-${(i % 28) + 1}`,
       status: "Approved",
-      reviewDate: "2024-08-20",
-      reviewer: "Prof. Michael Chen",
-      qualityScore: 85,
-      feedback:
-        "Excellent plan with clear learning outcomes and assessment methods. Well-structured content.",
+      reviewDate: `2024-08-${(i % 28) + 2}`,
+      reviewer: `Reviewer ${i + 1}`,
+      qualityScore: 80 + (i % 10),
+      feedback: "Well-structured content.",
       learningOutcomes: ["LO1", "LO2", "LO3"],
       assessmentMethods: ["Assignments", "Exams", "Projects"],
       resources: ["Textbook", "Online Materials", "Lab Equipment"],
       schedule: "Mon/Wed/Fri 09:00-10:30",
-      room: "Lab A-101",
+      room: `Lab A-${100 + i}`,
       maxStudents: 100,
       prerequisites: [],
-    },
-    {
-      id: 2,
-      moduleCode: "CS202",
-      moduleName: "Data Structures & Algorithms",
-      lecturer: "Prof. Michael Chen",
-      semester: "Fall 2024",
-      submissionDate: "2024-08-10",
-      status: "Under Review",
-      learningOutcomes: ["LO2", "LO4", "LO5"],
-      assessmentMethods: ["Projects", "Exams", "Code Reviews"],
-      resources: ["Textbook", "Programming Tools", "Online Platform"],
-      schedule: "Tue/Thu 11:00-12:30",
-      room: "Room B-205",
-      maxStudents: 80,
-      prerequisites: ["CS101"],
-    },
-    {
-      id: 3,
-      moduleCode: "CS303",
-      moduleName: "Database Systems",
-      lecturer: "Ms. Lisa Wang",
-      semester: "Spring 2025",
-      submissionDate: "2024-08-05",
+    })),
+    // Pending
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: 100 + i + 1,
+      moduleCode: `CS20${i + 1}`,
+      moduleName: `Pending Module ${i + 1}`,
+      lecturer: `Pending Lecturer ${i + 1}`,
+      semester: i % 2 === 0 ? "Fall 2024" : "Spring 2025",
+      submissionDate: `2024-09-${(i % 28) + 1}`,
       status: "Pending",
       learningOutcomes: ["LO1", "LO3", "LO4"],
       assessmentMethods: ["Assignments", "Database Projects", "Presentations"],
       resources: ["Database Software", "Case Studies", "Online Resources"],
       schedule: "Mon/Wed 14:00-15:30",
-      room: "Lab C-301",
+      room: `Lab C-${300 + i}`,
       maxStudents: 70,
       prerequisites: ["CS101", "CS202"],
-    },
+    })),
+    // Rejected
+    ...Array.from({ length: 11 }, (_, i) => ({
+      id: 200 + i + 1,
+      moduleCode: `CS30${i + 1}`,
+      moduleName: `Rejected Module ${i + 1}`,
+      lecturer: `Rejected Lecturer ${i + 1}`,
+      semester: i % 2 === 0 ? "Fall 2024" : "Spring 2025",
+      submissionDate: `2024-10-${(i % 28) + 1}`,
+      status: "Rejected",
+      learningOutcomes: ["LO2", "LO4", "LO5"],
+      assessmentMethods: ["Projects", "Exams", "Code Reviews"],
+      resources: ["Textbook", "Programming Tools", "Online Platform"],
+      schedule: "Tue/Thu 11:00-12:30",
+      room: `Room B-${205 + i}`,
+      maxStudents: 80,
+      prerequisites: ["CS101"],
+    })),
   ];
 
   const getStatusColor = (status: string) => {
@@ -178,15 +180,43 @@ export default function TeachingPlansPage() {
     }
   };
 
-  const filteredPlans = teachingPlans.filter((plan) => {
-    const matchesStatus =
-      selectedStatus === "all" || plan.status === selectedStatus;
-    const matchesSearch =
-      plan.moduleCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.moduleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.lecturer.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  // Pagination state
+  const [pendingPage, setPendingPage] = useState(1);
+  const [approvedPage, setApprovedPage] = useState(1);
+  const [rejectedPage, setRejectedPage] = useState(1);
+  const pageSize = 5;
+
+  // Filter plans by tab and paginate
+  const getPlansByTab = (tab: string, page: number) => {
+    let status = "";
+    if (tab === "pending") status = "Pending";
+    if (tab === "approved") status = "Approved";
+    if (tab === "rejected") status = "Rejected";
+    const filtered = teachingPlans.filter(
+      (plan) =>
+        plan.status === status &&
+        (plan.moduleCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          plan.moduleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          plan.lecturer.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  };
+
+  const getTotalPages = (tab: string) => {
+    let status = "";
+    if (tab === "pending") status = "Pending";
+    if (tab === "approved") status = "Approved";
+    if (tab === "rejected") status = "Rejected";
+    const filtered = teachingPlans.filter(
+      (plan) =>
+        plan.status === status &&
+        (plan.moduleCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          plan.moduleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          plan.lecturer.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    return Math.ceil(filtered.length / pageSize);
+  };
 
   return (
     <div className="flex-1 p-1 md:p-2 grid gap-6">
@@ -282,145 +312,86 @@ export default function TeachingPlansPage() {
         </div>
       </div>
 
+      {/* Statistics cards moved here under title/description */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">Total Plans</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-samps-[#026892]">
+              {teachingPlans.length}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <FileText className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">Submitted plans</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">Approved</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-samps-green-600">
+              {teachingPlans.filter((p) => p.status === "Approved").length}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <CheckCircle className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">Plans approved</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">Rejected</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-samps-red-600">
+              {teachingPlans.filter((p) => p.status === "Rejected").length}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <XCircle className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">Plans rejected</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-gray-700">Pending</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-samps-[#026892]">
+              {teachingPlans.filter((p) => p.status === "Pending").length}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <AlertTriangle className="h-4 w-4 text-gray-500" />
+              <span className="text-sm text-gray-600">Awaiting submission</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Tabs
         value={selectedView}
         onValueChange={setSelectedView}
         className="w-full"
       >
         <TabsList className="flex items-end gap-6 w-full">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="plans">Teaching Plans</TabsTrigger>
-          <TabsTrigger value="review">Review Process</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="pending">Pending</TabsTrigger>
+          <TabsTrigger value="approved">Approved</TabsTrigger>
+          <TabsTrigger value="rejected">Rejected</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-gray-700">
-                  Total Plans
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-samps-[#026892]">
-                  {teachingPlans.length}
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <FileText className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Submitted plans</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-gray-700">
-                  Approved
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-samps-green-600">
-                  {teachingPlans.filter((p) => p.status === "Approved").length}
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <CheckCircle className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Plans approved</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-gray-700">
-                  Under Review
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-samps-yellow-600">
-                  {
-                    teachingPlans.filter((p) => p.status === "Under Review")
-                      .length
-                  }
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">Pending review</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg text-gray-700">Pending</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-samps-[#026892]">
-                  {teachingPlans.filter((p) => p.status === "Pending").length}
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <AlertTriangle className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm text-gray-600">
-                    Awaiting submission
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-gray-700 mb-2 text-lg">
-                Recent Activity
-              </CardTitle>
-              <CardDescription>
-                Latest teaching plan updates and reviews
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {teachingPlans
-                  .sort(
-                    (a, b) =>
-                      new Date(b.submissionDate).getTime() -
-                      new Date(a.submissionDate).getTime()
-                  )
-                  .slice(0, 5)
-                  .map((plan) => (
-                    <div
-                      key={plan.id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-samps-[#026892] rounded-full"></div>
-                        <div>
-                          <p className="font-medium">
-                            {plan.moduleCode} - {plan.moduleName}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Submitted by {plan.lecturer} on{" "}
-                            {plan.submissionDate}
-                          </p>
-                        </div>
-                      </div>
-                      <Badge className={getStatusColor(plan.status)}>
-                        {plan.status}
-                      </Badge>
-                    </div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="plans" className="space-y-6">
+        {/* Pending Tab */}
+        <TabsContent value="pending" className="space-y-6">
           <Card className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-gray-700 mb-2 text-lg">
                 Teaching Plans Overview
               </CardTitle>
               <CardDescription>
-                Manage and review all submitted teaching plans
+                Manage and review all pending teaching plans
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -436,28 +407,7 @@ export default function TeachingPlansPage() {
                     />
                   </div>
                 </div>
-                <Select
-                  value={selectedStatus}
-                  onValueChange={setSelectedStatus}
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="Approved">Approved</SelectItem>
-                    <SelectItem value="Under Review">Under Review</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Rejected">Rejected</SelectItem>
-                    <SelectItem value="Draft">Draft</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="outline">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Advanced
-                </Button>
               </div>
-
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -471,7 +421,7 @@ export default function TeachingPlansPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredPlans.map((plan) => (
+                  {getPlansByTab("pending", pendingPage).map((plan) => (
                     <TableRow key={plan.id}>
                       <TableCell>
                         <div>
@@ -516,28 +466,294 @@ export default function TeachingPlansPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                          {plan.status === "Pending" && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-green-600"
-                            >
-                              <CheckSquare className="h-3 w-3" />
-                            </Button>
-                          )}
-                          <Button variant="outline" size="sm">
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedPlan(plan)}
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              {/* Pagination for Pending */}
+              <div className="flex justify-end items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pendingPage === 1}
+                  onClick={() => setPendingPage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm">
+                  Page {pendingPage} of {getTotalPages("pending")}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pendingPage === getTotalPages("pending")}
+                  onClick={() =>
+                    setPendingPage((p) =>
+                      Math.min(getTotalPages("pending"), p + 1)
+                    )
+                  }
+                >
+                  Next
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Approved Tab */}
+        <TabsContent value="approved" className="space-y-6">
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-gray-700 mb-2 text-lg">
+                Teaching Plans Overview
+              </CardTitle>
+              <CardDescription>
+                Manage and review all approved teaching plans
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search plans..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Module</TableHead>
+                    <TableHead>Lecturer</TableHead>
+                    <TableHead>Semester</TableHead>
+                    <TableHead>Submission Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Quality Score</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {getPlansByTab("approved", approvedPage).map((plan) => (
+                    <TableRow key={plan.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{plan.moduleCode}</div>
+                          <div className="text-sm text-gray-600">
+                            {plan.moduleName}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{plan.lecturer}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{plan.semester}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">{plan.submissionDate}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(plan.status)}>
+                          <div className="flex items-center gap-1">
+                            {getStatusIcon(plan.status)}
+                            {plan.status}
+                          </div>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {plan.qualityScore ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {plan.qualityScore}%
+                            </span>
+                            <Progress
+                              value={plan.qualityScore}
+                              className="w-16 h-2"
+                            />
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-500">
+                            Not scored
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedPlan(plan)}
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {/* Pagination for Approved */}
+              <div className="flex justify-end items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={approvedPage === 1}
+                  onClick={() => setApprovedPage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm">
+                  Page {approvedPage} of {getTotalPages("approved")}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={approvedPage === getTotalPages("approved")}
+                  onClick={() =>
+                    setApprovedPage((p) =>
+                      Math.min(getTotalPages("approved"), p + 1)
+                    )
+                  }
+                >
+                  Next
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Rejected Tab */}
+        <TabsContent value="rejected" className="space-y-6">
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-gray-700 mb-2 text-lg">
+                Teaching Plans Overview
+              </CardTitle>
+              <CardDescription>
+                Manage and review all rejected teaching plans
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                      placeholder="Search plans..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Module</TableHead>
+                    <TableHead>Lecturer</TableHead>
+                    <TableHead>Semester</TableHead>
+                    <TableHead>Submission Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Quality Score</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {getPlansByTab("rejected", rejectedPage).map((plan) => (
+                    <TableRow key={plan.id}>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{plan.moduleCode}</div>
+                          <div className="text-sm text-gray-600">
+                            {plan.moduleName}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{plan.lecturer}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{plan.semester}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">{plan.submissionDate}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(plan.status)}>
+                          <div className="flex items-center gap-1">
+                            {getStatusIcon(plan.status)}
+                            {plan.status}
+                          </div>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {plan.qualityScore ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">
+                              {plan.qualityScore}%
+                            </span>
+                            <Progress
+                              value={plan.qualityScore}
+                              className="w-16 h-2"
+                            />
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-500">
+                            Not scored
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedPlan(plan)}
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {/* Pagination for Rejected */}
+              <div className="flex justify-end items-center gap-2 mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={rejectedPage === 1}
+                  onClick={() => setRejectedPage((p) => Math.max(1, p - 1))}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm">
+                  Page {rejectedPage} of {getTotalPages("rejected")}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={rejectedPage === getTotalPages("rejected")}
+                  onClick={() =>
+                    setRejectedPage((p) =>
+                      Math.min(getTotalPages("rejected"), p + 1)
+                    )
+                  }
+                >
+                  Next
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
