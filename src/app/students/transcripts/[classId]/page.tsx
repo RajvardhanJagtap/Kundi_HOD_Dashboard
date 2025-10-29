@@ -14,6 +14,9 @@ import {
   TrendingUp,
   Loader2,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,12 +28,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useStudentEnrollments } from "@/hooks/transcripts/useAllGroups";
 import { useAcademicYears } from "@/hooks/academic-year-and-semesters/useAcademicYears";
 import { useSemesters } from "@/hooks/academic-year-and-semesters/useSemesters";
 import { AcademicContextProvider } from "@/src/app/academicContext";
+
+const ITEMS_PER_PAGE = 10;
 
 export default function ClassTranscriptsPage() {
   const params = useParams();
@@ -41,6 +54,8 @@ export default function ClassTranscriptsPage() {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [selectedSemester, setSelectedSemester] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   // Fetch academic years and semesters
   const { years, isLoading: yearsLoading } = useAcademicYears();
@@ -64,6 +79,13 @@ export default function ClassTranscriptsPage() {
       setSelectedSemester(semesters[0].id);
     }
   }, [semesters, selectedSemester]);
+
+  useEffect(() => {
+    // Set initialization complete after a short delay
+    setTimeout(() => {
+      setIsInitializing(false);
+    }, 300);
+  }, []);
 
   const handleYearChange = (yearId: string) => {
     setSelectedYear(yearId);
@@ -173,7 +195,7 @@ export default function ClassTranscriptsPage() {
 
   // Filter students based on search and status
   const filteredEnrollments = useMemo(() => {
-    return enrollments.filter((enrollment) => {
+    const filtered = enrollments.filter((enrollment) => {
       const matchesSearch =
         enrollment.studentFullName
           ?.toLowerCase()
@@ -192,7 +214,18 @@ export default function ClassTranscriptsPage() {
 
       return matchesSearch && matchesStatus;
     });
+
+    // Reset to page 1 when filters change
+    setCurrentPage(1);
+
+    return filtered;
   }, [enrollments, searchTerm, selectedStatus]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredEnrollments.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentEnrollments = filteredEnrollments.slice(startIndex, endIndex);
 
   // Format date helper
   const formatDate = (dateString: string) => {
@@ -207,14 +240,17 @@ export default function ClassTranscriptsPage() {
     );
   };
 
+  // Show loading skeleton only during initialization
+  const showLoading = isInitializing || isLoading;
+
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 p-4 md:p-6">
         <Alert className="border-red-200 bg-red-50">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-red-800">{error}</AlertDescription>
         </Alert>
-        <Button onClick={refetch} className="mt-4">
+        <Button onClick={refetch} className="mt-4 bg-[#026892] hover:bg-[#026892]/90">
           Try Again
         </Button>
       </div>
@@ -232,22 +268,22 @@ export default function ClassTranscriptsPage() {
       onYearChange={handleYearChange}
       onSemesterChange={handleSemesterChange}
     >
-      <div className="space-y-6">
+      <div className="flex-1 p-4 md:p-6 grid gap-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="items-center space-x-4">
+          <div className="space-y-2">
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="flex items-center mb-3 hover:cursor-pointer border-none hover:bg-gray-100"
+              className="flex items-center hover:cursor-pointer border-none hover:bg-gray-100"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Classes
             </Button>
             <div>
-              {isLoading ? (
+              {showLoading ? (
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[#026892]" />
                   <h1 className="text-2xl font-bold text-gray-900">
                     Loading...
                   </h1>
@@ -257,7 +293,7 @@ export default function ClassTranscriptsPage() {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {classInfo.groupName}
                   </h1>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 mt-1">
                     {classInfo.programName} - Year {classInfo.yearLevel}
                   </p>
                 </div>
@@ -266,7 +302,7 @@ export default function ClassTranscriptsPage() {
                   <h1 className="text-2xl font-bold text-gray-900">
                     Class Not Found
                   </h1>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 mt-1">
                     No students found for this class
                   </p>
                 </div>
@@ -276,10 +312,13 @@ export default function ClassTranscriptsPage() {
         </div>
 
         {/* Students Table */}
-        <Card>
-          {/* Filters and Search */}
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+        <Card className="bg-white shadow-sm border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-900">
+              Student Transcripts
+            </CardTitle>
+            {/* Filters and Search */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
@@ -290,7 +329,7 @@ export default function ClassTranscriptsPage() {
                 />
               </div>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-[200px]">
                   <SelectValue placeholder="All Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -302,109 +341,138 @@ export default function ClassTranscriptsPage() {
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
+          </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-8 h-8 animate-spin" />
-                <span className="ml-2">Loading student enrollments...</span>
+            {showLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-[#026892]" />
+                <span className="ml-3 text-gray-600">Loading student enrollments...</span>
               </div>
             ) : (
               <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Student ID
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Names
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        GPA
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Total Credits
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Percentage
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredEnrollments.map((enrollment) => (
-                      <tr key={enrollment.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                          {enrollment.enrollmentNumber}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {enrollment.studentFullName || "No name"}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {enrollment.studentEmail || "No email"}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {enrollment.cumulativeGpa
-                            ? enrollment.cumulativeGpa.toFixed(1)
-                            : "N/A"}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {enrollment.totalCreditsEarned}/
-                          {enrollment.totalCreditsAttempted}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {getCreditCompletionPercentage(enrollment)}%
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          <Badge
-                            className={getStatusBadgeClass(
-                              getEnrollmentStatus(enrollment)
-                            )}
-                          >
-                            {getEnrollmentStatus(enrollment)}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          <Link
-                            href={`/students/transcripts/${groupId}/${
-                              enrollment.studentId
-                            }${
-                              classInfo?.academicYearId
-                                ? `?yearId=${encodeURIComponent(
-                                    classInfo.academicYearId
-                                  )}`
-                                : ""
-                            }`}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-[#026892] hover:text-[#026892]/90 bg-transparent hover:bg-blue-50"
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Student ID</TableHead>
+                      <TableHead>Names</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>GPA</TableHead>
+                      <TableHead>Total Credits</TableHead>
+                      <TableHead>Percentage</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentEnrollments.length > 0 ? (
+                      currentEnrollments.map((enrollment) => (
+                        <TableRow key={enrollment.id}>
+                          <TableCell className="font-medium text-gray-900">
+                            {enrollment.enrollmentNumber}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {enrollment.studentFullName || "No name"}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {enrollment.studentEmail || "No email"}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {enrollment.cumulativeGpa
+                              ? enrollment.cumulativeGpa.toFixed(1)
+                              : "N/A"}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {enrollment.totalCreditsEarned}/
+                            {enrollment.totalCreditsAttempted}
+                          </TableCell>
+                          <TableCell className="text-gray-700">
+                            {getCreditCompletionPercentage(enrollment)}%
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={getStatusBadgeClass(
+                                getEnrollmentStatus(enrollment)
+                              )}
                             >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View Transcript
-                            </Button>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                              {getEnrollmentStatus(enrollment)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Link
+                              href={`/students/transcripts/${groupId}/${
+                                enrollment.studentId
+                              }${
+                                classInfo?.academicYearId
+                                  ? `?yearId=${encodeURIComponent(
+                                      classInfo.academicYearId
+                                    )}`
+                                  : ""
+                              }`}
+                            >
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-[#026892] hover:bg-blue-50"
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={8}
+                          className="text-center py-8 text-gray-500"
+                        >
+                          No students found matching your search criteria.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
 
-            {!isLoading && filteredEnrollments.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No students found matching your search criteria.
+                {/* Pagination - Always visible when there are items */}
+                {filteredEnrollments.length > 0 && (
+                  <div className="flex items-center justify-end gap-2 py-4 px-4 border-t border-gray-200">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    {Array.from({ length: Math.max(1, totalPages) }, (_, i) => i + 1).map(
+                      (pageNum) => (
+                        <Button
+                          key={pageNum}
+                          variant={
+                            currentPage === pageNum ? "secondary" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      )
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      className="gap-1"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
