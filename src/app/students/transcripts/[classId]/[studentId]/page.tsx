@@ -199,59 +199,18 @@ export default function StudentTranscriptPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-3">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
           <Button
             variant="outline"
             onClick={handleBack}
-            className="flex items-center"
+            className="flex items-center border-none hover:bg-gray-100"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Class
           </Button>
-
-          <div>
-            {enrollmentsError ? (
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Student Transcript
-                </h1>
-                <p className="text-red-600 text-sm">
-                  Error loading student information: {enrollmentsError}
-                </p>
-              </div>
-            ) : studentInfo ? (
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {studentInfo.studentFullName || "Student Transcript"}
-                </h1>
-                <p className="text-gray-600 text-sm">
-                  {studentInfo.programName}
-                </p>
-              </div>
-            ) : enrollmentsLoading ? (
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Student Transcript
-                </h1>
-                <p className="text-gray-600 text-sm flex items-center">
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Loading student information...
-                </p>
-              </div>
-            ) : (
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Student Transcript
-                </h1>
-                <p className="text-gray-600 text-sm">
-                  Student not found in this class
-                </p>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
@@ -282,48 +241,6 @@ export default function StudentTranscriptPage() {
         </div>
       </div>
 
-      {/* Student Info Card */}
-      {studentInfo && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="w-5 h-5 mr-2" />
-              Student Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Full Name</p>
-                <p className="text-sm text-gray-900">
-                  {studentInfo.studentFullName || "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">Email</p>
-                <p className="text-sm text-gray-900">
-                  {studentInfo.studentEmail || "N/A"}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">Program</p>
-                <p className="text-sm text-gray-900">
-                  {studentInfo.programName}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Current Year
-                </p>
-                <p className="text-sm text-gray-900">
-                  Year {studentInfo.currentYearLevel}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Error Display */}
       {error && (
         <Alert variant="destructive">
@@ -345,10 +262,10 @@ export default function StudentTranscriptPage() {
       {/* PDF Viewer Section */}
       <div>
         <div className="mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-3xl font-bold text-gray-900">
             Academic Transcript
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-lg text-gray-600 mt-1">
             {isLoading
               ? "Loading transcript..."
               : "View and download your transcript"}

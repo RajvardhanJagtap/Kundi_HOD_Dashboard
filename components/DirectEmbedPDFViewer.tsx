@@ -148,19 +148,6 @@ export default function SimplePDFViewer({
 
   return (
     <div className={`border rounded-lg overflow-hidden bg-white ${className}`}>
-      {/* Controls */}
-      <div className="border-b bg-gray-50 px-4 py-2 flex items-center justify-end">
-        <div className="flex items-center space-x-2">
-          <Button size="sm" variant="outline" onClick={openInNewTab}>
-            <ExternalLink className="w-4 h-4 mr-1" />
-            Open in Tab
-          </Button>
-          <Button size="sm" variant="outline" onClick={downloadPDF}>
-            <Download className="w-4 h-4 mr-1" />
-            Download
-          </Button>
-        </div>
-      </div>
 
       {/* PDF Display */}
       <div className="relative">

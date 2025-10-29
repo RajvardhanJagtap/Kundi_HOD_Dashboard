@@ -281,8 +281,9 @@ export default function TranscriptsPage() {
         </Card>
       </div>
 
-      {/* Filters and Search */}
+      {/* Groups Table */}
       <Card>
+        {/* filters and search*/}
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
@@ -325,13 +326,6 @@ export default function TranscriptsPage() {
             </Select>
           </div>
         </CardContent>
-      </Card>
-
-      {/* Groups Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Academic Groups ({filteredGroups.length})</CardTitle>
-        </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">

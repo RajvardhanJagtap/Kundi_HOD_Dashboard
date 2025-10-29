@@ -239,7 +239,7 @@ export default function ClassTranscriptsPage() {
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="flex items-center mb-3 hover:cursor-pointer"
+              className="flex items-center mb-3 hover:cursor-pointer border-none hover:bg-gray-100"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Classes
@@ -374,8 +374,9 @@ export default function ClassTranscriptsPage() {
           </Card>
         </div>
 
-        {/* Filters and Search */}
+        {/* Students Table */}
         <Card>
+          {/* Filters and Search */}
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
@@ -401,13 +402,6 @@ export default function ClassTranscriptsPage() {
               </Select>
             </div>
           </CardContent>
-        </Card>
-
-        {/* Students Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Students ({filteredEnrollments.length})</CardTitle>
-          </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
