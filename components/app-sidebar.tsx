@@ -115,6 +115,11 @@ const hodNavigation = [
     icon: MessageSquarePlus,
     url: "/notifications",
   },
+  {
+    title: "Services",
+    icon: MessageSquarePlus,
+    url: "/services",
+  },
 ];
 
 export function AppSidebar() {
