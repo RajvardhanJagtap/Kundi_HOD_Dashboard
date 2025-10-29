@@ -96,9 +96,9 @@ const hodNavigation = [
     url: "/staff/leave",
   },
   {
-    title: "Appeals",
+    title: "Student Records",
     icon: Award,
-    url: "/students/appeals",
+    url: "/students/records",
   },
   {
     title: "Students Transcripts",
