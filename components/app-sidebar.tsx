@@ -46,19 +46,14 @@ const hodNavigation = [
     url: "/dashboard",
   },
   {
-    title: "Resources",
-    icon: FolderKanban,
-    url: "/department/resources",
-  },
-  {
-    title: "Curriculum",
-    icon: BookCheck,
-    url: "/department/curriculum",
-  },
-  {
     title: "Teaching Plans",
     icon: ClipboardList,
     url: "/department/teaching-plans",
+  },
+  {
+    title: "Attendance",
+    icon: Clock,
+    url: "/academic/attendance",
   },
   {
     title: "Timetables",
@@ -81,19 +76,9 @@ const hodNavigation = [
     url: "/academic/classes-marks",
   },
   {
-    title: "Attendance",
-    icon: Clock,
-    url: "/academic/attendance",
-  },
-  {
-    title: "Module Assignments",
-    icon: UserSquare2,
-    url: "/staff/module-assignments",
-  },
-  {
-    title: "Leave",
-    icon: Users,
-    url: "/staff/leave",
+    title: "Students Transcripts",
+    icon: Scroll,
+    url: "/students/transcripts",
   },
   {
     title: "Student Records",
@@ -101,14 +86,19 @@ const hodNavigation = [
     url: "/students/records",
   },
   {
-    title: "Students Transcripts",
-    icon: Scroll,
-    url: "/students/transcripts",
+    title: "Resources",
+    icon: FolderKanban,
+    url: "/department/resources",
   },
   {
-    title: "Reports",
-    icon: LineChart,
-    url: "/reports",
+    title: "Leave Requests",
+    icon: Users,
+    url: "/staff/leave",
+  },
+  {
+    title: "Curriculum",
+    icon: BookCheck,
+    url: "/department/curriculum",
   },
   {
     title: "Communication",
@@ -116,7 +106,12 @@ const hodNavigation = [
     url: "/notifications",
   },
   {
-    title: "Services",
+    title: "Reports",
+    icon: LineChart,
+    url: "/reports",
+  },
+  {
+    title: "Services Requests",
     icon: MessageSquarePlus,
     url: "/services",
   },
