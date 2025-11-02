@@ -91,6 +91,11 @@ const hodNavigation = [
     url: "/department/resources",
   },
   {
+    title: "Modules Assignments",
+    icon: Users,
+    url: "/staff/module-assignments",
+  },
+  {
     title: "Leave Requests",
     icon: Users,
     url: "/staff/leave",
