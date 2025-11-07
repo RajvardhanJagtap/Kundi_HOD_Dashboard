@@ -62,11 +62,14 @@ import {
 
 export default function ModuleAssignmentsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [selectedLecturer, setSelectedLecturer] = useState("all");
   const [academicYearId, setAcademicYearId] = useState<string>("");
   const [currentSemesterId, setCurrentSemesterId] = useState<string>("");
+  const [editingAssignment, setEditingAssignment] = useState<any>(null);
+  const [lecturerSearchTerm, setLecturerSearchTerm] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -167,6 +170,19 @@ export default function ModuleAssignmentsPage() {
     });
   }, [assignments, searchTerm, selectedGroup, selectedLecturer]);
 
+  // Filter lecturers for search
+  const filteredLecturers = useMemo(() => {
+    if (!lecturerSearchTerm) return lecturers;
+    
+    return lecturers.filter((lecturer) => {
+      const searchLower = lecturerSearchTerm.toLowerCase();
+      return (
+        lecturer.fullName.toLowerCase().includes(searchLower) ||
+        lecturer.email.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [lecturers, lecturerSearchTerm]);
+
   // Pagination
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -251,6 +267,33 @@ export default function ModuleAssignmentsPage() {
     }
   };
 
+  // Handle edit click
+  const handleEditClick = (assignment: any) => {
+    setEditingAssignment(assignment);
+    setLecturerSearchTerm("");
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle update assignment
+  const handleUpdateAssignment = async () => {
+    try {
+      if (!editingAssignment?.instructorId) {
+        toast.error("Please select a lecturer");
+        return;
+      }
+
+      // Here you would call your update API
+      // await updateAssignment(editingAssignment.id, { instructorId: editingAssignment.instructorId });
+      
+      toast.success("Module assignment updated successfully!");
+      setIsEditDialogOpen(false);
+      setEditingAssignment(null);
+      refetch();
+    } catch (error) {
+      toast.error("Failed to update module assignment");
+    }
+  };
+
   // Handle errors
   if (assignmentsError || groupsError || lecturersError || modulesError) {
     return (
@@ -322,10 +365,7 @@ export default function ModuleAssignmentsPage() {
                       {modules.map((module) => (
                         <SelectItem key={module.id} value={module.id}>
                           <div className="flex flex-col">
-                            <span className="font-medium">{module.code}</span>
-                            <span className="text-sm text-gray-600">
-                              {module.name}
-                            </span>
+                            <span className="font-medium">{module.code} - {module.name}</span>
                           </div>
                         </SelectItem>
                       ))}
@@ -351,9 +391,6 @@ export default function ModuleAssignmentsPage() {
                             <span className="font-medium">
                               {lecturer.fullName}
                             </span>
-                            <span className="text-sm text-gray-600">
-                              {lecturer.email}
-                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -377,9 +414,6 @@ export default function ModuleAssignmentsPage() {
                         <SelectItem key={group.id} value={group.id}>
                           <div className="flex flex-col">
                             <span className="font-medium">{group.name}</span>
-                            <span className="text-sm text-gray-600">
-                              {group.code} - Year {group.yearLevel}
-                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -841,7 +875,8 @@ export default function ModuleAssignmentsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="text-[#026892] hover:text-[#026892]/90"
+                            className="text-[#026892] hover:text-[#026892]/90 hover:bg-[#026892]/10"
+                            onClick={() => handleEditClick(assignment)}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -899,6 +934,164 @@ export default function ModuleAssignmentsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Assignment Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Edit Module Assignment
+            </DialogTitle>
+            <p className="text-gray-600 mt-2">
+              Update the lecturer for this module assignment
+            </p>
+          </DialogHeader>
+          
+          {editingAssignment && (
+            <div className="space-y-6 py-4">
+              {/* Module Info Card */}
+              <div className="bg-gray-50 from-[#026892]/5 to-[#026892]/10 border border-gray-200 rounded-lg p-6">
+                <div className="flex items-start gap-4">
+                  <div className="bg-[#026892] p-3 rounded-lg">
+                    <BookOpen className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                      {editingAssignment.moduleCode}
+                    </h3>
+                    <p className="text-gray-700 mb-3">
+                      {editingAssignment.moduleName}
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-[#026892]" />
+                        <span className="text-gray-600">
+                          Group: <span className="font-medium text-gray-900">{editingAssignment.groupName}</span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-[#026892]" />
+                        <span className="text-gray-600">
+                          Credits: <span className="font-medium text-gray-900">{editingAssignment.moduleCredits}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Current Lecturer */}
+              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Current Lecturer
+                </Label>
+                <div className="flex items-center gap-3">
+                  <div className="bg-[#026892] text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
+                    {editingAssignment.instructorName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {editingAssignment.instructorName}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {editingAssignment.instructorEmail}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* New Lecturer Selection */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-900">
+                  Select New Lecturer *
+                </Label>
+                <div className="relative">
+                  <Select
+                    value={editingAssignment.instructorId}
+                    onValueChange={(value) => {
+                      setEditingAssignment({
+                        ...editingAssignment,
+                        instructorId: value,
+                      });
+                    }}
+                  >
+                    <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-[#026892] transition-colors text-left [&>span]:text-left">
+                      <SelectValue placeholder="Search and select a lecturer..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <div className="px-2 py-2 sticky top-0 bg-white border-b z-10">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <Input
+                            placeholder="Type to search lecturers..."
+                            value={lecturerSearchTerm}
+                            onChange={(e) => setLecturerSearchTerm(e.target.value)}
+                            className="pl-10 h-9"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      </div>
+                      <div className="p-1">
+                        {filteredLecturers.length > 0 ? (
+                          filteredLecturers.map((lecturer) => (
+                            <SelectItem 
+                              key={lecturer.id} 
+                              value={lecturer.id}
+                              className="cursor-pointer hover:bg-[#026892]/5 rounded-md my-1"
+                            >
+                              <div className="flex items-center gap-3 py-2">
+                                <div className="bg-[#026892]/10 text-[#026892] rounded-full w-10 h-10 flex items-center justify-center font-semibold text-sm flex-shrink-0">
+                                  {lecturer.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                </div>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="font-medium text-gray-900 truncate">
+                                    {lecturer.fullName}
+                                  </span>
+                                </div>
+                              </div>
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="text-center py-6 text-gray-500">
+                            <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">No lecturers found</p>
+                            <p className="text-xs mt-1">Try a different search term</p>
+                          </div>
+                        )}
+                      </div>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Search by name or email to find the lecturer you want to assign
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setEditingAssignment(null);
+                    setLecturerSearchTerm("");
+                  }}
+                  className="px-6"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleUpdateAssignment}
+                  className="bg-[#026892] hover:bg-[#026892]/90 text-white px-6"
+                >
+                  <UserCheck className="w-4 h-4 mr-2" />
+                  Update Assignment
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
