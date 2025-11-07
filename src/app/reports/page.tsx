@@ -14,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { FileBarChart, Download, Eye, Calendar, Search, Filter, Users, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react"
+import { FileBarChart, Eye, Search, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react"
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("all")
@@ -35,7 +35,6 @@ export default function ReportsPage() {
       status: "Ready",
       type: "Performance",
       size: "2.4 MB",
-      downloads: 45,
       description: "Comprehensive analysis of faculty teaching performance and research output"
     },
     {
@@ -48,7 +47,6 @@ export default function ReportsPage() {
       status: "Ready",
       type: "Enrollment",
       size: "1.8 MB",
-      downloads: 32,
       description: "Detailed breakdown of student enrollment trends and demographics"
     },
     {
@@ -61,7 +59,6 @@ export default function ReportsPage() {
       status: "Processing",
       type: "Financial",
       size: "3.2 MB",
-      downloads: 18,
       description: "Annual budget allocation and expenditure analysis"
     },
     {
@@ -74,7 +71,6 @@ export default function ReportsPage() {
       status: "Ready",
       type: "Quality",
       size: "1.5 MB",
-      downloads: 67,
       description: "Quality metrics and improvement recommendations"
     },
     {
@@ -87,7 +83,6 @@ export default function ReportsPage() {
       status: "Ready",
       type: "Research",
       size: "4.1 MB",
-      downloads: 29,
       description: "Faculty research publications and grant acquisition summary"
     },
     {
@@ -100,7 +95,6 @@ export default function ReportsPage() {
       status: "Draft",
       type: "Infrastructure",
       size: "2.7 MB",
-      downloads: 12,
       description: "Campus facilities condition and maintenance requirements"
     }
   ]
@@ -363,12 +357,6 @@ export default function ReportsPage() {
                               <Eye className="w-4 h-4 mr-1" />
                               View
                             </Button>
-                            {report.status === "Ready" && (
-                              <Button variant="outline" size="sm" className="text-[#026892] hover:text-[#026892]/90 border hover:bg-[#026892]/10 hover:cursor-pointer">
-                                <Download className="w-4 h-4 mr-1" />
-                                Download
-                              </Button>
-                            )}
                           </div>
                         </td>
                       </tr>
