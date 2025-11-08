@@ -60,6 +60,7 @@ import {
   useCreateModuleAssignment,
   useUpdateModuleAssignment,
 } from "@/hooks/modules-assigment/useModuleAssignments";
+import { useSemesters } from "@/hooks/academic-year-and-semesters/useSemesters";
 
 export default function ModuleAssignmentsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -77,6 +78,7 @@ export default function ModuleAssignmentsPage() {
     moduleId: "",
     instructorId: "",
     groupId: "",
+    semesterId: "",
     assignmentDate: new Date(),
     startDate: new Date(),
     endDate: new Date(),
@@ -128,6 +130,11 @@ export default function ModuleAssignmentsPage() {
     isLoading: groupsLoading,
     error: groupsError,
   } = useTranscripts({ academicYearId });
+const {
+    semesters,
+    isLoading: semestersLoading,
+    error: semestersError,
+  } = useSemesters(academicYearId);
   const {
     assignments,
     isLoading: assignmentsLoading,
@@ -220,7 +227,7 @@ export default function ModuleAssignmentsPage() {
         instructorId: formData.instructorId,
         groupId: formData.groupId,
         academicYearId,
-        semesterId: currentSemesterId,
+        semesterId: formData.semesterId,
         assignmentDate: format(formData.assignmentDate, "yyyy-MM-dd"),
         startDate: format(formData.startDate, "yyyy-MM-dd"),
         endDate: format(formData.endDate, "yyyy-MM-dd"),
@@ -247,6 +254,7 @@ export default function ModuleAssignmentsPage() {
         moduleId: "",
         instructorId: "",
         groupId: "",
+        semesterId: "",
         assignmentDate: new Date(),
         startDate: new Date(),
         endDate: new Date(),
@@ -296,7 +304,7 @@ export default function ModuleAssignmentsPage() {
   };
 
   // Handle errors
-  if (assignmentsError || groupsError || lecturersError || modulesError) {
+  if (assignmentsError || groupsError || lecturersError || modulesError || semestersError) {
     return (
       <div className="space-y-6">
         <Alert className="border-red-200 bg-red-50">
@@ -313,7 +321,7 @@ export default function ModuleAssignmentsPage() {
   }
 
   const isLoading =
-    assignmentsLoading || groupsLoading || lecturersLoading || modulesLoading;
+    assignmentsLoading || groupsLoading || lecturersLoading || modulesLoading || semestersLoading;
 
   return (
     <div className="space-y-6">
@@ -366,10 +374,7 @@ export default function ModuleAssignmentsPage() {
                       {modules.map((module) => (
                         <SelectItem key={module.id} value={module.id}>
                           <div className="flex flex-col">
-                            <span className="font-medium">{module.code}</span>
-                            <span className="text-sm text-gray-600">
-                              {module.name}
-                            </span>
+                            <span className="font-medium">{module.name}</span>
                           </div>
                         </SelectItem>
                       ))}
@@ -395,9 +400,29 @@ export default function ModuleAssignmentsPage() {
                             <span className="font-medium">
                               {lecturer.fullName}
                             </span>
-                            <span className="text-sm text-gray-600">
-                              {lecturer.email}
-                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="group">Semester *</Label>
+                  <Select
+                    value={formData.semesterId}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, semesterId: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select semester" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {semesters.map((semester) => (
+                        <SelectItem key={semester.id} value={semester.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">Semester {semester.name}</span>
                           </div>
                         </SelectItem>
                       ))}
@@ -421,9 +446,6 @@ export default function ModuleAssignmentsPage() {
                         <SelectItem key={group.id} value={group.id}>
                           <div className="flex flex-col">
                             <span className="font-medium">{group.name}</span>
-                            <span className="text-sm text-gray-600">
-                              {group.code} - Year {group.yearLevel}
-                            </span>
                           </div>
                         </SelectItem>
                       ))}
