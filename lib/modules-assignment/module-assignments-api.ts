@@ -179,6 +179,19 @@ export interface CreateModuleAssignmentResponse {
   timestamp: string;
 }
 
+export interface UpdateModuleAssignmentRequest {
+  assignmentId: string;
+  newLecturerId: string;
+  reason?: string;
+}
+
+export interface UpdateModuleAssignmentResponse {
+  success: boolean;
+  message: string;
+  data: any;
+  timestamp: string;
+}
+
 export const moduleAssignmentsApi = {
   /**
    * Get lecturers by department
@@ -226,6 +239,24 @@ export const moduleAssignmentsApi = {
     const response = await api.post<CreateModuleAssignmentResponse>(
       '/academics/module-assignments',
       data
+    );
+    return response.data;
+  },
+
+  /**
+   * Update/Transfer module assignment to a new lecturer
+   * @param moduleAssignmentId - The module assignment ID
+   * @param data - The update data (assignmentId/semesterId, newLecturerId, reason)
+   * @returns Promise<UpdateModuleAssignmentResponse>
+   */
+  updateModuleAssignment: async (
+    moduleAssignmentId: string, 
+    data: UpdateModuleAssignmentRequest
+  ): Promise<UpdateModuleAssignmentResponse> => {
+    const { assignmentId, newLecturerId, reason = 'Reassignment by HOD' } = data;
+    
+    const response = await api.put<UpdateModuleAssignmentResponse>(
+      `/academics/module-assignments/${moduleAssignmentId}/transfer?assignmentId=${assignmentId}&newLecturerId=${newLecturerId}&reason=${encodeURIComponent(reason)}`
     );
     return response.data;
   },

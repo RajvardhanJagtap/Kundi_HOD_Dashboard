@@ -4,7 +4,8 @@ import {
   Lecturer, 
   Module, 
   ModuleAssignment,
-  CreateModuleAssignmentRequest 
+  CreateModuleAssignmentRequest,
+  UpdateModuleAssignmentRequest 
 } from "@/lib/modules-assignment/module-assignments-api";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -216,6 +217,42 @@ export const useCreateModuleAssignment = (): UseCreateModuleAssignmentReturn => 
   return {
     createAssignment,
     isCreating,
+    error,
+  };
+};
+
+interface UseUpdateModuleAssignmentReturn {
+  updateAssignment: (moduleAssignmentId: string, data: UpdateModuleAssignmentRequest) => Promise<void>;
+  isUpdating: boolean;
+  error: string | null;
+}
+
+export const useUpdateModuleAssignment = (): UseUpdateModuleAssignmentReturn => {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateAssignment = async (moduleAssignmentId: string, data: UpdateModuleAssignmentRequest) => {
+    try {
+      setIsUpdating(true);
+      setError(null);
+
+      const response = await moduleAssignmentsApi.updateModuleAssignment(moduleAssignmentId, data);
+      
+      if (!response.success) {
+        throw new Error(response.message || "Failed to update module assignment");
+      }
+    } catch (err: any) {
+      console.error("Error updating module assignment:", err);
+      setError(err.message || "Failed to update module assignment");
+      throw err;
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return {
+    updateAssignment,
+    isUpdating,
     error,
   };
 };

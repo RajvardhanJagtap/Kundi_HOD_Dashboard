@@ -58,6 +58,7 @@ import {
   useLecturersByDepartment,
   useModulesByDepartment,
   useCreateModuleAssignment,
+  useUpdateModuleAssignment,
 } from "@/hooks/modules-assigment/useModuleAssignments";
 
 export default function ModuleAssignmentsPage() {
@@ -365,7 +366,10 @@ export default function ModuleAssignmentsPage() {
                       {modules.map((module) => (
                         <SelectItem key={module.id} value={module.id}>
                           <div className="flex flex-col">
-                            <span className="font-medium">{module.code} - {module.name}</span>
+                            <span className="font-medium">{module.code}</span>
+                            <span className="text-sm text-gray-600">
+                              {module.name}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -391,6 +395,9 @@ export default function ModuleAssignmentsPage() {
                             <span className="font-medium">
                               {lecturer.fullName}
                             </span>
+                            <span className="text-sm text-gray-600">
+                              {lecturer.email}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -414,6 +421,9 @@ export default function ModuleAssignmentsPage() {
                         <SelectItem key={group.id} value={group.id}>
                           <div className="flex flex-col">
                             <span className="font-medium">{group.name}</span>
+                            <span className="text-sm text-gray-600">
+                              {group.code} - Year {group.yearLevel}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -939,7 +949,7 @@ export default function ModuleAssignmentsPage() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-800">
+            <DialogTitle className="text-2xl font-bold text-[#026892]">
               Edit Module Assignment
             </DialogTitle>
             <p className="text-gray-600 mt-2">
@@ -950,7 +960,7 @@ export default function ModuleAssignmentsPage() {
           {editingAssignment && (
             <div className="space-y-6 py-4">
               {/* Module Info Card */}
-              <div className="bg-gray-50 from-[#026892]/5 to-[#026892]/10 border border-gray-200 rounded-lg p-6">
+              <div className="bg-gradient-to-br from-[#026892]/5 to-[#026892]/10 border border-[#026892]/20 rounded-lg p-6">
                 <div className="flex items-start gap-4">
                   <div className="bg-[#026892] p-3 rounded-lg">
                     <BookOpen className="h-6 w-6 text-white" />
@@ -1006,6 +1016,7 @@ export default function ModuleAssignmentsPage() {
                   Select New Lecturer *
                 </Label>
                 <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
                   <Select
                     value={editingAssignment.instructorId}
                     onValueChange={(value) => {
@@ -1015,7 +1026,7 @@ export default function ModuleAssignmentsPage() {
                       });
                     }}
                   >
-                    <SelectTrigger className="w-full h-12 border-2 border-gray-200 focus:border-[#026892] transition-colors text-left [&>span]:text-left">
+                    <SelectTrigger className="w-full pl-10 h-12 border-2 border-gray-200 focus:border-[#026892] transition-colors">
                       <SelectValue placeholder="Search and select a lecturer..." />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -1046,6 +1057,9 @@ export default function ModuleAssignmentsPage() {
                                 <div className="flex flex-col min-w-0">
                                   <span className="font-medium text-gray-900 truncate">
                                     {lecturer.fullName}
+                                  </span>
+                                  <span className="text-sm text-gray-600 truncate">
+                                    {lecturer.email}
                                   </span>
                                 </div>
                               </div>
