@@ -130,7 +130,7 @@ export default function ModuleAssignmentsPage() {
     isLoading: groupsLoading,
     error: groupsError,
   } = useTranscripts({ academicYearId });
-const {
+  const {
     semesters,
     isLoading: semestersLoading,
     error: semestersError,
@@ -152,6 +152,7 @@ const {
     error: modulesError,
   } = useModulesByDepartment();
   const { createAssignment, isCreating } = useCreateModuleAssignment();
+  const { updateAssignment, isUpdating } = useUpdateModuleAssignment();
 
   // Filter assignments
   const filteredAssignments = useMemo(() => {
@@ -181,7 +182,7 @@ const {
   // Filter lecturers for search
   const filteredLecturers = useMemo(() => {
     if (!lecturerSearchTerm) return lecturers;
-    
+
     return lecturers.filter((lecturer) => {
       const searchLower = lecturerSearchTerm.toLowerCase();
       return (
@@ -291,20 +292,41 @@ const {
         return;
       }
 
-      // Here you would call your update API
-      // await updateAssignment(editingAssignment.id, { instructorId: editingAssignment.instructorId });
-      
+      // Prevent no-op: ensure the lecturer actually changed
+      const currentLecturerId = editingAssignment?.instructorId || "";
+      if (!editingAssignment.id) {
+        toast.error("Invalid assignment selected");
+        return;
+      }
+
+      // Call update hook
+      await updateAssignment(editingAssignment.id, {
+        assignmentId: editingAssignment.id,
+        newLecturerId: editingAssignment.instructorId,
+        reason: `Reassigned by HOD via UI`,
+      });
+
       toast.success("Module assignment updated successfully!");
       setIsEditDialogOpen(false);
       setEditingAssignment(null);
+      setLecturerSearchTerm("");
       refetch();
-    } catch (error) {
-      toast.error("Failed to update module assignment");
+    } catch (err: any) {
+      console.error("Update assignment error:", err);
+      // Try to surface server message if available
+      const serverMessage = err?.response?.data?.message || err?.message;
+      toast.error(serverMessage || "Failed to update module assignment");
     }
   };
 
   // Handle errors
-  if (assignmentsError || groupsError || lecturersError || modulesError || semestersError) {
+  if (
+    assignmentsError ||
+    groupsError ||
+    lecturersError ||
+    modulesError ||
+    semestersError
+  ) {
     return (
       <div className="space-y-6">
         <Alert className="border-red-200 bg-red-50">
@@ -321,7 +343,11 @@ const {
   }
 
   const isLoading =
-    assignmentsLoading || groupsLoading || lecturersLoading || modulesLoading || semestersLoading;
+    assignmentsLoading ||
+    groupsLoading ||
+    lecturersLoading ||
+    modulesLoading ||
+    semestersLoading;
 
   return (
     <div className="space-y-6">
@@ -422,7 +448,9 @@ const {
                       {semesters.map((semester) => (
                         <SelectItem key={semester.id} value={semester.id}>
                           <div className="flex flex-col">
-                            <span className="font-medium">Semester {semester.name}</span>
+                            <span className="font-medium">
+                              Semester {semester.name}
+                            </span>
                           </div>
                         </SelectItem>
                       ))}
@@ -978,7 +1006,7 @@ const {
               Update the lecturer for this module assignment
             </p>
           </DialogHeader>
-          
+
           {editingAssignment && (
             <div className="space-y-6 py-4">
               {/* Module Info Card */}
@@ -998,13 +1026,19 @@ const {
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-[#026892]" />
                         <span className="text-gray-600">
-                          Group: <span className="font-medium text-gray-900">{editingAssignment.groupName}</span>
+                          Group:{" "}
+                          <span className="font-medium text-gray-900">
+                            {editingAssignment.groupName}
+                          </span>
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-[#026892]" />
                         <span className="text-gray-600">
-                          Credits: <span className="font-medium text-gray-900">{editingAssignment.moduleCredits}</span>
+                          Credits:{" "}
+                          <span className="font-medium text-gray-900">
+                            {editingAssignment.moduleCredits}
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -1019,7 +1053,11 @@ const {
                 </Label>
                 <div className="flex items-center gap-3">
                   <div className="bg-[#026892] text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
-                    {editingAssignment.instructorName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
+                    {editingAssignment.instructorName
+                      .split(" ")
+                      .map((n: string) => n[0])
+                      .join("")
+                      .slice(0, 2)}
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">
@@ -1058,7 +1096,9 @@ const {
                           <Input
                             placeholder="Type to search lecturers..."
                             value={lecturerSearchTerm}
-                            onChange={(e) => setLecturerSearchTerm(e.target.value)}
+                            onChange={(e) =>
+                              setLecturerSearchTerm(e.target.value)
+                            }
                             className="pl-10 h-9"
                             onClick={(e) => e.stopPropagation()}
                           />
@@ -1067,14 +1107,18 @@ const {
                       <div className="p-1">
                         {filteredLecturers.length > 0 ? (
                           filteredLecturers.map((lecturer) => (
-                            <SelectItem 
-                              key={lecturer.id} 
+                            <SelectItem
+                              key={lecturer.id}
                               value={lecturer.id}
                               className="cursor-pointer hover:bg-[#026892]/5 rounded-md my-1"
                             >
                               <div className="flex items-center gap-3 py-2">
                                 <div className="bg-[#026892]/10 text-[#026892] rounded-full w-10 h-10 flex items-center justify-center font-semibold text-sm flex-shrink-0">
-                                  {lecturer.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                  {lecturer.fullName
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")
+                                    .slice(0, 2)}
                                 </div>
                                 <div className="flex flex-col min-w-0">
                                   <span className="font-medium text-gray-900 truncate">
@@ -1091,7 +1135,9 @@ const {
                           <div className="text-center py-6 text-gray-500">
                             <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
                             <p className="text-sm">No lecturers found</p>
-                            <p className="text-xs mt-1">Try a different search term</p>
+                            <p className="text-xs mt-1">
+                              Try a different search term
+                            </p>
                           </div>
                         )}
                       </div>
@@ -1099,7 +1145,8 @@ const {
                   </Select>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Search by name or email to find the lecturer you want to assign
+                  Search by name or email to find the lecturer you want to
+                  assign
                 </p>
               </div>
 
@@ -1119,9 +1166,14 @@ const {
                 <Button
                   onClick={handleUpdateAssignment}
                   className="bg-[#026892] hover:bg-[#026892]/90 text-white px-6"
+                  disabled={isUpdating}
                 >
-                  <UserCheck className="w-4 h-4 mr-2" />
-                  Update Assignment
+                  {isUpdating ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <UserCheck className="w-4 h-4 mr-2" />
+                  )}
+                  {isUpdating ? "Updating..." : "Update Assignment"}
                 </Button>
               </div>
             </div>
