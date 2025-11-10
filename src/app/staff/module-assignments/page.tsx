@@ -863,7 +863,7 @@ export default function ModuleAssignmentsPage() {
                   <TableRow>
                     <TableHead className="text-gray-700">Module</TableHead>
                     <TableHead className="text-gray-700">Lecturer</TableHead>
-                    <TableHead className="text-gray-700">Group</TableHead>
+                    <TableHead className="text-gray-700">Class</TableHead>
                     <TableHead className="text-gray-700">Semester</TableHead>
                     <TableHead className="text-gray-700">Credits</TableHead>
                     <TableHead className="text-gray-700">Status</TableHead>

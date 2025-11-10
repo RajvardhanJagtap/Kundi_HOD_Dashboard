@@ -417,7 +417,7 @@ export default function MarksSubmittedPage() {
                         Module
                       </th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Group
+                        Class
                       </th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         CAT Status

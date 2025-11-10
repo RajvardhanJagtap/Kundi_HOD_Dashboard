@@ -470,7 +470,7 @@ export default function MarksSubmittedPage() {
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
-                        Group
+                        Class
                       </th>
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-900 tracking-wider">
                         Program
