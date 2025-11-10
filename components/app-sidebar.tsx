@@ -61,11 +61,6 @@ const hodNavigation = [
     url: "/academic/timetables",
   },
   {
-    title: "Set Submissions",
-    icon: CalendarCheck,
-    url: "/academic/deadlines",
-  },
-  {
     title: "Marks Submitted",
     icon: CheckCircle,
     url: "/academic/marks-submitted",
@@ -94,6 +89,11 @@ const hodNavigation = [
     title: "Modules Assignments",
     icon: Users,
     url: "/staff/module-assignments",
+  },
+  {
+    title: "Set Submissions",
+    icon: CalendarCheck,
+    url: "/academic/deadlines",
   },
   {
     title: "Leave Requests",
