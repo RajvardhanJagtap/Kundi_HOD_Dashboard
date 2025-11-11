@@ -43,7 +43,7 @@ export default function ModuleReviewPage() {
                 <TableCell className="font-medium text-gray-800">CSC101</TableCell>
                 <TableCell className="text-gray-700">Introduction to Programming</TableCell>
                 <TableCell className="text-gray-700">2023-09-01</TableCell>
-                <TableCell className="text-gray-700">Dr. Alice Smith</TableCell>
+                <TableCell className="text-gray-700">Dr. Alice Iradukunda</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <FileText className="h-4 w-4" /> Start Review

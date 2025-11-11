@@ -75,8 +75,8 @@ export default function ProgramStudentsPage() {
     },
     {
       id: "STU002",
-      name: "Bob Smith",
-      email: "bob.smith@university.edu",
+      name: "Bob Iradukunda",
+      email: "bob.Iradukunda@university.edu",
       phone: "+250 788 234 567",
       gpa: 3.5,
       creditsCompleted: 42,
@@ -247,7 +247,7 @@ export default function ProgramStudentsPage() {
       : programCode.includes("Y3")
       ? "Year 3"
       : "Year 4",
-    coordinator: "Dr. Alice Smith",
+    coordinator: "Dr. Alice Iradukunda",
     department: "Engineering",
   };
 

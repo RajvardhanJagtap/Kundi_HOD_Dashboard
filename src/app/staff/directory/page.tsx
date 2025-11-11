@@ -41,7 +41,7 @@ export default function StaffDirectoryPage() {
             </TableHeader>
             <TableBody>
               <TableRow className="hover:bg-gray-50">
-                <TableCell className="font-medium text-gray-800">Dr. Alice Smith</TableCell>
+                <TableCell className="font-medium text-gray-800">Dr. Alice Iradukunda</TableCell>
                 <TableCell className="text-gray-700">Lecturer</TableCell>
                 <TableCell className="text-gray-700">alice.s@example.com</TableCell>
                 <TableCell className="text-gray-700">123-456-7890</TableCell>

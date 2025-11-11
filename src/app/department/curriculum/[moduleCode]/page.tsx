@@ -62,7 +62,7 @@ export default function ModuleDetailPage() {
     credits: 15,
     semester: "Semester 1",
     year: "Year 1",
-    lecturer: "Dr. Alice Smith",
+    lecturer: "Dr. Alice Iradukunda",
     status: "Active",
     lastUpdated: "2024-09-15",
     description:

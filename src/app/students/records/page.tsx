@@ -65,7 +65,7 @@ export default function StudentRecordsPage() {
       name: "Computer Engineering - Year 1",
       enrolledStudents: 145,
       capacity: 150,
-      coordinator: "Dr. Alice Smith",
+      coordinator: "Dr. Alice Iradukunda",
       status: "Active",
       department: "Engineering",
     },

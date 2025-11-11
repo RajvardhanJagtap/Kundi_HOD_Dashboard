@@ -26,7 +26,7 @@ interface LeaveRequest {
 const leaveRequests: LeaveRequest[] = [
   {
     id: '1',
-    staffName: 'Dr. Alice Smith',
+    staffName: 'Dr. Alice Iradukunda',
     position: 'Senior Lecturer',
     leaveType: 'Annual',
     startDate: '2024-09-20',

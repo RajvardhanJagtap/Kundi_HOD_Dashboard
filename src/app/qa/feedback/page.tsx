@@ -53,7 +53,7 @@ export default function FeedbackPage() {
                 </TableCell>
               </TableRow>
               <TableRow className="hover:bg-gray-50">
-                <TableCell className="font-medium text-gray-800">Lecturer (Dr. Smith)</TableCell>
+                <TableCell className="font-medium text-gray-800">Lecturer (Dr. Iradukunda)</TableCell>
                 <TableCell className="text-gray-700">Resource Availability</TableCell>
                 <TableCell className="text-gray-700">2024-07-21</TableCell>
                 <TableCell className="text-samps-green-600">Reviewed</TableCell>

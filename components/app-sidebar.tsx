@@ -91,6 +91,11 @@ const hodNavigation = [
     url: "/staff/module-assignments",
   },
   {
+    title: "Lecturer Registration",
+    icon: Users,
+    url: "/staff/lecturer-registration",
+  },
+  {
     title: "Set Submissions",
     icon: CalendarCheck,
     url: "/academic/deadlines",

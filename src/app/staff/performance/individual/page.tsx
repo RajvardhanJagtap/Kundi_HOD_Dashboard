@@ -35,9 +35,9 @@ interface LecturerPerformance {
 const lecturersData: LecturerPerformance[] = [
   {
     id: "1",
-    name: "Dr. Alice Smith",
+    name: "Dr. Alice Iradukunda",
     position: "Senior Lecturer",
-    email: "alice.smith@university.edu",
+    email: "alice.Iradukunda@university.edu",
     department: "Computer Science",
     yearsOfService: 8,
     overallRating: 4.5,

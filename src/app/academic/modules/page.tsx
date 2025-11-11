@@ -23,7 +23,7 @@ interface Module {
 
 const modules: Module[] = [
   // Year 1 - Semester 1
-  { id: "1", code: "CSC101", name: "Introduction to Computer Science", yearOfStudy: 1, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Smith", students: 45, department: "Computer Science" },
+  { id: "1", code: "CSC101", name: "Introduction to Computer Science", yearOfStudy: 1, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Iradukunda", students: 45, department: "Computer Science" },
   { id: "2", code: "MTH101", name: "Mathematics for Computing", yearOfStudy: 1, semester: "Semester 1", credits: 12, lecturer: "Prof. Bob Johnson", students: 45, department: "Mathematics" },
   { id: "3", code: "PHY101", name: "Physics for Engineers", yearOfStudy: 1, semester: "Semester 1", credits: 12, lecturer: "Dr. Sarah Lee", students: 45, department: "Physics" },
   { id: "4", code: "ENG101", name: "English Communication", yearOfStudy: 1, semester: "Semester 1", credits: 6, lecturer: "Ms. Carol White", students: 45, department: "English" },
@@ -31,21 +31,21 @@ const modules: Module[] = [
   // Year 1 - Semester 2
   { id: "5", code: "CSC102", name: "Programming Fundamentals", yearOfStudy: 1, semester: "Semester 2", credits: 12, lecturer: "Dr. Michael Brown", students: 42, department: "Computer Science" },
   { id: "6", code: "MTH102", name: "Discrete Mathematics", yearOfStudy: 1, semester: "Semester 2", credits: 12, lecturer: "Prof. Bob Johnson", students: 42, department: "Mathematics" },
-  { id: "7", code: "CSC103", name: "Computer Systems Architecture", yearOfStudy: 1, semester: "Semester 2", credits: 12, lecturer: "Dr. Alice Smith", students: 42, department: "Computer Science" },
+  { id: "7", code: "CSC103", name: "Computer Systems Architecture", yearOfStudy: 1, semester: "Semester 2", credits: 12, lecturer: "Dr. Alice Iradukunda", students: 42, department: "Computer Science" },
   
   // Year 2 - Semester 1
-  { id: "8", code: "CSC201", name: "Object Oriented Programming", yearOfStudy: 2, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Smith", students: 38, department: "Computer Science" },
+  { id: "8", code: "CSC201", name: "Object Oriented Programming", yearOfStudy: 2, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Iradukunda", students: 38, department: "Computer Science" },
   { id: "9", code: "CSC203", name: "Data Structures & Algorithms", yearOfStudy: 2, semester: "Semester 1", credits: 12, lecturer: "Dr. Michael Brown", students: 38, department: "Computer Science" },
   { id: "10", code: "CSC204", name: "Computer Networks", yearOfStudy: 2, semester: "Semester 1", credits: 12, lecturer: "Prof. David Wilson", students: 38, department: "Computer Science" },
   { id: "11", code: "MTH201", name: "Statistics for Computing", yearOfStudy: 2, semester: "Semester 1", credits: 12, lecturer: "Dr. Sarah Lee", students: 38, department: "Mathematics" },
   
   // Year 2 - Semester 2
   { id: "12", code: "CSC205", name: "Database Systems", yearOfStudy: 2, semester: "Semester 2", credits: 12, lecturer: "Prof. Bob Johnson", students: 35, department: "Computer Science" },
-  { id: "13", code: "CSC206", name: "Software Engineering Principles", yearOfStudy: 2, semester: "Semester 2", credits: 12, lecturer: "Dr. Alice Smith", students: 35, department: "Computer Science" },
+  { id: "13", code: "CSC206", name: "Software Engineering Principles", yearOfStudy: 2, semester: "Semester 2", credits: 12, lecturer: "Dr. Alice Iradukunda", students: 35, department: "Computer Science" },
   { id: "14", code: "CSC207", name: "Operating Systems", yearOfStudy: 2, semester: "Semester 2", credits: 12, lecturer: "Dr. Michael Brown", students: 35, department: "Computer Science" },
   
   // Year 3 - Semester 1
-  { id: "15", code: "CSC301", name: "Software Engineering", yearOfStudy: 3, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Smith", students: 32, department: "Computer Science" },
+  { id: "15", code: "CSC301", name: "Software Engineering", yearOfStudy: 3, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Iradukunda", students: 32, department: "Computer Science" },
   { id: "16", code: "CSC302", name: "Web Development", yearOfStudy: 3, semester: "Semester 1", credits: 12, lecturer: "Ms. Carol White", students: 32, department: "Computer Science" },
   { id: "17", code: "CSC303", name: "Mobile App Development", yearOfStudy: 3, semester: "Semester 1", credits: 12, lecturer: "Dr. Michael Brown", students: 32, department: "Computer Science" },
   
@@ -56,7 +56,7 @@ const modules: Module[] = [
   
   // Year 4 - Semester 1
   { id: "21", code: "CSC401", name: "Final Year Project I", yearOfStudy: 4, semester: "Semester 1", credits: 15, lecturer: "Various", students: 28, department: "Computer Science" },
-  { id: "22", code: "CSC402", name: "Advanced Software Engineering", yearOfStudy: 4, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Smith", students: 28, department: "Computer Science" },
+  { id: "22", code: "CSC402", name: "Advanced Software Engineering", yearOfStudy: 4, semester: "Semester 1", credits: 12, lecturer: "Dr. Alice Iradukunda", students: 28, department: "Computer Science" },
   { id: "23", code: "CSC403", name: "Distributed Systems", yearOfStudy: 4, semester: "Semester 1", credits: 12, lecturer: "Prof. David Wilson", students: 28, department: "Computer Science" },
   
   // Year 4 - Semester 2

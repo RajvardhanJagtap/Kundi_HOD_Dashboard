@@ -79,7 +79,7 @@ export default function CurriculumPage() {
       name: "Introduction to Programming",
       credits: 15,
       semester: "Semester 1",
-      lecturer: "Dr. Alice Smith",
+      lecturer: "Dr. Alice Iradukunda",
       status: "Active",
       lastUpdated: "2024-09-15",
     },
@@ -429,7 +429,7 @@ export default function CurriculumPage() {
               </div>
               <div>
                 <Label htmlFor="lecturer">Assigned Lecturer</Label>
-                <Input id="lecturer" placeholder="e.g., Dr. Alice Smith" />
+                <Input id="lecturer" placeholder="e.g., Dr. Alice Iradukunda" />
               </div>
               <div>
                 <Label htmlFor="description">Description</Label>

@@ -67,7 +67,7 @@ export default function ResourcesPage() {
     {
       fileName: "Annual Report 2024.pdf",
       type: "PDF Document",
-      uploadedBy: "Dr. John Smith",
+      uploadedBy: "Dr. John Iradukunda",
       date: "2024-08-05",
       size: "3.2 MB",
       icon: "FileText",
@@ -123,7 +123,7 @@ export default function ResourcesPage() {
     {
       fileName: "Student Handbook 2024.pdf",
       type: "PDF Document",
-      uploadedBy: "Dr. John Smith",
+      uploadedBy: "Dr. John Iradukunda",
       date: "2024-09-20",
       size: "4.5 MB",
       icon: "FileText",

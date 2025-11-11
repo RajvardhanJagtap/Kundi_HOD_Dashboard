@@ -80,7 +80,7 @@ interface LecturerPerformance {
 const lecturersData: LecturerPerformance[] = [
   {
     id: "1",
-    name: "Dr. Alice Smith",
+    name: "Dr. Alice Iradukunda",
     position: "Senior Lecturer",
     overallRating: 4.5,
     teachingRating: 4.6,

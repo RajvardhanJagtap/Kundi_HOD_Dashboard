@@ -54,7 +54,7 @@ export default function ImprovementsPage() {
                 <TableCell className="font-medium text-gray-800">Enhance Student Support Services</TableCell>
                 <TableCell className="text-samps-green-600">Completed</TableCell>
                 <TableCell className="text-gray-700">2024-06-30</TableCell>
-                <TableCell className="text-gray-700">Dr. Alice Smith</TableCell>
+                <TableCell className="text-gray-700">Dr. Alice Iradukunda</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="sm" className="text-samps-[#026892] hover:bg-samps-blue-50">
                     <CheckSquare className="h-4 w-4" />

@@ -41,7 +41,7 @@ export default function ReportsPage() {
       id: "RPT002",
       title: "Student Enrollment Analysis",
       department: "Admissions",
-      generatedBy: "Ms. Jane Smith",
+      generatedBy: "Ms. Jane Iradukunda",
       date: "2024-01-10",
       lastModified: "2024-01-12 09:15",
       status: "Ready",
