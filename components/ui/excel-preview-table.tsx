@@ -45,12 +45,16 @@ interface ExcelPreviewTableProps {
   data: ExcelSheetData[];
   onDownload?: () => void;
   isDownloadLoading?: boolean;
+  hideTopMeta?: boolean;
+  startAtHeader?: boolean;
 }
 
 export function ExcelPreviewTable({
   data,
   onDownload,
   isDownloadLoading = false,
+  hideTopMeta = false,
+  startAtHeader = false,
 }: ExcelPreviewTableProps) {
   const [currentSheetIndex, setCurrentSheetIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -71,6 +75,119 @@ export function ExcelPreviewTable({
 
   // Show all rows without pagination
   const visibleRows = currentSheet.rows;
+
+  // If hideTopMeta is enabled, determine the index to cut rows above.
+  // If startAtHeader is true, find the first row that looks like the main table header (contains SN and REF).
+  // Otherwise, prefer the last YEAR row (e.g., 'YEAR 1') and start from there; fallback to SN/REF.
+  const topMetaCutIndex = React.useMemo(() => {
+    if (!hideTopMeta || !visibleRows || visibleRows.length === 0) return -1;
+
+    const yearRegex = /\bYEAR\s*(?:I{1,3}|IV|V|\d+)\b/i;
+
+    if (startAtHeader) {
+      // Expanded list of column headers that might appear in a marks table
+      const headerIndicators = [
+        "SN",
+        "S/N",
+        "SERIAL",
+        "NO",
+        "REF",
+        "REF.NO",
+        "REF NO",
+        "REFERENCE",
+        "SEX",
+        "GENDER",
+        "MATRIC",
+        "MATRIC NO",
+        "NAME",
+        "STUDENT NAME",
+        "FULL NAME",
+        "MODULE",
+        "MODULE CODE",
+        "MODULE TITLE",
+        "COURSE",
+        "TOTAL",
+        "MARK",
+        "SCORE",
+        "GRADE",
+        "G",
+        "F",
+        "M",
+        "TOT",
+        "%F",
+        "%M",
+        "PERCENT",
+        "GPA",
+        "POINT",
+        "CREDIT",
+        "UNIT",
+      ];
+
+      for (let i = 0; i < visibleRows.length; i++) {
+        const row = visibleRows[i];
+        const rowText = row
+          .map((c: any) => {
+            if (c === null || c === undefined) return "";
+            if (typeof c === "object" && "value" in c)
+              return String(c.value || "");
+            return String(c);
+          })
+          .join(" ")
+          .toUpperCase()
+          .replace(/\s+/g, " "); // normalize whitespace
+
+        // Count how many header indicators are present in this row
+        let matchCount = 0;
+        for (const h of headerIndicators) {
+          if (rowText.includes(h.toUpperCase())) matchCount++;
+        }
+
+        // If at least 3 indicators are present, assume this is the header row
+        if (matchCount >= 3) return i;
+      }
+      return -1;
+    }
+
+    let lastYearMatch = -1;
+    for (let i = 0; i < visibleRows.length; i++) {
+      const row = visibleRows[i];
+      const rowText = row
+        .map((c: any) => {
+          if (c === null || c === undefined) return "";
+          if (typeof c === "object" && "value" in c)
+            return String(c.value || "");
+          return String(c);
+        })
+        .join(" ")
+        .toUpperCase();
+
+      // Track the last YEAR row
+      if (yearRegex.test(rowText)) {
+        lastYearMatch = i;
+        continue;
+      }
+
+      // Look for the actual table header (SN + REF or other header indicators)
+      if (
+        rowText.includes("SN") &&
+        (rowText.includes("REF") ||
+          rowText.includes("REF.NO") ||
+          rowText.includes("REF NO") ||
+          rowText.includes("SEX") ||
+          rowText.includes("MATRIC"))
+      ) {
+        // Return this header row index (which hides everything before it)
+        return i;
+      }
+    }
+
+    // If we found a YEAR row but no header, return the row after the last YEAR (to skip YEAR and empty rows)
+    if (lastYearMatch >= 0) {
+      return lastYearMatch + 1;
+    }
+
+    return -1;
+  }, [hideTopMeta, startAtHeader, visibleRows]);
 
   // Memoize merged cells lookup for performance
   const mergedCellsLookup = React.useMemo(() => {
@@ -142,8 +259,6 @@ export function ExcelPreviewTable({
       >
         <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-end space-y-0 pb-3 bg-gray-50 border-b">
-            
-
             <div className="flex items-center gap-2">
               {onDownload && (
                 <Button
@@ -220,6 +335,14 @@ export function ExcelPreviewTable({
                 <TableBody>
                   {visibleRows.map((row, rowIndex) => {
                     const actualRowIndex = rowIndex;
+
+                    // If configured to hide top meta rows, skip anything above the detected cut index
+                    if (
+                      topMetaCutIndex >= 0 &&
+                      actualRowIndex < topMetaCutIndex
+                    ) {
+                      return null;
+                    }
 
                     return (
                       <TableRow

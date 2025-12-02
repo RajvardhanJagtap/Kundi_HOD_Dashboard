@@ -93,10 +93,16 @@ export default function ExcelMarksPage({
 
     // Try to load preview automatically; errors are handled inside loadPreview
     if (sheetInfo.yearId && sheetInfo.groupId) {
-      console.log('Overall Marks component - Loading preview with:', { yearId: sheetInfo.yearId, groupId: sheetInfo.groupId });
+      console.log("Overall Marks component - Loading preview with:", {
+        yearId: sheetInfo.yearId,
+        groupId: sheetInfo.groupId,
+      });
       void loadPreview();
     } else {
-      console.warn('Overall Marks component - Missing required IDs:', { yearId: sheetInfo.yearId, groupId: sheetInfo.groupId });
+      console.warn("Overall Marks component - Missing required IDs:", {
+        yearId: sheetInfo.yearId,
+        groupId: sheetInfo.groupId,
+      });
     }
   }, [sheetInfo.yearId, sheetInfo.groupId]);
 
@@ -155,7 +161,6 @@ export default function ExcelMarksPage({
 
   return (
     <div className="space-y-6">
-
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive">
@@ -193,14 +198,13 @@ export default function ExcelMarksPage({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold">Grading Sheet Preview</h2>
-              
             </div>
-     
           </div>
           <ExcelPreviewTable
             data={previewData.sheets}
             onDownload={downloadSheet}
             isDownloadLoading={isDownloading}
+            hideTopMeta={true}
           />
         </>
       ) : (
