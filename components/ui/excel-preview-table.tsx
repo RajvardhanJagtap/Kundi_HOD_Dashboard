@@ -515,6 +515,92 @@ export function ExcelPreviewTable({
                             }
                           }
 
+                          // Check if cell value is a number under 50% for failing marks
+                          const isFailingMark = (() => {
+                            if (cellValue === null || cellValue === undefined || cellValue === "") {
+                              return false
+                            }
+                            
+                            const numericValue = typeof cellValue === "number" 
+                              ? cellValue 
+                              : parseFloat(String(cellValue).trim())
+                            
+                            // Check if it's a valid percentage or score under 50
+                            if (isNaN(numericValue) || numericValue < 0 || numericValue > 100) {
+                              return false
+                            }
+                            
+                            // Check if this row contains student data (has student ID)
+                            const hasStudentDataInRow = visibleRows[actualRowIndex].some((cell: any) => {
+                              const val = String(
+                                cell && typeof cell === "object" && "value" in cell ? cell.value || "" : cell || ""
+                              )
+                              return /^\d{6,}$/.test(val.trim()) // Student ID pattern
+                            })
+                            
+                            if (!hasStudentDataInRow) {
+                              return false
+                            }
+                            
+                            // Look for mark columns by checking multiple rows for patterns
+                            let isMarkColumn = false
+                            
+                            // Check current column header
+                            for (let checkRow = 0; checkRow < Math.min(5, visibleRows.length); checkRow++) {
+                              const headerCell = visibleRows[checkRow]?.[cellIndex]
+                              const headerText = String(
+                                headerCell && typeof headerCell === "object" && "value" in headerCell 
+                                  ? headerCell.value || "" 
+                                  : headerCell || ""
+                              ).toLowerCase()
+                              
+                              if (headerText.includes("mark") ||
+                                  headerText.includes("score") ||
+                                  headerText.includes("test") ||
+                                  headerText.includes("exam") ||
+                                  headerText.includes("assessment") ||
+                                  headerText.includes("assignment") ||
+                                  headerText.includes("cat") ||
+                                  headerText.includes("final") ||
+                                  (headerText.includes("total") && !headerText.includes("credit")) ||
+                                  (headerText.includes("grade") && !headerText.includes("point"))) {
+                                isMarkColumn = true
+                                break
+                              }
+                            }
+                            
+                            // Also check if column has module code pattern above
+                            if (!isMarkColumn) {
+                              for (let checkRow = 0; checkRow < Math.min(3, actualRowIndex); checkRow++) {
+                                const moduleCell = visibleRows[checkRow]?.[cellIndex]
+                                const moduleText = String(
+                                  moduleCell && typeof moduleCell === "object" && "value" in moduleCell 
+                                    ? moduleCell.value || "" 
+                                    : moduleCell || ""
+                                )
+                                // Module code pattern like CSC101, MTH201, etc.
+                                if (/^[A-Z]{3,4}\d{3,4}$/i.test(moduleText.trim())) {
+                                  isMarkColumn = true
+                                  break
+                                }
+                              }
+                            }
+                            
+                            // If still not identified, check if this is in the middle of the table (likely mark columns)
+                            if (!isMarkColumn && cellIndex > 2 && cellIndex < 20) {
+                              isMarkColumn = true
+                            }
+                            
+                            return numericValue < 50 && isMarkColumn
+                          })()
+
+                          // Apply red styling for failing marks
+                          if (isFailingMark) {
+                            cellStyle.backgroundColor = "#fecaca" // Light red background
+                            cellStyle.color = "#dc2626" // Red text
+                            cellStyle.fontWeight = "bold"
+                          }
+
                           return (
                             <TableCell
                               key={cellIndex}

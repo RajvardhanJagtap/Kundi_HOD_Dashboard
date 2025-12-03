@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   Bell,
   Calendar,
-  ChevronDown,
   Clock,
   FileText,
   User,
@@ -35,8 +34,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 export function HeaderContent({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
   const router = useRouter()
-  const [selectedRole, setSelectedRole] = React.useState("HOD")
-  const roles = ["Lecturer", "HOD", "Dean", "DTLE"]
   const [notifications] = useState(5)
 
   // Academic year and semester dropdown state
@@ -130,26 +127,14 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
             </SelectContent>
           </Select>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="flex items-center gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50 min-w-[120px]"
-              >
-                {selectedRole}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuLabel>Switch Role</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {roles.map((role) => (
-                <DropdownMenuItem key={role} onSelect={() => setSelectedRole(role)}>
-                  {role}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Role Display - Static */}
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 bg-white text-gray-700 border-gray-300 hover:bg-gray-50 min-w-[120px]"
+          >
+            HOD
+          </Button>
+
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
