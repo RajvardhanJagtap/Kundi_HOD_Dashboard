@@ -5,23 +5,16 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  ChevronLeft,
-  ChevronRight,
   Download,
   Maximize2,
   Minimize2,
@@ -189,6 +182,61 @@ export function ExcelPreviewTable({
     return -1;
   }, [hideTopMeta, startAtHeader, visibleRows]);
 
+  // Detect header rows and their types for styling
+  const headerRowInfo = React.useMemo(() => {
+    const headerRowMap = new Map<number, "main" | "semester" | "modules">();
+
+    if (!hideTopMeta || !visibleRows || visibleRows.length === 0) {
+      return headerRowMap;
+    }
+
+    // Find the cut index to know where headers start
+    const startIndex = topMetaCutIndex >= 0 ? topMetaCutIndex : 0;
+
+    // Check ALL visible rows (not just the first 5) to identify all header rows throughout the sheet
+    for (let i = startIndex; i < visibleRows.length; i++) {
+      const row = visibleRows[i];
+      const rowText = row
+        .map((c: any) => {
+          if (c === null || c === undefined) return "";
+          if (typeof c === "object" && "value" in c)
+            return String(c.value || "");
+          return String(c);
+        })
+        .join(" ")
+        .toUpperCase();
+
+      // Check if this is the main header row (contains SN, REF, SEX, etc.)
+      if (
+        rowText.includes("SN") &&
+        (rowText.includes("REF") ||
+          rowText.includes("SEX") ||
+          rowText.includes("MATRIC"))
+      ) {
+        headerRowMap.set(i, "main");
+      }
+      // Check if this is a module code header row (contains MODULE CODE, MODULE TITLE)
+      else if (
+        (rowText.includes("MODULE") && rowText.includes("CODE")) ||
+        (rowText.includes("MODULE") && rowText.includes("TITLE"))
+      ) {
+        headerRowMap.set(i, "modules");
+      }
+      // Check if this is a semester/secondary header row (contains SEMESTER, OBSERVATIONS, TOTAL CREDITS, etc.)
+      else if (
+        rowText.includes("SEMESTER") ||
+        rowText.includes("OBSERVATION") ||
+        (rowText.includes("TOTAL") && rowText.includes("CREDIT")) ||
+        rowText.includes("REMARK") ||
+        rowText.includes("ANNUAL")
+      ) {
+        headerRowMap.set(i, "semester");
+      }
+    }
+
+    return headerRowMap;
+  }, [topMetaCutIndex, hideTopMeta, visibleRows]);
+
   // Memoize merged cells lookup for performance
   const mergedCellsLookup = React.useMemo(() => {
     const lookup = new Map<
@@ -347,10 +395,14 @@ export function ExcelPreviewTable({
                     return (
                       <TableRow
                         key={actualRowIndex}
-                        className={`border-b border-gray-200 hover:bg-blue-50/50 ${
-                          actualRowIndex % 2 === 1
-                            ? "bg-gray-50/50"
-                            : "bg-white"
+                        className={`border-b border-gray-200 ${
+                          headerRowInfo.has(actualRowIndex)
+                            ? headerRowInfo.get(actualRowIndex) === "main"
+                              ? "bg-green-100 hover:bg-green-100"
+                              : ""
+                            : actualRowIndex % 2 === 1
+                            ? "bg-gray-50/50 hover:bg-blue-50/50"
+                            : "bg-white hover:bg-blue-50/50"
                         }`}
                       >
                         {row.map((cell, cellIndex) => {
@@ -368,7 +420,6 @@ export function ExcelPreviewTable({
                             return null;
                           }
 
-                          // Handle both old format (simple values) and new format (cell objects with styling)
                           const cellValue =
                             cell && typeof cell === "object" && "value" in cell
                               ? cell.value
@@ -379,6 +430,75 @@ export function ExcelPreviewTable({
                             "styling" in cell
                               ? cell.styling
                               : null;
+
+                          const rowText = visibleRows[actualRowIndex]
+                            .map((c: any) => {
+                              if (c === null || c === undefined) return "";
+                              if (typeof c === "object" && "value" in c)
+                                return String(c.value || "");
+                              return String(c);
+                            })
+                            .join(" ")
+                            .toLowerCase();
+
+                          const hasHeaderKeywords =
+                            rowText.includes("sn") ||
+                            rowText.includes("sl.no") ||
+                            rowText.includes("sl no") ||
+                            rowText.includes("reg") ||
+                            rowText.includes("candidate") ||
+                            rowText.includes("gender") ||
+                            rowText.includes("final assessment") ||
+                            rowText.includes("test") ||
+                            rowText.includes("assignment") ||
+                            rowText.includes("examinati") ||
+                            rowText.includes("total exam") ||
+                            rowText.includes("cat mark") ||
+                            rowText.includes("final mark") ||
+                            rowText.includes("grade") ||
+                            rowText.includes("remark") ||
+                            rowText.includes("attendance") ||
+                            (rowText.includes("i") && rowText.includes("e")) ||
+                            rowText.includes("name") ||
+                            rowText.includes("module") ||
+                            rowText.includes("code") ||
+                            rowText.includes("title") ||
+                            rowText.includes("total") ||
+                            rowText.includes("mark") ||
+                            rowText.includes("score") ||
+                            rowText.includes("gpa") ||
+                            rowText.includes("credit");
+
+                          const hasStudentData = visibleRows[
+                            actualRowIndex
+                          ].some((cell: any) => {
+                            const val = String(
+                              cell &&
+                                typeof cell === "object" &&
+                                "value" in cell
+                                ? cell.value || ""
+                                : cell || ""
+                            );
+                            // Check if cell contains registration number pattern or marks
+                            return (
+                              /^\d{6,}$/.test(val.trim()) || // Long numbers (reg numbers)
+                              (/^\d+\.?\d*$/.test(val.trim()) &&
+                                parseFloat(val) > 0 &&
+                                parseFloat(val) <= 100)
+                            ); // Marks
+                          });
+
+                          // First row is always header, or rows with header keywords but no student data
+                          const isHeaderRow =
+                            actualRowIndex === 0 ||
+                            (actualRowIndex < 3 &&
+                              hasHeaderKeywords &&
+                              !hasStudentData &&
+                              !rowText.includes("summary statistics") &&
+                              !rowText.includes("performance summary") &&
+                              !rowText.includes("total students") &&
+                              !rowText.includes("students passed") &&
+                              !rowText.includes("average score"));
 
                           // Build style object for the cell
                           const cellStyle: React.CSSProperties = {
@@ -392,15 +512,17 @@ export function ExcelPreviewTable({
                             fontSize: "12px",
                             wordBreak: "break-word",
                             overflowWrap: "break-word",
+                            // Apply the same border styling as marks-submitted
+                            borderTop: "1.5px solid",
+                            borderRight: "1.5px solid",
+                            borderBottom: "1.5px solid",
+                            borderLeft: "1.5px solid",
+                            borderColor: isHeaderRow
+                              ? "#9ca3af" // gray-400 for headers
+                              : "#d1d5db", // gray-300 for data rows
                           };
 
-                          const cellClasses = [
-                            "border-r",
-                            "border-gray-200",
-                            "last:border-r-0",
-                            "text-xs",
-                            "relative",
-                          ];
+                          const cellClasses = ["text-xs", "relative"];
 
                           // Initialize rowspan and colspan
                           let rowSpan: number | undefined = undefined;
@@ -465,6 +587,61 @@ export function ExcelPreviewTable({
                                 cellStyle.textAlign = "center";
                                 cellStyle.verticalAlign = "middle";
                               }
+                            }
+                          }
+
+                          // Special styling for header rows
+                          if (headerRowInfo.has(actualRowIndex)) {
+                            const headerType =
+                              headerRowInfo.get(actualRowIndex);
+                            const cellValueStr = String(cellValue || "")
+                              .toUpperCase()
+                              .trim();
+
+                            // Only apply background color if the cell contains relevant header content (non-empty)
+                            const isHeaderCell =
+                              cellValueStr !== "" &&
+                              (cellValueStr.includes("SEMESTER") ||
+                                cellValueStr.includes("MODULE") ||
+                                cellValueStr.includes("CODE") ||
+                                cellValueStr.includes("TITLE") ||
+                                cellValueStr.includes("TOTAL") ||
+                                cellValueStr.includes("CREDIT") ||
+                                cellValueStr.includes("ANNUAL") ||
+                                cellValueStr.includes("PREVIOUS") ||
+                                cellValueStr.includes("CURRENT") ||
+                                cellValueStr.includes("FAILED") ||
+                                cellValueStr === "REMARK" ||
+                                cellValueStr === "PRH" ||
+                                cellValueStr === "SN" ||
+                                cellValueStr.includes("REF") ||
+                                cellValueStr === "SEX" ||
+                                cellValueStr.includes("OBSERVATION"));
+
+                            // Apply background colors based on header type - only for cells with actual header content
+                            if (isHeaderCell) {
+                              if (headerType === "main") {
+                                cellStyle.backgroundColor = "#c8e6c9"; // Light green
+                              } else if (headerType === "modules") {
+                                cellStyle.backgroundColor = "#c8e6c9"; // Light green
+                              } else if (headerType === "semester") {
+                                cellStyle.backgroundColor = "#d1c4e9"; // Light purple
+                              }
+                            }
+
+                            // Make meta columns bold
+                            if (
+                              cellValueStr.includes("TOTAL") ||
+                              cellValueStr.includes("CREDIT") ||
+                              cellValueStr.includes("ANNUAL") ||
+                              cellValueStr.includes("PREVIOUS") ||
+                              cellValueStr.includes("CURRENT") ||
+                              cellValueStr.includes("FAILED") ||
+                              cellValueStr === "REMARK" ||
+                              cellValueStr === "PRH"
+                            ) {
+                              cellClasses.push("font-bold");
+                              cellStyle.fontWeight = "bold";
                             }
                           }
 

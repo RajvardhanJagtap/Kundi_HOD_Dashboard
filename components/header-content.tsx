@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";

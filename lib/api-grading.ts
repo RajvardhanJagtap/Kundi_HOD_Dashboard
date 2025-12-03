@@ -312,23 +312,22 @@ export async function parseExcelForPreview(blob: Blob, filename: string): Promis
                     } else if (cellStyle.font.color.theme !== undefined) {
                       // Theme color - convert to approximate hex values with tint support
                       const themeColors: { [key: number]: string } = {
-                        0: '#000000', // Text 1 (Black)
-                        1: '#FFFFFF', // Background 1 (White)
-                        2: '#1F497D', // Text 2 (Dark Blue)
-                        3: '#EEECE1', // Background 2 (Tan)
-                        4: '#4F81BD', // Accent 1 (Blue) - Enhanced for Excel headers
-                        5: '#9CBB58', // Accent 2 (Green)
-                        6: '#F79646', // Accent 3 (Orange)
-                        7: '#8064A2', // Accent 4 (Purple)
-                        8: '#4BACC6', // Accent 5 (Aqua)
-                        9: '#F2F2F2', // Accent 6 (Light Gray)
-                        10: '#026892', // Hyperlink (Professional Blue - matching theme)
-                        11: '#800080', // Followed Hyperlink (Purple)
-                        // Enhanced mapping for common Excel patterns
-                        12: '#5B9BD5', // Light Blue variant
-                        13: '#FFFF99', // Light Yellow variant
-                        14: '#366092', // Header Blue
-                        15: '#FFEAA7'  // Light Yellow background
+                        0: '#000000',
+                        1: '#FFFFFF', 
+                        2: '#1F497D', 
+                        3: '#EEECE1', 
+                        4: '#4F81BD', 
+                        5: '#9CBB58', 
+                        6: '#F79646', 
+                        7: '#8064A2', 
+                        8: '#4BACC6', 
+                        9: '#F2F2F2', 
+                        10: '#026892', 
+                        11: '#800080', 
+                        12: '#5B9BD5', 
+                        13: '#FFFF99', 
+                        14: '#366092', 
+                        15: '#FFEAA7' 
                       }
                       let color = themeColors[cellStyle.font.color.theme] || '#000000'
                       console.log(`Theme color ${cellStyle.font.color.theme} mapped to: ${color}`)
@@ -396,7 +395,6 @@ export async function parseExcelForPreview(blob: Blob, filename: string): Promis
                     // RGB background color
                     const rgb = cellStyle.fill.fgColor.rgb
                     styling.backgroundColor = rgb.startsWith('#') ? rgb : `#${rgb}`
-                    console.log(`Applied RGB background color: ${styling.backgroundColor}`)
                   } else if (cellStyle.fill.fgColor?.theme !== undefined) {
                     // Theme background color with tint support
                     const themeColors: { [key: number]: string } = {
