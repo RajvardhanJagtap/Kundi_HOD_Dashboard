@@ -1,139 +1,121 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ExcelPreviewTable } from "@/components/ui/excel-preview-table"
+import { FileSpreadsheet, AlertCircle, RefreshCw } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ExcelPreviewTable } from "@/components/ui/excel-preview-table";
-import {
-  Download,
-  FileSpreadsheet,
-  AlertCircle,
-  RefreshCw,
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import {
-  fetchGradingExcelSheet,
   downloadGradingExcelSheet,
   fetchAndParseGradingSheet,
   validateGradingSheetParams,
-  formatFileSize,
   type ExcelPreviewData,
-} from "@/lib/api-grading";
+} from "@/lib/api-grading"
 
 interface GradingSheetInfo {
-  yearId: string;
-  groupId: string;
-  filename?: string;
-  lastModified?: Date;
-  size?: number;
+  yearId: string
+  groupId: string
+  filename?: string
+  lastModified?: Date
+  size?: number
 }
 
 interface ExcelMarksPageProps {
-  groupId?: string;
-  academicYearId?: string;
+  groupId?: string
+  academicYearId?: string
 }
 
-export default function ExcelMarksPage({
-  groupId,
-  academicYearId,
-}: ExcelMarksPageProps) {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+export default function ExcelMarksPage({ groupId, academicYearId }: ExcelMarksPageProps) {
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false)
   const [sheetInfo] = useState<GradingSheetInfo>({
     yearId: academicYearId || "",
     groupId: groupId || "",
-  });
-  const [error, setError] = useState<string | null>(null);
-  const [previewData, setPreviewData] = useState<ExcelPreviewData | null>(null);
-  const { toast } = useToast();
+  })
+  const [error, setError] = useState<string | null>(null)
+  const [previewData, setPreviewData] = useState<ExcelPreviewData | null>(null)
+  const { toast } = useToast()
 
   const loadPreview = async () => {
-    setIsPreviewLoading(true);
-    setError(null);
+    setIsPreviewLoading(true)
+    setError(null)
 
     try {
       // Validate parameters first
-      validateGradingSheetParams(sheetInfo);
+      validateGradingSheetParams(sheetInfo)
 
-      const previewData = await fetchAndParseGradingSheet(sheetInfo);
-      setPreviewData(previewData);
+      const previewData = await fetchAndParseGradingSheet(sheetInfo)
+      setPreviewData(previewData)
 
       toast({
         title: "Preview Loaded",
         description: `Successfully loaded Excel preview with ${previewData.sheets.length} sheet(s).`,
-      });
+      })
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unknown error occurred";
-      setError(errorMessage);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred"
+      setError(errorMessage)
       toast({
         title: "Preview Failed",
         description: errorMessage,
         variant: "destructive",
-      });
+      })
     } finally {
-      setIsPreviewLoading(false);
+      setIsPreviewLoading(false)
     }
-  };
+  }
 
   // Auto-load preview when component mounts (client-side only)
-  const hasAutoLoaded = useRef(false);
+  const hasAutoLoaded = useRef(false)
   useEffect(() => {
     // Guard to prevent double-calls in React Strict Mode during development
-    if (hasAutoLoaded.current) return;
-    hasAutoLoaded.current = true;
+    if (hasAutoLoaded.current) return
+    hasAutoLoaded.current = true
 
     // Try to load preview automatically; errors are handled inside loadPreview
     if (sheetInfo.yearId && sheetInfo.groupId) {
       console.log("Overall Marks component - Loading preview with:", {
         yearId: sheetInfo.yearId,
         groupId: sheetInfo.groupId,
-      });
-      void loadPreview();
+      })
+      void loadPreview()
     } else {
       console.warn("Overall Marks component - Missing required IDs:", {
         yearId: sheetInfo.yearId,
         groupId: sheetInfo.groupId,
-      });
+      })
     }
-  }, [sheetInfo.yearId, sheetInfo.groupId]);
+  }, [sheetInfo.yearId, sheetInfo.groupId])
 
   // Function to download the Excel sheet
   const downloadSheet = async () => {
-    setIsDownloading(true);
-    setError(null);
+    setIsDownloading(true)
+    setError(null)
 
     try {
       // Validate parameters first
-      validateGradingSheetParams(sheetInfo);
+      validateGradingSheetParams(sheetInfo)
 
-      const filename = await downloadGradingExcelSheet(sheetInfo);
+      const filename = await downloadGradingExcelSheet(sheetInfo)
 
       toast({
         title: "Download Started",
         description: `Excel sheet "${filename}" is being downloaded.`,
-      });
+      })
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Unknown error occurred";
-      setError(errorMessage);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred"
+      setError(errorMessage)
       toast({
         title: "Download Failed",
         description: errorMessage,
         variant: "destructive",
-      });
+      })
     } finally {
-      setIsDownloading(false);
+      setIsDownloading(false)
     }
-  };
+  }
 
   // Show validation message if no real data is provided
   if (!groupId || !academicYearId) {
@@ -147,8 +129,7 @@ export default function ExcelMarksPage({
                 <div>
                   <h3 className="font-medium">Real Group Data Required</h3>
                   <p className="text-sm mt-1">
-                    Please navigate from the main classes page to load real
-                    group and academic year information.
+                    Please navigate from the main classes page to load real group and academic year information.
                   </p>
                 </div>
               </div>
@@ -156,11 +137,11 @@ export default function ExcelMarksPage({
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full min-w-0 overflow-hidden">
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive">
@@ -178,9 +159,7 @@ export default function ExcelMarksPage({
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-4 w-4 animate-spin text-[#026892]" />
-                <span className="text-sm font-medium">
-                  Loading grading sheet preview...
-                </span>
+                <span className="text-sm font-medium">Loading grading sheet preview...</span>
               </div>
               <div className="space-y-2">
                 <Skeleton className="h-4 w-full" />
@@ -194,8 +173,8 @@ export default function ExcelMarksPage({
 
       {/* Excel Preview */}
       {previewData ? (
-        <>
-          <div className="flex items-center justify-between">
+        <div className="w-full min-w-0 overflow-hidden">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold">Grading Sheet Preview</h2>
             </div>
@@ -206,25 +185,18 @@ export default function ExcelMarksPage({
             isDownloadLoading={isDownloading}
             hideTopMeta={true}
           />
-        </>
+        </div>
       ) : (
         !isPreviewLoading &&
         !error && (
           <Card>
             <CardContent className="p-8 text-center">
               <FileSpreadsheet className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No Preview Available
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Preview Available</h3>
               <p className="text-gray-500 mb-4">
-                The grading sheet preview will load automatically when data is
-                available.
+                The grading sheet preview will load automatically when data is available.
               </p>
-              <Button
-                onClick={loadPreview}
-                disabled={isPreviewLoading}
-                className="bg-[#026892] hover:bg-[#026899]"
-              >
+              <Button onClick={loadPreview} disabled={isPreviewLoading} className="bg-[#026892] hover:bg-[#026899]">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Retry Loading Preview
               </Button>
@@ -233,5 +205,5 @@ export default function ExcelMarksPage({
         )
       )}
     </div>
-  );
+  )
 }
