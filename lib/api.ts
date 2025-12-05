@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://ursmartmonitoring.ur.ac.rw/api/v1';
+const API_BASE_URL = 'http://41.186.186.167:2000/api/v1';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -36,7 +36,7 @@ api.interceptors.response.use(
           try {
             const refreshEndpoint = process.env.NODE_ENV === 'development'
               ? '/api/auth/refresh'
-              : 'https://ursmartmonitoring.ur.ac.rw/api/v1/auth/refresh';
+              : 'http://41.186.186.167:2000/api/v1/auth/refresh';
               
             const response = await axios.post(refreshEndpoint, {
               refreshToken,
