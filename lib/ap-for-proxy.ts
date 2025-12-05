@@ -2,7 +2,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 
 // Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://ursmartmonitoring.ur.ac.rw/api/v1'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://41.186.186.167:2000/api/v1'
 const USE_PROXY = process.env.NEXT_PUBLIC_USE_PROXY === 'true'
 const API_TIMEOUT = parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '30000')
 const DEBUG_API = process.env.NEXT_PUBLIC_DEBUG_API === 'true'

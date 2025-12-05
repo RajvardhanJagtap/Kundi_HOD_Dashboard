@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE_URL = 'https://ursmartmonitoring.ur.ac.rw/api/v1';
+const API_BASE_URL = 'http://41.186.186.167:2000/api/v1';
 
 export async function POST(request: NextRequest) {
   try {

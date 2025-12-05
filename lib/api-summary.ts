@@ -9,7 +9,7 @@ interface GroupSubmission {
 }
 
 // Use the same API configuration as other files
-const API_BASE_URL = "https://ursmartmonitoring.ur.ac.rw/api/v1";
+const API_BASE_URL = "http://41.186.186.167:2000/api/v1";
 
 // Create axios instance with proper configuration
 const apiInstance = axios.create({
