@@ -30,6 +30,8 @@ import { SidebarInset } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/AuthContext"
 import { useEffect, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
+import { useAcademicYears } from "@/hooks/academic-year-and-semesters/useAcademicYears"
+import { useSemesters } from "@/hooks/academic-year-and-semesters/useSemesters"
 
 export function HeaderContent({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
@@ -37,36 +39,73 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
   const [notifications] = useState(5)
 
   // Academic year and semester dropdown state
-  const { years, isLoading: yearsLoading } =
-    require("@/hooks/academic-year-and-semesters/useAcademicYears").useAcademicYears()
+  const { years, isLoading: yearsLoading } = useAcademicYears()
   const [selectedYear, setSelectedYearState] = useState<string>("")
-  const { semesters, isLoading: semestersLoading } =
-    require("@/hooks/academic-year-and-semesters/useSemesters").useSemesters(selectedYear)
+  const { semesters, isLoading: semestersLoading } = useSemesters(selectedYear)
   const [selectedSemester, setSelectedSemesterState] = useState<string>("")
+  const [userHasSelectedYear, setUserHasSelectedYear] = useState(false)
+  const [userHasSelectedSemester, setUserHasSelectedSemester] = useState(false)
 
   useEffect(() => {
     const storedYear = typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYear") : null
+    const storedYearId = typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYearId") : null
     const storedSemester = typeof window !== "undefined" ? localStorage.getItem("selectedSemester") : null
-    if (storedYear) setSelectedYearState(storedYear)
-    if (storedSemester) setSelectedSemesterState(storedSemester)
+    const storedSemesterId = typeof window !== "undefined" ? localStorage.getItem("selectedSemesterId") : null
+    
+    // Prefer the ID versions if available, otherwise fall back to the old values
+    if (storedYearId) {
+      setSelectedYearState(storedYearId)
+      // Don't set userHasSelectedYear here - allow auto-selection to override
+    }
+    else if (storedYear) {
+      setSelectedYearState(storedYear)
+      // Don't set userHasSelectedYear here - allow auto-selection to override
+    }
+    if (storedSemesterId) {
+      setSelectedSemesterState(storedSemesterId)
+      // Don't set userHasSelectedSemester here - allow auto-selection to override
+    }
+    else if (storedSemester) {
+      setSelectedSemesterState(storedSemester)
+      // Don't set userHasSelectedSemester here - allow auto-selection to override
+    }
   }, [])
 
-  // Auto-select first academic year when available and none selected yet
+  // Auto-select most recent academic year when available and none selected yet
   useEffect(() => {
-    if (!yearsLoading && Array.isArray(years) && years.length > 0 && !selectedYear) {
-      const firstYearId = years[0]?.id
-      if (firstYearId) {
-        setSelectedYear(firstYearId)
+    if (!yearsLoading && Array.isArray(years) && years.length > 0 && !userHasSelectedYear) {
+      // Find the academic year with the greatest endDate (most recent)
+      const mostRecentYear = years.reduce((prev, current) => {
+        return (!prev || new Date(current.endDate) > new Date(prev.endDate)) ? current : prev;
+      });
+      
+      // Only auto-select if user hasn't made a manual selection
+      if (mostRecentYear?.id && mostRecentYear.id !== selectedYear) {
+        setSelectedYearProgrammatically(mostRecentYear.id)
       }
     }
-  }, [yearsLoading, years, selectedYear])
+  }, [yearsLoading, years, selectedYear, userHasSelectedYear])
 
-  // After year is selected and semesters fetched, auto-select first semester if none
+  // After year is selected and semesters fetched, auto-select current semester if none
   useEffect(() => {
-    if (!semestersLoading && Array.isArray(semesters) && semesters.length > 0 && selectedYear && !selectedSemester) {
-      const firstSemesterId = semesters[0]?.id
-      if (firstSemesterId) {
-        setSelectedSemester(firstSemesterId)
+    if (!semestersLoading && Array.isArray(semesters) && semesters.length > 0 && selectedYear) {
+      // Only clear and auto-select if we don't have a valid semester for this year
+      const hasValidSemester = selectedSemester && semesters.some(s => s.id === selectedSemester);
+      
+      if (!hasValidSemester) {
+        // Always prefer Semester 1 for consistency
+        const semesterOne = semesters.find(semester => 
+          (semester.name && semester.name.toLowerCase().includes('1')) || 
+          (semester.code && semester.code.toLowerCase().includes('1')) ||
+          semester.name === '1'
+        );
+        
+        // Fall back to first semester if Semester 1 is not found
+        const semesterToSelect = semesterOne || semesters[0];
+        
+        if (semesterToSelect?.id) {
+          setSelectedSemester(semesterToSelect.id)
+        }
       }
     }
   }, [semestersLoading, semesters, selectedYear, selectedSemester])
@@ -78,13 +117,31 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
 
   const setSelectedYear = (year: string) => {
     setSelectedYearState(year)
-    if (typeof window !== "undefined") localStorage.setItem("selectedAcademicYear", year)
-    setSelectedSemesterState("") // Reset semester when year changes
-    if (typeof window !== "undefined") localStorage.removeItem("selectedSemester")
+    setUserHasSelectedYear(true) // Mark that user has made a selection
+    // Don't reset semester selection flag here - let the semester validation handle it
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedAcademicYear", year)
+      localStorage.setItem("selectedAcademicYearId", year)
+    }
+    // Don't clear semester immediately - let the semester selection effect handle it
+  }
+
+  // Separate function for programmatic selection that doesn't clear semester
+  const setSelectedYearProgrammatically = (year: string) => {
+    setSelectedYearState(year)
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedAcademicYear", year)
+      localStorage.setItem("selectedAcademicYearId", year)
+    }
+    // Don't clear semester for programmatic selection
   }
   const setSelectedSemester = (semester: string) => {
     setSelectedSemesterState(semester)
-    if (typeof window !== "undefined") localStorage.setItem("selectedSemester", semester)
+    setUserHasSelectedSemester(true) // Mark that user has made a selection
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedSemester", semester)
+      localStorage.setItem("selectedSemesterId", semester)
+    }
   }
 
   return (

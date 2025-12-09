@@ -55,27 +55,6 @@ export default function MarksSubmittedPage() {
   const [selectedSemesterId, setSelectedSemesterId] =
     React.useState<string>("");
 
-  // Set current academic year when years are loaded
-  React.useEffect(() => {
-    if (academicYears && academicYears.length > 0) {
-      // Find the current academic year
-      const currentYear = academicYears.find(
-        (year) =>
-          year.startDate <= new Date().toISOString() &&
-          year.endDate >= new Date().toISOString()
-      );
-      setCurrentAcademicYearId(currentYear?.id || academicYears[0].id);
-    }
-  }, [academicYears]);
-
-  // Set initial semester ID when semesters are loaded
-  React.useEffect(() => {
-    if (semesters && semesters.length > 0) {
-      setSelectedSemesterId(semesters[0].id);
-      fetchGroupReadiness(semesters[0].id);
-    }
-  }, [semesters]);
-
   // Use the department group readiness hook for HOD view
   const {
     data: groupReadinessData,
@@ -90,6 +69,96 @@ export default function MarksSubmittedPage() {
     fetchGroupReadiness,
     clearError: clearGroupsError,
   } = useDepartmentGroupReadiness(selectedSemesterId);
+
+  // Set current academic year when years are loaded or when header changes it
+  React.useEffect(() => {
+    if (academicYears && academicYears.length > 0) {
+      // First check if header has set a value
+      const storedAcademicYearId = localStorage.getItem("selectedAcademicYearId");
+      if (storedAcademicYearId) {
+        setCurrentAcademicYearId(storedAcademicYearId);
+        return;
+      }
+      
+      // Fall back to finding the current academic year
+      const currentYear = academicYears.find(
+        (year) =>
+          year.startDate <= new Date().toISOString() &&
+          year.endDate >= new Date().toISOString()
+      );
+      setCurrentAcademicYearId(currentYear?.id || academicYears[0].id);
+    }
+  }, [academicYears]);
+
+  // Set initial semester ID when semesters are loaded
+  React.useEffect(() => {
+    if (semesters && semesters.length > 0) {
+      // First check if header has set a value
+      const storedSemesterId = localStorage.getItem("selectedSemesterId");
+      if (storedSemesterId) {
+        setSelectedSemesterId(storedSemesterId);
+        fetchGroupReadiness(storedSemesterId);
+        return;
+      }
+      
+      // Fall back to first semester
+      setSelectedSemesterId(semesters[0].id);
+      fetchGroupReadiness(semesters[0].id);
+    }
+  }, [semesters]);
+
+  // Listen for storage changes from header dropdowns
+  React.useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "selectedSemesterId" && e.newValue && e.newValue !== selectedSemesterId) {
+        setSelectedSemesterId(e.newValue);
+        fetchGroupReadiness(e.newValue);
+      }
+      if (e.key === "selectedAcademicYearId" && e.newValue && e.newValue !== currentAcademicYearId) {
+        setCurrentAcademicYearId(e.newValue);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [selectedSemesterId, currentAcademicYearId, fetchGroupReadiness]);
+
+  // Initialize from localStorage and sync with header on mount
+  React.useEffect(() => {
+    const storedAcademicYearId = localStorage.getItem("selectedAcademicYearId");
+    const storedSemesterId = localStorage.getItem("selectedSemesterId");
+    
+    // Sync with header values if available
+    if (storedAcademicYearId && storedAcademicYearId !== currentAcademicYearId) {
+      setCurrentAcademicYearId(storedAcademicYearId);
+    }
+    
+    if (storedSemesterId && storedSemesterId !== selectedSemesterId) {
+      setSelectedSemesterId(storedSemesterId);
+      fetchGroupReadiness(storedSemesterId);
+    }
+  }, []);
+
+  // Fallback: Periodically check localStorage for changes (in case storage events don't fire)
+  React.useEffect(() => {
+    const checkLocalStorage = () => {
+      const storedAcademicYearId = localStorage.getItem("selectedAcademicYearId");
+      const storedSemesterId = localStorage.getItem("selectedSemesterId");
+      
+      if (storedAcademicYearId && storedAcademicYearId !== currentAcademicYearId) {
+        setCurrentAcademicYearId(storedAcademicYearId);
+      }
+      
+      if (storedSemesterId && storedSemesterId !== selectedSemesterId) {
+        setSelectedSemesterId(storedSemesterId);
+        fetchGroupReadiness(storedSemesterId);
+      }
+    };
+
+    // Check every 2 seconds
+    const interval = setInterval(checkLocalStorage, 2000);
+    return () => clearInterval(interval);
+  }, [currentAcademicYearId, selectedSemesterId, fetchGroupReadiness]);
 
   // Module submission details hook for detailed view
   const {
