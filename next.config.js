@@ -1,10 +1,7 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ignore ESLint and TypeScript errors during builds for now
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // ignore TypeScript errors during builds for now
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -35,7 +32,14 @@ const nextConfig = {
     ]
   },
   
-  // Enhanced webpack config for PDF.js
+  // Turbopack config (Next.js 16+)
+  turbopack: {
+    resolveAlias: {
+      'pdfjs-dist/build/pdf.worker.min.js': 'pdfjs-dist/build/pdf.worker.min.js',
+    },
+  },
+  
+  // Enhanced webpack config for PDF.js (for non-Turbopack builds)
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Handle client-side only modules
     if (!isServer) {

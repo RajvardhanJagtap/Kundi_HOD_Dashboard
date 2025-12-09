@@ -10,6 +10,10 @@ const config = {
     "*.{js,ts,jsx,tsx,mdx}",
   ],
   prefix: "",
+  corePlugins: {
+    preflight: true,
+  },
+  safelist: [],
   theme: {
     container: {
       center: true,
