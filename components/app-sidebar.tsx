@@ -81,9 +81,13 @@ const navigationConfig = {
         title: "Staff Management",
         icon: Users,
         items: [
-          { title: "Lecturer Registration", url: "/staff/lecturer-registration" },
+          {
+            title: "Lecturer Registration",
+            url: "/staff/lecturer-registration",
+          },
           { title: "Leave Requests", url: "/staff/leave" },
           { title: "Modules Allocation", url: "/staff/module-assignments" },
+          { title: "Assign Claims", url: "/staff/assign-claims" },
           { title: "Set Submissions", url: "/academic/deadlines" },
         ],
       },
@@ -234,18 +238,45 @@ export function AppSidebar() {
                             }}
                           >
                             {/* Add appropriate icon for each submenu item */}
-                            {subItem.title === "Teaching Plans" && <ClipboardList className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Attendance" && <Clock className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Timetables" && <Calendar className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Student Requests" && <MessageSquarePlus className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Marks Submitted" && <CheckCircle className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Classes Marks" && <BookmarkCheck className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Students Transcripts" && <Scroll className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Student Records" && <Award className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Lecturer Registration" && <Users className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Leave Requests" && <Users className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Modules Allocation" && <Users className="mr-3 h-4 w-4" />}
-                            {subItem.title === "Set Submissions" && <CalendarCheck className="mr-3 h-4 w-4" />}
+                            {subItem.title === "Teaching Plans" && (
+                              <ClipboardList className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Attendance" && (
+                              <Clock className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Timetables" && (
+                              <Calendar className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Student Requests" && (
+                              <MessageSquarePlus className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Marks Submitted" && (
+                              <CheckCircle className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Classes Marks" && (
+                              <BookmarkCheck className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Students Transcripts" && (
+                              <Scroll className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Student Records" && (
+                              <Award className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Lecturer Registration" && (
+                              <Users className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Leave Requests" && (
+                              <Users className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Modules Allocation" && (
+                              <Users className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Assign Claims" && (
+                              <FileText className="mr-3 h-4 w-4" />
+                            )}
+                            {subItem.title === "Set Submissions" && (
+                              <CalendarCheck className="mr-3 h-4 w-4" />
+                            )}
                             <span>{subItem.title}</span>
                           </Button>
                         </Link>
@@ -258,9 +289,7 @@ export function AppSidebar() {
                   <Button
                     variant="ghost"
                     className={`w-full justify-start text-black hover:text-[#026892] hover:bg-[#ECFDF5] ${
-                      pathname === item.url
-                        ? "bg-[#ECFDF5] text-[#026892]"
-                        : ""
+                      pathname === item.url ? "bg-[#ECFDF5] text-[#026892]" : ""
                     }`}
                     onClick={() => {
                       setExpandedSection(item.title);
