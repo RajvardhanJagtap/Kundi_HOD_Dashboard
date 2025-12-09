@@ -832,7 +832,7 @@ export default function ResultsPage() {
             <nav className="flex space-x-8">
               <TabButton
                 tabKey="assessments"
-                label="Assessments"
+                label="CATs"
                 isActive={activeTab === "assessments"}
                 onClick={() => handleTabSwitch("assessments")}
               />

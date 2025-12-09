@@ -334,9 +334,15 @@ export default function AssignClaimsPage() {
                       <SelectValue placeholder="Select module" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="CSC102">CSC102 - Data Structures</SelectItem>
-                      <SelectItem value="CSC201">CSC201 - Database Systems</SelectItem>
-                      <SelectItem value="CSC203">CSC203 - Software Engineering</SelectItem>
+                      <SelectItem value="CSC102">
+                        CSC102 - Data Structures
+                      </SelectItem>
+                      <SelectItem value="CSC201">
+                        CSC201 - Database Systems
+                      </SelectItem>
+                      <SelectItem value="CSC203">
+                        CSC203 - Software Engineering
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -349,9 +355,15 @@ export default function AssignClaimsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="GRADE_APPEAL">Grade Appeal</SelectItem>
-                      <SelectItem value="ATTENDANCE_VARIANCE">Attendance Variance</SelectItem>
-                      <SelectItem value="SPECIAL_CONSIDERATION">Special Consideration</SelectItem>
-                      <SelectItem value="MISSING_SCORE">Missing Score</SelectItem>
+                      <SelectItem value="ATTENDANCE_VARIANCE">
+                        Attendance Variance
+                      </SelectItem>
+                      <SelectItem value="SPECIAL_CONSIDERATION">
+                        Special Consideration
+                      </SelectItem>
+                      <SelectItem value="MISSING_SCORE">
+                        Missing Score
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -372,11 +384,7 @@ export default function AssignClaimsPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="dueDate">Due Date *</Label>
-                  <Input
-                    id="dueDate"
-                    type="date"
-                    className=""
-                  />
+                  <Input id="dueDate" type="date" className="" />
                 </div>
               </div>
 
