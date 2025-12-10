@@ -60,7 +60,7 @@ export default function MarksSubmissionDeadlinesPage() {
     submissionError,
     submissionDetailsError,
     isCreatingSubmissions,
-  } = useModuleAssignments({ page: 0, size: 20 });
+  } = useModuleAssignments({ page: 0, size: 100 });
 
   // Local state for filters and pagination
   const [moduleSearch, setModuleSearch] = useState("");

@@ -234,12 +234,27 @@ export const moduleAssignmentsApi = {
   // and then get submission details for each module that has submissions
   getAllModuleSubmissionDetails: async (params?: ModuleAssignmentsParams): Promise<ModuleSubmissionDetailsListResponse> => {
     try {
-      // First, try to get all module assignments
-      const assignmentsResponse = await moduleAssignmentsApi.getModuleAssignments(params);
-      const assignments = assignmentsResponse.data.content;
+      let allAssignments: ModuleAssignment[] = [];
+      let page = 0;
+      let hasMore = true;
+      
+      // Fetch all pages of module assignments
+      while (hasMore) {
+        const assignmentsResponse = await moduleAssignmentsApi.getModuleAssignments({
+          ...params,
+          page,
+          size: 100, // Request 100 items per page to minimize API calls
+        });
+        
+        allAssignments = [...allAssignments, ...assignmentsResponse.data.content];
+        
+        // Check if there are more pages
+        hasMore = assignmentsResponse.data.hasNext;
+        page++;
+      }
       
       // Then get submission details for each assignment
-      const submissionDetailsPromises = assignments.map(async (assignment) => {
+      const submissionDetailsPromises = allAssignments.map(async (assignment) => {
         try {
           const submissionResponse = await moduleAssignmentsApi.getModuleSubmissionDetails(assignment.id);
           return submissionResponse.data;

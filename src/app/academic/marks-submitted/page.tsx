@@ -181,7 +181,7 @@ export default function MarksSubmittedPage() {
   }, [transformedData, moduleSearch, statusFilter]);
 
   // Local pagination for filtered data
-  const modulePageSize = 4;
+  const modulePageSize = 10;
   const moduleTotalPages = Math.ceil(filteredData.length / modulePageSize);
   const modulePaginatedData = filteredData.slice(
     (modulePage - 1) * modulePageSize,
