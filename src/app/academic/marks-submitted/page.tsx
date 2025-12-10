@@ -75,10 +75,50 @@ const formatDate = (dateString: string) => {
 };
 
 export default function MarksSubmittedPage() {
-  // Main tabs: 'mark-submissions', 'analytics', 'deadlines'
-  const [mainActiveTab, setMainActiveTab] = React.useState("mark-submissions");
+  const router = useRouter();
+  
+  // State for selected academic year and semester from header
+  const [academicYearId, setAcademicYearId] = React.useState<string>("");
+  const [semesterId, setSemesterId] = React.useState<string>("");
 
-  // API Hook - fetch submission details instead of module assignments
+  // Initialize from localStorage and listen for changes
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const getItem = (k: string) => {
+      try {
+        return localStorage.getItem(k);
+      } catch {
+        return null;
+      }
+    };
+
+    const updateFromStorage = () => {
+      const storedAcademicYearId = getItem("selectedAcademicYearId") || getItem("selectedAcademicYear");
+      const storedSemesterId = getItem("selectedSemesterId") || getItem("selectedSemester");
+
+      if (storedAcademicYearId) setAcademicYearId(storedAcademicYearId);
+      if (storedSemesterId) setSemesterId(storedSemesterId);
+    };
+
+    // Initial load
+    updateFromStorage();
+
+    // Listen for academic year and semester changes from header
+    const handleStorageChange = () => {
+      updateFromStorage();
+    };
+
+    window.addEventListener('academicYearChanged', handleStorageChange);
+    window.addEventListener('semesterChanged', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('academicYearChanged', handleStorageChange);
+      window.removeEventListener('semesterChanged', handleStorageChange);
+    };
+  }, []);
+
+  // API Hook - fetch submission details with academic year and semester filters
   const {
     data: submissionDetails,
     loading,
@@ -88,16 +128,22 @@ export default function MarksSubmittedPage() {
     fetchAllSubmissionDetails,
   } = useModuleSubmissionDetails();
 
-  // Fetch submission details on component mount
+  // Fetch submission details when academic year or semester changes
   React.useEffect(() => {
-    fetchAllSubmissionDetails();
-  }, [fetchAllSubmissionDetails]);
+    if (academicYearId || semesterId) {
+      fetchAllSubmissionDetails({ academicYearId, semesterId });
+    } else {
+      fetchAllSubmissionDetails({});
+    }
+  }, [academicYearId, semesterId]);
+
+  // Main tabs: 'mark-submissions', 'analytics', 'deadlines'
+  const [mainActiveTab, setMainActiveTab] = React.useState("mark-submissions");
 
   // Module Table State
   const [moduleSearch, setModuleSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("All Status");
   const [modulePage, setModulePage] = React.useState(1);
-  const router = useRouter();
 
   // Transform submission details data to match table format - memoized to prevent recalculation
   const transformedData = React.useMemo(() => {

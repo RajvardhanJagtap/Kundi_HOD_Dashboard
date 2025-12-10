@@ -108,20 +108,38 @@ export default function ModuleAssignmentsPage() {
       }
     };
 
-    const storedAcademicYearId = getItem("selectedAcademicYearId");
-    const storedAcademicYear = getItem("selectedAcademicYear");
-    const storedSemesterId =
-      getItem("selectedSemesterId") || getItem("selectedSemester");
+    const updateFromStorage = () => {
+      const storedAcademicYearId = getItem("selectedAcademicYearId");
+      const storedAcademicYear = getItem("selectedAcademicYear");
+      const storedSemesterId =
+        getItem("selectedSemesterId") || getItem("selectedSemester");
 
-    const yearIdToUse =
-      storedAcademicYearId && storedAcademicYearId.trim().length > 0
-        ? storedAcademicYearId.trim()
-        : storedAcademicYear && storedAcademicYear.trim().length > 0
-        ? storedAcademicYear.trim()
-        : "";
+      const yearIdToUse =
+        storedAcademicYearId && storedAcademicYearId.trim().length > 0
+          ? storedAcademicYearId.trim()
+          : storedAcademicYear && storedAcademicYear.trim().length > 0
+          ? storedAcademicYear.trim()
+          : "";
 
-    if (yearIdToUse) setAcademicYearId(yearIdToUse);
-    if (storedSemesterId) setCurrentSemesterId(storedSemesterId);
+      if (yearIdToUse) setAcademicYearId(yearIdToUse);
+      if (storedSemesterId) setCurrentSemesterId(storedSemesterId);
+    };
+
+    // Initial load
+    updateFromStorage();
+
+    // Listen for academic year and semester changes from header
+    const handleStorageChange = () => {
+      updateFromStorage();
+    };
+
+    window.addEventListener('academicYearChanged', handleStorageChange);
+    window.addEventListener('semesterChanged', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('academicYearChanged', handleStorageChange);
+      window.removeEventListener('semesterChanged', handleStorageChange);
+    };
   }, []);
 
   // Hooks

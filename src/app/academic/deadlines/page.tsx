@@ -42,8 +42,49 @@ interface DeadlineModalData {
 export default function MarksSubmissionDeadlinesPage() {
   // Toast hook
   const { toast } = useToast();
+  
+  // State for selected academic year and semester from header
+  const [academicYearId, setAcademicYearId] = useState<string>("");
+  const [semesterId, setSemesterId] = useState<string>("");
 
-  // API Hook
+  // Initialize from localStorage and listen for changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const getItem = (k: string) => {
+      try {
+        return localStorage.getItem(k);
+      } catch {
+        return null;
+      }
+    };
+
+    const updateFromStorage = () => {
+      const storedAcademicYearId = getItem("selectedAcademicYearId") || getItem("selectedAcademicYear");
+      const storedSemesterId = getItem("selectedSemesterId") || getItem("selectedSemester");
+
+      if (storedAcademicYearId) setAcademicYearId(storedAcademicYearId);
+      if (storedSemesterId) setSemesterId(storedSemesterId);
+    };
+
+    // Initial load
+    updateFromStorage();
+
+    // Listen for academic year and semester changes from header
+    const handleStorageChange = () => {
+      updateFromStorage();
+    };
+
+    window.addEventListener('academicYearChanged', handleStorageChange);
+    window.addEventListener('semesterChanged', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('academicYearChanged', handleStorageChange);
+      window.removeEventListener('semesterChanged', handleStorageChange);
+    };
+  }, []);
+
+  // API Hook - with academic year and semester filters
   const {
     data: moduleAssignments,
     loading,
@@ -60,7 +101,18 @@ export default function MarksSubmissionDeadlinesPage() {
     submissionError,
     submissionDetailsError,
     isCreatingSubmissions,
-  } = useModuleAssignments({ page: 0, size: 100 });
+  } = useModuleAssignments({ 
+    page: 0, 
+    size: 100
+  });
+
+  // Refetch data when academic year or semester changes
+  useEffect(() => {
+    updateFilters({
+      academicYear: academicYearId,
+      semester: semesterId
+    });
+  }, [academicYearId, semesterId, updateFilters]);
 
   // Local state for filters and pagination
   const [moduleSearch, setModuleSearch] = useState("");

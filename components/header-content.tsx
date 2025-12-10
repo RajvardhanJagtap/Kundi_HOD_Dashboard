@@ -122,6 +122,8 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedAcademicYear", year)
       localStorage.setItem("selectedAcademicYearId", year)
+      // Dispatch event to notify components that academic year changed
+      window.dispatchEvent(new Event('academicYearChanged'));
     }
     // Don't clear semester immediately - let the semester selection effect handle it
   }
@@ -141,6 +143,8 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedSemester", semester)
       localStorage.setItem("selectedSemesterId", semester)
+      // Dispatch event to notify components that semester changed
+      window.dispatchEvent(new Event('semesterChanged'));
     }
   }
 

@@ -187,6 +187,7 @@ export interface ModuleSubmissionDetailsListResponse {
 export const moduleAssignmentsApi = {
   // Get department group readiness (NEW - replaces getModuleAssignments for HOD view)
   getDepartmentGroupReadiness: async (semesterId: string): Promise<DepartmentGroupReadinessResponse> => {
+    console.log('API: getDepartmentGroupReadiness called with params:', { semesterId });
     const response = await api.get(`/grading/group-readiness/my-department`, { 
       params: { semesterId } 
     });
@@ -202,6 +203,7 @@ export const moduleAssignmentsApi = {
   // Get a specific module assignment by ID
   getModuleAssignmentById: async (id: string): Promise<{ success: boolean; data: ModuleAssignment; message: string }> => {
     const response = await api.get(`/academics/module-assignments/${id}`);
+    console.log('API: getModuleAssignmentById response:', response.data);
     return response.data;
   },
 
