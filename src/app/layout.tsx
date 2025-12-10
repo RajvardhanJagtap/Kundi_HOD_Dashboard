@@ -1,8 +1,11 @@
 import type React from "react";
 import { cookies } from "next/headers";
+import { Inter } from "next/font/google";
 import { ConditionalLayout } from "@/components/ConditionalLayout";
 import ClientProviders from "@/components/ClientProviders";
 import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default async function RootLayout({
   children,
@@ -14,7 +17,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className="font-sans antialiased">
+      <body className={inter.className}>
         <ClientProviders>
           <ConditionalLayout defaultOpen={defaultOpen}>
             {children}
