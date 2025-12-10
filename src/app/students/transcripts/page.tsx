@@ -93,26 +93,40 @@ export default function TranscriptsPage() {
     };
 
     // Get academic year ID from storage
-    const urlAcademicYearId = getStorageItem("selectedAcademicYearId");
-    const storedYear = getStorageItem("selectedAcademicYear");
+    const updateFromStorage = () => {
+      const urlAcademicYearId = getStorageItem("selectedAcademicYearId");
+      const storedYear = getStorageItem("selectedAcademicYear");
 
-    if (urlAcademicYearId && urlAcademicYearId.trim().length > 0) {
-      setAcademicYearId(urlAcademicYearId.trim());
-    } else if (storedYear && storedYear.trim().length > 0) {
-      // Some parts of the app save the selected year under `selectedAcademicYear`.
-      console.log(
-        "Setting academic year ID from storage (selectedAcademicYear):",
-        storedYear.trim()
-      );
-      setAcademicYearId(storedYear.trim());
-    } else {
-      console.warn("No academic year ID found in storage");
-    }
-    
-    // Set initialization complete after a short delay
-    setTimeout(() => {
-      setIsInitializing(false);
-    }, 300);
+      const newAcademicYearId = urlAcademicYearId && urlAcademicYearId.trim().length > 0
+        ? urlAcademicYearId.trim()
+        : storedYear && storedYear.trim().length > 0
+        ? storedYear.trim()
+        : null;
+
+      // Only update if the value has actually changed
+      if (newAcademicYearId && newAcademicYearId !== academicYearId) {
+        setAcademicYearId(newAcademicYearId);
+      } else if (!newAcademicYearId && academicYearId) {
+        // Clear if no academic year found
+        setAcademicYearId("");
+        console.warn("No academic year ID found in storage");
+      }
+    };
+
+    // Initial load
+    updateFromStorage();
+    setIsInitializing(false);
+
+    // Listen for academic year changes from header
+    const handleAcademicYearChange = () => {
+      updateFromStorage();
+    };
+
+    window.addEventListener('academicYearChanged', handleAcademicYearChange);
+
+    return () => {
+      window.removeEventListener('academicYearChanged', handleAcademicYearChange);
+    };
   }, []);
 
   // Filter data based on search and selections
