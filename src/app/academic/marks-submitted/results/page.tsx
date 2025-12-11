@@ -202,18 +202,14 @@ export default function ResultsPage() {
     }
   }, [showSubmissionMessage, submissionData, submissionError, clearSubmission])
 
-  // Find the row index that contains "SN" (checks all cells in the row)
+  // Find the row index that starts with "SN"
   const findSNRowIndex = (data: CellData[][]) => {
     for (let i = 0; i < data.length; i++) {
-      const row = data[i]
-      for (let j = 0; j < row.length; j++) {
-        const cell = row[j]
-        if (cell && cell.value !== null && cell.value !== undefined) {
-          const cellValue = String(cell.value).trim().toUpperCase()
-          // Check for SN or variations
-          if (cellValue === "SN" || cellValue.startsWith("SN") || cellValue.includes("SN")) {
-            return i
-          }
+      const firstCell = data[i][0]
+      if (firstCell && firstCell.value) {
+        const cellValue = String(firstCell.value).trim().toUpperCase()
+        if (cellValue === "SN" || cellValue.startsWith("SN")) {
+          return i
         }
       }
     }
@@ -260,20 +256,6 @@ export default function ResultsPage() {
     }
     return currentColumnWidths
   })()
-
-  // Get the starting column index for filtering rows
-  const getStartColumnIndex = () => {
-    const snRowIndex = findSNRowIndex(currentStyledData)
-    if (snRowIndex > 0 && currentStyledData.length > snRowIndex) {
-      const snRow = currentStyledData[snRowIndex]
-      for (let i = 0; i < snRow.length; i++) {
-        if (snRow[i] && snRow[i].value !== null && snRow[i].value !== undefined && String(snRow[i].value).trim() !== "") {
-          return i
-        }
-      }
-    }
-    return 0
-  }
 
   const handleDownloadMarksheet = async () => {
     if (!currentBlob || !moduleId) {
@@ -663,8 +645,18 @@ export default function ResultsPage() {
                       </colgroup>
                       <tbody>
                         {filteredStyledData.map((row, rowIndex) => {
-                          // Get the starting column index
-                          const startCol = getStartColumnIndex()
+                          // Find the starting column index based on the original SN row
+                          const snRowIndex = findSNRowIndex(currentStyledData)
+                          let startCol = 0
+                          if (snRowIndex > 0 && currentStyledData.length > snRowIndex) {
+                            const snRow = currentStyledData[snRowIndex]
+                            for (let i = 0; i < snRow.length; i++) {
+                              if (snRow[i] && snRow[i].value !== null && snRow[i].value !== undefined && String(snRow[i].value).trim() !== "") {
+                                startCol = i
+                                break
+                              }
+                            }
+                          }
                           
                           // Filter row cells to start from the correct column
                           const filteredRow = row.slice(startCol)
