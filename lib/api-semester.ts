@@ -16,12 +16,19 @@ const apiInstance = axios.create({
 // Add request interceptor to include auth token
 apiInstance.interceptors.request.use(
   (config: any) => {
-    const token = localStorage.getItem("token");
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      return null;
+    };
+    
+    const token = getCookie("accessToken") || localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       console.log("API: Sending token with request");
     } else {
-      console.log("API: No token found in localStorage");
+      console.log("API: No token found in cookies or localStorage");
     }
     return config;
   },

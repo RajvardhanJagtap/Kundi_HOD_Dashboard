@@ -28,7 +28,14 @@ export const transcriptApi = {
         const url = buildApiUrl(endpoint);
         console.log('Strategy 1: Proxy with auth -', url);
         
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        const getCookie = (name: string) => {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop()?.split(";").shift();
+          return null;
+        };
+        
+        const token = getCookie('accessToken') || sessionStorage.getItem('accessToken');
         const headers: HeadersInit = {
           'Accept': 'application/pdf',
           'Cache-Control': 'no-cache',
@@ -60,7 +67,14 @@ export const transcriptApi = {
         const directUrl = buildDirectUrl(endpoint);
         console.log('Strategy 2: Direct CORS -', directUrl);
         
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        const getCookie = (name: string) => {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop()?.split(";").shift();
+          return null;
+        };
+        
+        const token = getCookie('accessToken') || sessionStorage.getItem('accessToken');
         const headers: HeadersInit = {
           'Accept': 'application/pdf',
           'Content-Type': 'application/json',
@@ -89,7 +103,14 @@ export const transcriptApi = {
     const proxyQueryTokenStrategy: FetchStrategy = {
       name: 'proxy-query-token',
       fetch: async () => {
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+        const getCookie = (name: string) => {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop()?.split(";").shift();
+          return null;
+        };
+        
+        const token = getCookie('accessToken') || sessionStorage.getItem('accessToken');
         if (!token) throw new Error('No token available for query param strategy');
         
         const url = `${buildApiUrl(endpoint)}?token=${encodeURIComponent(token)}`;
@@ -124,7 +145,14 @@ export const transcriptApi = {
           xhr.responseType = 'blob';
           xhr.withCredentials = true;
           
-          const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+          const getCookie = (name: string) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop()?.split(";").shift();
+            return null;
+          };
+          
+          const token = getCookie('accessToken') || sessionStorage.getItem('accessToken');
           if (token) {
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
           }
@@ -191,7 +219,14 @@ export const transcriptApi = {
    */
   getStudentTranscriptUrl: (studentId: string, academicYearId: string): string => {
     const endpoint = `grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
-    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    const getCookie = (name: string) => {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop()?.split(";").shift();
+          return null;
+        };
+        
+        const token = getCookie('accessToken') || sessionStorage.getItem('accessToken');
 
     // Important: Use our same-origin proxy for iframe/tab viewing to avoid
     // X-Frame-Options and cross-origin auth header issues on the backend domain.

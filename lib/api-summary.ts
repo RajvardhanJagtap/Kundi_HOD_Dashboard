@@ -108,8 +108,25 @@ export const generateYearSummarySheet = async (
     throw new Error("Academic Year ID and Group ID are required. Please select a class from the main page.")
   }
 
+  // Debug: Check if token exists
+  if (typeof window !== "undefined") {
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`
+      const parts = value.split(`; ${name}=`)
+      if (parts.length === 2) return parts.pop()?.split(";").shift()
+      return null
+    }
+    const token = getCookie("accessToken")
+    console.log("Summary API - Token check:", {
+      hasToken: !!token,
+      tokenLength: token?.length,
+      cookieValue: document.cookie.includes("accessToken"),
+    })
+  }
+
   try {
     const endpoint = `/grading/overall-sheets/generate-year-summary-sheet/${academicYearId}/group/${groupId}/excel`
+    console.log("Summary API - Making request to:", endpoint)
 
     const response = await apiInstance.get(endpoint, {
       responseType: "blob",
@@ -141,7 +158,42 @@ export const generateYearSummarySheet = async (
     } else {
       throw new Error("Response is not a valid Excel blob")
     }
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Summary API - Error details:", {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      message: error.message,
+      isAxiosError: error.isAxiosError,
+      config: error.config ? {
+        url: error.config.url,
+        method: error.config.method,
+        headers: error.config.headers
+      } : null
+    })
+
+    // Special handling for 401 errors
+    if (error.response?.status === 401) {
+      // Check if we're in browser and clear invalid tokens
+      if (typeof window !== "undefined") {
+        console.log("Summary API - 401 Error, clearing tokens and redirecting to login")
+        document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        localStorage.removeItem("user")
+        localStorage.removeItem("permissions") 
+        localStorage.removeItem("roles")
+        
+        if (!window.location.pathname.includes("/login")) {
+          window.location.href = "/login"
+        }
+      }
+      return {
+        success: false,
+        message: "Authentication expired. Please log in again.",
+        data: undefined,
+        timestamp: new Date().toISOString(),
+      }
+    }
+
     return {
       success: false,
       message: `Failed to generate year summary sheet: ${error instanceof Error ? error.message : "Unknown error"}`,

@@ -111,8 +111,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
+        // Helper function to set cookies
+        const setCookie = (name: string, value: string, days: number = 1) => {
+          const expires = new Date();
+          expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+          document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+        };
+        
+        // Store tokens in cookies
+        setCookie("accessToken", data.accessToken, 1);
+        setCookie("refreshToken", data.refreshToken, 7);
+        
+        // Store other data in localStorage
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("permissions", JSON.stringify(data.permissions));
         localStorage.setItem("roles", JSON.stringify(data.roles));
@@ -154,8 +164,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      // Clear cookies
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      
+      // Clear localStorage
       localStorage.removeItem("user");
       localStorage.removeItem("permissions");
       localStorage.removeItem("roles");
@@ -177,7 +190,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const token = localStorage.getItem("accessToken");
+      // Helper function to get cookies
+      const getCookie = (name: string) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(";").shift();
+        return null;
+      };
+
+      const token = getCookie("accessToken");
 
       if (!token) {
         setIsAuthenticated(false);

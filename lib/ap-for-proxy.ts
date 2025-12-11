@@ -29,14 +29,23 @@ api.interceptors.request.use(
     }
 
     // Add auth token if available
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
-    if (token && config.headers) {
-      config.headers['Authorization'] = `Bearer ${token}`
-    }
-
-    // For proxy requests, ensure we pass the token correctly
-    if (USE_PROXY && token && config.headers) {
-      config.headers['X-Access-Token'] = token
+    if (typeof window !== 'undefined') {
+      const getCookie = (name: string) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(";").shift();
+        return null;
+      };
+      
+      const token = getCookie('accessToken') || localStorage.getItem('accessToken');
+      if (token && config.headers) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      // For proxy requests, ensure we pass the token correctly
+      if (USE_PROXY && token && config.headers) {
+        config.headers['X-Access-Token'] = token;
+      }
     }
 
     return config
@@ -75,7 +84,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Token expired or invalid
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken')
+        document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        localStorage.removeItem('accessToken');
       }
     } else if (error.code === 'ERR_NETWORK') {
       error.message = 'Network error. Please check your internet connection.'
@@ -101,7 +111,17 @@ export const buildApiUrl = (endpoint: string): string => {
 
 // Helper function to build URL for direct access (for iframes)
 export const buildDirectUrl = (endpoint: string): string => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+  let token = null;
+  if (typeof window !== 'undefined') {
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      return null;
+    };
+    token = getCookie('accessToken') || localStorage.getItem('accessToken');
+  }
+  
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
   const fullUrl = `${API_BASE_URL}/${cleanEndpoint}`
   

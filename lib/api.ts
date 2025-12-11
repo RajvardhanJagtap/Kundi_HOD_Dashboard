@@ -13,7 +13,15 @@ export const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('accessToken');
+    // Use cookies instead of localStorage to match summary API
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      return null;
+    };
+    
+    const token = getCookie('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,7 +39,15 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       if (typeof window !== 'undefined') {
-        const refreshToken = localStorage.getItem('refreshToken');
+        // Use cookies for refresh token as well
+        const getCookie = (name: string) => {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop()?.split(";").shift();
+          return null;
+        };
+        
+        const refreshToken = getCookie('refreshToken');
         if (refreshToken) {
           try {
             const refreshEndpoint = process.env.NODE_ENV === 'development'
@@ -43,21 +59,30 @@ api.interceptors.response.use(
             });
             
             const { accessToken } = response.data.data;
-            localStorage.setItem('accessToken', accessToken);
+            // Store new token in cookie
+            document.cookie = `accessToken=${accessToken}; path=/; max-age=86400; SameSite=Lax`;
             
             return api(originalRequest);
           } catch (refreshError) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            // Clear cookies and redirect
+            document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            document.cookie = 'refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
             localStorage.removeItem('user');
             localStorage.removeItem('permissions');
             localStorage.removeItem('roles');
             window.location.href = '/login';
-            }
+          }
+        } else {
+          // No refresh token, clear and redirect
+          document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+          localStorage.removeItem('user');
+          localStorage.removeItem('permissions');
+          localStorage.removeItem('roles');
+          window.location.href = '/login';
         }
-        }
+      }
     }
     
     return Promise.reject(error);
-    }
+  }
 );
