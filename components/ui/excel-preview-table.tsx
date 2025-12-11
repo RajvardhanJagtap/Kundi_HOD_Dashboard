@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Download, Maximize2, Minimize2 } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import type { ExcelSheetData } from "@/lib/api-grading"
 
 interface ExcelPreviewTableProps {
@@ -175,16 +176,7 @@ export function ExcelPreviewTable({
   }, [topMetaCutIndex, hideTopMeta, visibleRows])
 
   const mergedCellsLookup = React.useMemo(() => {
-    const lookup = new Map<
-      string,
-      {
-        startRow: number
-        startCol: number
-        endRow: number
-        endCol: number
-        value: any
-      }
-    >()
+    const lookup = new Map<string, { startRow: number; startCol: number; endRow: number; endCol: number; value: any }>()
 
     if (currentSheet?.mergedCells) {
       currentSheet.mergedCells.forEach((merge) => {
@@ -207,6 +199,74 @@ export function ExcelPreviewTable({
         </CardContent>
       </Card>
     )
+  }
+
+  const renderCellContent = (
+    cellValue: any,
+    styling: any,
+    rowSpan: number | undefined,
+    colSpan: number | undefined,
+  ) => {
+    const textColor = styling?.color || "inherit"
+    const isMergedCell = (rowSpan && rowSpan > 1) || (colSpan && colSpan > 1)
+
+    let content: React.ReactNode
+
+    if (cellValue === null || cellValue === undefined || cellValue === "") {
+      content = <span className="text-transparent select-none">-</span>
+    } else if (typeof cellValue === "number") {
+      content = (
+        <span className={isMergedCell ? "font-mono text-center" : "text-right font-mono"} style={{ color: textColor }}>
+          {cellValue.toLocaleString()}
+        </span>
+      )
+    } else if (typeof cellValue === "boolean") {
+      content = (
+        <span className="text-center font-medium" style={{ color: textColor }}>
+          {cellValue ? "TRUE" : "FALSE"}
+        </span>
+      )
+    } else {
+      const stringValue = String(cellValue).trim()
+      if (stringValue === "") {
+        content = <span className="text-transparent select-none">-</span>
+      } else {
+        content = <span style={{ color: textColor }}>{stringValue}</span>
+      }
+    }
+
+    // If there's a comment, wrap in tooltip with red triangle indicator
+    if (styling?.comment) {
+      return (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative cursor-help w-full h-full">
+                {content}
+                {/* Red triangle indicator in top-right corner */}
+                <div
+                  className="absolute top-0 right-0 w-0 h-0 pointer-events-none"
+                  style={{
+                    borderLeft: "8px solid transparent",
+                    borderTop: "8px solid #dc2626",
+                  }}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              align="start"
+              className="max-w-sm bg-[#ffffc0] border border-[#000000] text-black p-2 text-xs shadow-lg z-[9999]"
+              sideOffset={5}
+            >
+              <div className="whitespace-pre-wrap break-words">{styling.comment}</div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )
+    }
+
+    return content
   }
 
   return (
@@ -283,14 +343,11 @@ export function ExcelPreviewTable({
                       key={index}
                       variant={index === currentSheetIndex ? "default" : "ghost"}
                       size="sm"
-                      className={`
-                        flex-shrink-0 text-xs font-medium px-3 py-1
-                        ${
-                          index === currentSheetIndex
-                            ? "bg-[#026892] text-white hover:bg-[#025f7f]"
-                            : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
-                        }
-                      `}
+                      className={`flex-shrink-0 text-xs font-medium px-3 py-1 ${
+                        index === currentSheetIndex
+                          ? "bg-[#026892] text-white hover:bg-[#025f7f]"
+                          : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                      }`}
                       onClick={() => setCurrentSheetIndex(index)}
                     >
                       {sheet.sheetName}
@@ -432,8 +489,14 @@ export function ExcelPreviewTable({
                             if (styling.italic) cellClasses.push("italic")
                             if (styling.underline) cellClasses.push("underline")
 
-                            if (styling.color) cellStyle.color = styling.color
-                            if (styling.backgroundColor) cellStyle.backgroundColor = styling.backgroundColor
+                            // Apply background color from Excel
+                            if (styling.backgroundColor) {
+                              cellStyle.backgroundColor = styling.backgroundColor
+                            }
+                            // Apply font color from Excel
+                            if (styling.color) {
+                              cellStyle.color = styling.color
+                            }
 
                             if (styling.fontSize) cellStyle.fontSize = `${Math.min(styling.fontSize, 14)}px`
                             if (styling.fontFamily) cellStyle.fontFamily = styling.fontFamily
@@ -464,8 +527,8 @@ export function ExcelPreviewTable({
                             }
                           }
 
-                          // Special styling for header rows
-                          if (headerRowInfo.has(actualRowIndex)) {
+                          // Fallback header styling (only if no backgroundColor from Excel)
+                          if (!styling?.backgroundColor && headerRowInfo.has(actualRowIndex)) {
                             const headerType = headerRowInfo.get(actualRowIndex)
                             const cellValueStr = String(cellValue || "")
                               .toUpperCase()
@@ -491,9 +554,7 @@ export function ExcelPreviewTable({
                                 cellValueStr.includes("OBSERVATION"))
 
                             if (isHeaderCell) {
-                              if (headerType === "main") {
-                                cellStyle.backgroundColor = "#c8e6c9"
-                              } else if (headerType === "modules") {
+                              if (headerType === "main" || headerType === "modules") {
                                 cellStyle.backgroundColor = "#c8e6c9"
                               } else if (headerType === "semester") {
                                 cellStyle.backgroundColor = "#d1c4e9"
@@ -515,89 +576,77 @@ export function ExcelPreviewTable({
                             }
                           }
 
-                          // Check if cell value is a number under 50% for failing marks
+                          // Check for failing marks (only if no backgroundColor already set from Excel)
                           const isFailingMark = (() => {
-                            if (cellValue === null || cellValue === undefined || cellValue === "") {
-                              return false
-                            }
-                            
-                            const numericValue = typeof cellValue === "number" 
-                              ? cellValue 
-                              : parseFloat(String(cellValue).trim())
-                            
-                            // Check if it's a valid percentage or score under 50
-                            if (isNaN(numericValue) || numericValue < 0 || numericValue > 100) {
-                              return false
-                            }
-                            
-                            // Check if this row contains student data (has student ID)
+                            if (styling?.backgroundColor) return false // Don't override Excel colors
+                            if (cellValue === null || cellValue === undefined || cellValue === "") return false
+
+                            const numericValue =
+                              typeof cellValue === "number" ? cellValue : Number.parseFloat(String(cellValue).trim())
+                            if (isNaN(numericValue) || numericValue < 0 || numericValue > 100) return false
+
                             const hasStudentDataInRow = visibleRows[actualRowIndex].some((cell: any) => {
                               const val = String(
-                                cell && typeof cell === "object" && "value" in cell ? cell.value || "" : cell || ""
+                                cell && typeof cell === "object" && "value" in cell ? cell.value || "" : cell || "",
                               )
-                              return /^\d{6,}$/.test(val.trim()) // Student ID pattern
+                              return /^\d{6,}$/.test(val.trim())
                             })
-                            
-                            if (!hasStudentDataInRow) {
-                              return false
-                            }
-                            
-                            // Look for mark columns by checking multiple rows for patterns
+
+                            if (!hasStudentDataInRow) return false
+
                             let isMarkColumn = false
-                            
-                            // Check current column header
+
                             for (let checkRow = 0; checkRow < Math.min(5, visibleRows.length); checkRow++) {
                               const headerCell = visibleRows[checkRow]?.[cellIndex]
                               const headerText = String(
-                                headerCell && typeof headerCell === "object" && "value" in headerCell 
-                                  ? headerCell.value || "" 
-                                  : headerCell || ""
+                                headerCell && typeof headerCell === "object" && "value" in headerCell
+                                  ? headerCell.value || ""
+                                  : headerCell || "",
                               ).toLowerCase()
-                              
-                              if (headerText.includes("mark") ||
-                                  headerText.includes("score") ||
-                                  headerText.includes("test") ||
-                                  headerText.includes("exam") ||
-                                  headerText.includes("assessment") ||
-                                  headerText.includes("assignment") ||
-                                  headerText.includes("cat") ||
-                                  headerText.includes("final") ||
-                                  (headerText.includes("total") && !headerText.includes("credit")) ||
-                                  (headerText.includes("grade") && !headerText.includes("point"))) {
+
+                              if (
+                                headerText.includes("mark") ||
+                                headerText.includes("score") ||
+                                headerText.includes("test") ||
+                                headerText.includes("exam") ||
+                                headerText.includes("assessment") ||
+                                headerText.includes("assignment") ||
+                                headerText.includes("cat") ||
+                                headerText.includes("final") ||
+                                (headerText.includes("total") && !headerText.includes("credit")) ||
+                                (headerText.includes("grade") && !headerText.includes("point"))
+                              ) {
                                 isMarkColumn = true
                                 break
                               }
                             }
-                            
-                            // Also check if column has module code pattern above
+
                             if (!isMarkColumn) {
                               for (let checkRow = 0; checkRow < Math.min(3, actualRowIndex); checkRow++) {
                                 const moduleCell = visibleRows[checkRow]?.[cellIndex]
                                 const moduleText = String(
-                                  moduleCell && typeof moduleCell === "object" && "value" in moduleCell 
-                                    ? moduleCell.value || "" 
-                                    : moduleCell || ""
+                                  moduleCell && typeof moduleCell === "object" && "value" in moduleCell
+                                    ? moduleCell.value || ""
+                                    : moduleCell || "",
                                 )
-                                // Module code pattern like CSC101, MTH201, etc.
                                 if (/^[A-Z]{3,4}\d{3,4}$/i.test(moduleText.trim())) {
                                   isMarkColumn = true
                                   break
                                 }
                               }
                             }
-                            
-                            // If still not identified, check if this is in the middle of the table (likely mark columns)
+
                             if (!isMarkColumn && cellIndex > 2 && cellIndex < 20) {
                               isMarkColumn = true
                             }
-                            
+
                             return numericValue < 50 && isMarkColumn
                           })()
 
-                          // Apply red styling for failing marks
-                          if (isFailingMark) {
-                            cellStyle.backgroundColor = "#fecaca" // Light red background
-                            cellStyle.color = "#dc2626" // Red text
+                          // Apply failing mark styling only if no Excel background color
+                          if (isFailingMark && !styling?.backgroundColor) {
+                            cellStyle.backgroundColor = "#fecaca"
+                            cellStyle.color = "#dc2626"
                             cellStyle.fontWeight = "bold"
                           }
 
@@ -611,43 +660,10 @@ export function ExcelPreviewTable({
                             >
                               <div
                                 className="truncate"
-                                title={String(cellValue || "")}
-                                style={{
-                                  lineHeight: "1.2",
-                                  minHeight: "16px",
-                                }}
+                                title={styling?.comment ? undefined : String(cellValue || "")}
+                                style={{ lineHeight: "1.2", minHeight: "16px" }}
                               >
-                                {(() => {
-                                  if (cellValue === null || cellValue === undefined || cellValue === "") {
-                                    return <span className="text-transparent select-none">-</span>
-                                  }
-
-                                  const textColor = styling?.color || "inherit"
-                                  const isMergedCell = (rowSpan && rowSpan > 1) || (colSpan && colSpan > 1)
-
-                                  if (typeof cellValue === "number") {
-                                    return (
-                                      <span
-                                        className={isMergedCell ? "font-mono text-center" : "text-right font-mono"}
-                                        style={{ color: textColor }}
-                                      >
-                                        {cellValue.toLocaleString()}
-                                      </span>
-                                    )
-                                  }
-                                  if (typeof cellValue === "boolean") {
-                                    return (
-                                      <span className="text-center font-medium" style={{ color: textColor }}>
-                                        {cellValue ? "TRUE" : "FALSE"}
-                                      </span>
-                                    )
-                                  }
-                                  const stringValue = String(cellValue).trim()
-                                  if (stringValue === "") {
-                                    return <span className="text-transparent select-none">-</span>
-                                  }
-                                  return <span style={{ color: textColor }}>{stringValue}</span>
-                                })()}
+                                {renderCellContent(cellValue, styling, rowSpan, colSpan)}
                               </div>
                             </TableCell>
                           )
