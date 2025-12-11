@@ -202,29 +202,63 @@ export default function ResultsPage() {
     }
   }, [showSubmissionMessage, submissionData, submissionError, clearSubmission])
 
-  // Find the row index that starts with "SN"
-  const findSNRowIndex = (data: CellData[][]) => {
+  // Find the header row index that contains "Sl.No" or similar
+  const findHeaderRowIndex = (data: CellData[][]) => {
     for (let i = 0; i < data.length; i++) {
       const firstCell = data[i][0]
       if (firstCell && firstCell.value) {
         const cellValue = String(firstCell.value).trim().toUpperCase()
-        if (cellValue === "SN" || cellValue.startsWith("SN")) {
+        // Look for various header formats
+        if (cellValue === "SL.NO" || cellValue.startsWith("SL.NO") || 
+            cellValue === "SL NO" || cellValue.startsWith("SL NO") ||
+            cellValue === "S.NO" || cellValue.startsWith("S.NO") ||
+            cellValue === "S NO" || cellValue.startsWith("S NO") ||
+            cellValue === "SERIAL" || cellValue.startsWith("SERIAL") ||
+            cellValue === "SN" || cellValue.startsWith("SN")) {
+          console.log(`Found header row at index ${i} in ${activeTab} sheet:`, cellValue)
           return i
         }
       }
     }
+    console.log(`No header row found in ${activeTab} sheet`)
     return -1
   }
 
-  // Filter styled data based on search and hide rows above SN
+  // Find header row and starting column for both sheets
+  const getHeaderInfo = (data: CellData[][]) => {
+    const headerRowIndex = findHeaderRowIndex(data)
+    let startCol = 0
+    
+    if (headerRowIndex >= 0 && data.length > headerRowIndex) {
+      const headerRow = data[headerRowIndex]
+      // Find the first non-empty cell in header row (should be "Sl.No")
+      for (let i = 0; i < headerRow.length; i++) {
+        if (headerRow[i] && headerRow[i].value !== null && headerRow[i].value !== undefined && String(headerRow[i].value).trim() !== "") {
+          startCol = i
+          break
+        }
+      }
+    }
+    
+    return { headerRowIndex, startCol }
+  }
+
+  // Filter styled data based on search and hide rows above header
   const filteredStyledData = (() => {
-    const snRowIndex = findSNRowIndex(currentStyledData)
+    const { headerRowIndex, startCol } = getHeaderInfo(currentStyledData)
     let dataToShow = currentStyledData
     
-    // Hide rows above SN row if found
-    if (snRowIndex > 0) {
-      dataToShow = currentStyledData.slice(snRowIndex)
+    console.log(`${activeTab} sheet - Original data length: ${currentStyledData.length}, header row index: ${headerRowIndex}, start column: ${startCol}`)
+    
+    // Hide rows above header row if found
+    if (headerRowIndex >= 0) {
+      dataToShow = currentStyledData.slice(headerRowIndex)
+      console.log(`${activeTab} sheet - After row filtering, data length: ${dataToShow.length}`)
     }
+    
+    // Filter columns to start from header column
+    dataToShow = dataToShow.map(row => row.slice(startCol))
+    console.log(`${activeTab} sheet - After column filtering, row length: ${dataToShow.length > 0 ? dataToShow[0].length : 0}`)
     
     // Apply search filter
     if (search.trim()) {
@@ -241,20 +275,8 @@ export default function ResultsPage() {
 
   // Also filter column widths to match the filtered data
   const filteredColumnWidths = (() => {
-    const snRowIndex = findSNRowIndex(currentStyledData)
-    if (snRowIndex > 0 && currentStyledData.length > snRowIndex) {
-      // Find the first non-empty cell in SN row to determine starting column
-      const snRow = currentStyledData[snRowIndex]
-      let startCol = 0
-      for (let i = 0; i < snRow.length; i++) {
-        if (snRow[i] && snRow[i].value !== null && snRow[i].value !== undefined && String(snRow[i].value).trim() !== "") {
-          startCol = i
-          break
-        }
-      }
-      return currentColumnWidths.slice(startCol)
-    }
-    return currentColumnWidths
+    const { startCol } = getHeaderInfo(currentStyledData)
+    return currentColumnWidths.slice(startCol)
   })()
 
   const handleDownloadMarksheet = async () => {
@@ -645,25 +667,14 @@ export default function ResultsPage() {
                       </colgroup>
                       <tbody>
                         {filteredStyledData.map((row, rowIndex) => {
-                          // Find the starting column index based on the original SN row
-                          const snRowIndex = findSNRowIndex(currentStyledData)
-                          let startCol = 0
-                          if (snRowIndex > 0 && currentStyledData.length > snRowIndex) {
-                            const snRow = currentStyledData[snRowIndex]
-                            for (let i = 0; i < snRow.length; i++) {
-                              if (snRow[i] && snRow[i].value !== null && snRow[i].value !== undefined && String(snRow[i].value).trim() !== "") {
-                                startCol = i
-                                break
-                              }
-                            }
+                          // Debug for first few rows
+                          if (rowIndex < 2) {
+                            console.log(`${activeTab} sheet - Row ${rowIndex}, cells: ${row.length}`)
                           }
-                          
-                          // Filter row cells to start from the correct column
-                          const filteredRow = row.slice(startCol)
                           
                           return (
                             <tr key={`row-${rowIndex}`}>
-                              {filteredRow.map((cell, cellIndex) => {
+                              {row.map((cell, cellIndex) => {
                               if (cell.isMergedChild) {
                                 return null
                               }
