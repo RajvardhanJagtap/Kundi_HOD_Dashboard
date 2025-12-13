@@ -111,16 +111,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (typeof window !== "undefined") {
-        // Helper function to set cookies
-        const setCookie = (name: string, value: string, days: number = 1) => {
-          const expires = new Date();
-          expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-          document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+        // Helper function to set cookies with consistent max-age
+        const setCookie = (name: string, value: string, maxAge: number) => {
+          document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
         };
         
-        // Store tokens in cookies
-        setCookie("accessToken", data.accessToken, 1);
-        setCookie("refreshToken", data.refreshToken, 7);
+        // Store tokens in cookies with proper expiration
+        setCookie("accessToken", data.accessToken, 86400); // 1 day in seconds
+        setCookie("refreshToken", data.refreshToken, 604800); // 7 days in seconds
         
         // Store other data in localStorage
         localStorage.setItem("user", JSON.stringify(data.user));
@@ -164,9 +162,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     if (typeof window !== "undefined") {
-      // Clear cookies
-      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      // Clear cookies using consistent approach
+      const clearCookie = (name: string) => {
+        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      };
+      
+      clearCookie("accessToken");
+      clearCookie("refreshToken");
       
       // Clear localStorage
       localStorage.removeItem("user");
