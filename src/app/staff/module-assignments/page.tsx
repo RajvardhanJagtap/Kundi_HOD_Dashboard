@@ -159,7 +159,7 @@ export default function ModuleAssignmentsPage() {
     isLoading: assignmentsLoading,
     error: assignmentsError,
     refetch,
-  } = useModuleAssignments({ academicYearId });
+  } = useModuleAssignments({ academicYearId, semesterId: currentSemesterId });
   const {
     lecturers,
     isLoading: lecturersLoading,

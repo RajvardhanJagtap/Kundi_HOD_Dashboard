@@ -130,11 +130,11 @@ export default function MarksSubmittedPage() {
 
   // Fetch submission details when academic year or semester changes
   React.useEffect(() => {
-    if (academicYearId || semesterId) {
+    // Only fetch when semesterId is available to avoid the error
+    if (semesterId) {
       fetchAllSubmissionDetails({ academicYearId, semesterId });
-    } else {
-      fetchAllSubmissionDetails({});
     }
+    // Don't call with empty params - wait for semesterId to be loaded
   }, [academicYearId, semesterId]);
 
   // Main tabs: 'mark-submissions', 'analytics', 'deadlines'

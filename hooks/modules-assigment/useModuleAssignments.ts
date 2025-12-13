@@ -128,9 +128,10 @@ interface UseModuleAssignmentsReturn {
 
 interface UseModuleAssignmentsParams {
   academicYearId: string;
+  semesterId: string;
 }
 
-export const useModuleAssignments = ({ academicYearId }: UseModuleAssignmentsParams): UseModuleAssignmentsReturn => {
+export const useModuleAssignments = ({ academicYearId, semesterId }: UseModuleAssignmentsParams): UseModuleAssignmentsReturn => {
   const [assignments, setAssignments] = useState<ModuleAssignment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -146,15 +147,19 @@ export const useModuleAssignments = ({ academicYearId }: UseModuleAssignmentsPar
         throw new Error("Department ID not found");
       }
 
-      if (!academicYearId) {
+      if (!academicYearId || !semesterId) {
         setAssignments([]);
         return;
       }
 
+      // For now, use the existing department endpoint. The semesterId will be used
+      // when the backend is updated to support the new my-department endpoint
       const response = await moduleAssignmentsApi.getModuleAssignmentsByDepartment(departmentId, academicYearId);
       
       if (response.success) {
-        setAssignments(response.data);
+        // Filter assignments by semesterId since the API doesn't support it yet
+        const filteredAssignments = response.data.filter(assignment => assignment.semesterId === semesterId);
+        setAssignments(filteredAssignments);
       } else {
         throw new Error(response.message || "Failed to fetch module assignments");
       }
@@ -168,10 +173,10 @@ export const useModuleAssignments = ({ academicYearId }: UseModuleAssignmentsPar
   };
 
   useEffect(() => {
-    if (academicYearId) {
+    if (academicYearId && semesterId) {
       fetchAssignments();
     }
-  }, [academicYearId]);
+  }, [academicYearId, semesterId]);
 
   const refetch = async () => {
     await fetchAssignments();

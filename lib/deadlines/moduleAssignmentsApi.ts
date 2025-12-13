@@ -248,15 +248,19 @@ export const moduleAssignmentsApi = {
   getModuleAssignments: async (params: ModuleAssignmentsParams = {}): Promise<ModuleAssignmentsResponse> => {
     const queryParams = new URLSearchParams();
     
+    // Require semesterId for the new endpoint
+    if (!params.semester) {
+      throw new Error('semester (semesterId) is required for getModuleAssignments');
+    }
+    
     if (params.page !== undefined) queryParams.append('page', params.page.toString());
     if (params.size !== undefined) queryParams.append('size', params.size.toString());
     if (params.moduleCode) queryParams.append('moduleCode', params.moduleCode);
     if (params.instructorName) queryParams.append('instructorName', params.instructorName);
     if (params.departmentName) queryParams.append('departmentName', params.departmentName);
     if (params.academicYear) queryParams.append('academicYear', params.academicYear);
-    if (params.semester) queryParams.append('semester', params.semester);
 
-    const response = await api.get(`/academics/module-assignments?${queryParams.toString()}`);
+    const response = await api.get(`/academics/module-assignments/my-department?semesterId=${params.semester}&${queryParams.toString()}`);
     return response.data.data;
   },
 

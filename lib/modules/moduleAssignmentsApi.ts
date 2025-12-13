@@ -194,9 +194,16 @@ export const moduleAssignmentsApi = {
     return response.data;
   },
 
-  // Get all module assignments with optional filters and pagination (kept for backward compatibility)
+  // Get all module assignments with optional filters and pagination (updated to use my-department endpoint)
   getModuleAssignments: async (params?: ModuleAssignmentsParams): Promise<ModuleAssignmentsResponse> => {
-    const response = await api.get('/academics/module-assignments', { params });
+    // Require semesterId for the new endpoint
+    if (!params?.semesterId) {
+      throw new Error('semesterId is required for getModuleAssignments');
+    }
+    
+    const response = await api.get(`/academics/module-assignments/my-department?semesterId=${params.semesterId}`, { 
+      params: { ...params, semesterId: undefined } // Remove semesterId from params since it's in the URL
+    });
     return response.data;
   },
 
