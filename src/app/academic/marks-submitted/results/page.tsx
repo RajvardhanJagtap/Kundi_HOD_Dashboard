@@ -27,6 +27,7 @@ import {
   X,
   MessageSquare,
 } from "lucide-react"
+import { useModuleSubmissionDetails } from "@/hooks/modules/useModuleAssignments"
 
 export default function ResultsPage() {
   const searchParams = useSearchParams()
@@ -41,7 +42,7 @@ export default function ResultsPage() {
   const [approvalComments, setApprovalComments] = useState("")
   const [approvalNotes, setApprovalNotes] = useState("")
 
-  // Track approval status
+  // Track approval status based on API response action field
   const [catApproved, setCatApproved] = useState(false)
   const [examApproved, setExamApproved] = useState(false)
   const [overallApproved, setOverallApproved] = useState(false)
@@ -50,8 +51,33 @@ export default function ResultsPage() {
     exam: false,
   })
 
+  // Function to check if submission is approved based on nested submission status fields
+  const isSubmissionApproved = (submissionData: any, submissionType: 'cat' | 'exam' | 'overall'): boolean => {
+    if (!submissionData?.data) return false;
+    
+    const data = submissionData.data;
+    
+    // Check the appropriate nested submission status based on submission type
+    if (submissionType === 'cat' && data.catSubmission) {
+      return data.catSubmission.status === 'APPROVED';
+    }
+    
+    if (submissionType === 'exam' && data.examSubmission) {
+      return data.examSubmission.status === 'APPROVED';
+    }
+    
+    if (submissionType === 'overall' && data.overallSubmission) {
+      return data.overallSubmission.status === 'APPROVED';
+    }
+    
+    return false;
+  }
+
   // Submission hook
   const { isSubmitting, submissionData, error: submissionError, submit, clearSubmission } = useSubmission()
+
+  // Module submission details hook
+  const { fetchSubmissionDetails } = useModuleSubmissionDetails()
 
   const [downloading, setDownloading] = useState(false)
 
@@ -92,19 +118,34 @@ export default function ResultsPage() {
     }
   }
 
-  // Initialize approval status from stored data
-  useEffect(() => {
-    if (!moduleId) return
-    const storedStatus = localStorage.getItem(`approvalStatus-${moduleId}`)
-    if (storedStatus) {
-      const status = JSON.parse(storedStatus)
-      setCatApproved(status.cat)
-      setExamApproved(status.exam)
-      setOverallApproved(status.overall)
-      setMarksApprovalStatus({ cat: status.cat, exam: status.exam })
-      setSubmitted(status.overall)
+  // Function to fetch current submission status
+  const fetchCurrentSubmissionStatus = async () => {
+    if (!moduleId) return;
+    
+    try {
+      const submissionDetails = await fetchSubmissionDetails(moduleId);
+      if (submissionDetails?.data) {
+        // Check approval status based on action field from API response
+        const isCatApproved = isSubmissionApproved(submissionDetails, 'cat');
+        const isExamApproved = isSubmissionApproved(submissionDetails, 'exam');
+        const isOverallApproved = isSubmissionApproved(submissionDetails, 'overall');
+
+        setCatApproved(isCatApproved);
+        setExamApproved(isExamApproved);
+        setOverallApproved(isOverallApproved);
+        setMarksApprovalStatus({ cat: isCatApproved, exam: isExamApproved });
+        setSubmitted(isOverallApproved);
+      }
+    } catch (error) {
+      console.error('Error fetching submission status:', error);
+      // Keep current state if fetch fails
     }
-  }, [moduleId])
+  };
+
+  // Fetch current submission status when component mounts
+  useEffect(() => {
+    fetchCurrentSubmissionStatus();
+  }, [moduleId]);
 
   // Hooks for both tabs - Now using styledData with merge information
   const {
@@ -136,57 +177,21 @@ export default function ResultsPage() {
   const currentBlob = activeTab === "assessments" ? assessmentsBlob : examsBlob
   const currentRefetch = activeTab === "assessments" ? refetchAssessments : refetchExams
 
-  // Update approval status from submission data
+  // Update approval status when new submission data is received
   useEffect(() => {
     if (!moduleId || !submissionData?.data) return
 
-    const { catSubmission, examSubmission, overallSubmission } = submissionData.data
+    // Check approval status based on action field from API response
+    const isCatApproved = isSubmissionApproved(submissionData, 'cat')
+    const isExamApproved = isSubmissionApproved(submissionData, 'exam')
+    const isOverallApproved = isSubmissionApproved(submissionData, 'overall')
 
-    if (catSubmission) {
-      const isCatApproved = catSubmission.status === "APPROVED"
-      setCatApproved(isCatApproved)
-      setMarksApprovalStatus((prev) => ({ ...prev, cat: isCatApproved }))
-    }
-
-    if (examSubmission) {
-      const isExamApproved = examSubmission.status === "APPROVED"
-      setExamApproved(isExamApproved)
-      setMarksApprovalStatus((prev) => ({ ...prev, exam: isExamApproved }))
-    }
-
-    if (overallSubmission) {
-      const isOverallApproved = overallSubmission.status === "APPROVED"
-      setOverallApproved(isOverallApproved)
-      setSubmitted(isOverallApproved)
-    }
-
-    localStorage.setItem(
-      `approvalStatus-${moduleId}`,
-      JSON.stringify({
-        cat: catSubmission?.status === "APPROVED",
-        exam: examSubmission?.status === "APPROVED",
-        overall: overallSubmission?.status === "APPROVED",
-      }),
-    )
+    setCatApproved(isCatApproved)
+    setExamApproved(isExamApproved)
+    setOverallApproved(isOverallApproved)
+    setMarksApprovalStatus({ cat: isCatApproved, exam: isExamApproved })
+    setSubmitted(isOverallApproved)
   }, [moduleId, submissionData])
-
-  // Handle submission data changes and persist state
-  useEffect(() => {
-    if (!moduleId) return
-    if (submissionData) {
-      let newStatus
-      if (activeTab === "assessments") {
-        newStatus = { cat: true, exam: marksApprovalStatus.exam, overall: overallApproved }
-        setCatApproved(true)
-        setMarksApprovalStatus((prev) => ({ ...prev, cat: true }))
-      } else {
-        newStatus = { cat: marksApprovalStatus.cat, exam: true, overall: overallApproved }
-        setExamApproved(true)
-        setMarksApprovalStatus((prev) => ({ ...prev, exam: true }))
-      }
-      localStorage.setItem(`approvalStatus-${moduleId}`, JSON.stringify(newStatus))
-    }
-  }, [submissionData, activeTab, moduleId, marksApprovalStatus, overallApproved])
 
   // Auto-hide submission message after 5 seconds
   useEffect(() => {
@@ -336,6 +341,7 @@ export default function ResultsPage() {
     setShowSubmissionMessage(false)
     clearSubmission()
     currentRefetch()
+    fetchCurrentSubmissionStatus() // Also fetch current approval status
   }
 
   const handleTabSwitch = (tab: "assessments" | "exams") => {
