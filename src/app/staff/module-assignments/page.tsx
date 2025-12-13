@@ -72,6 +72,7 @@ export default function ModuleAssignmentsPage() {
   const [currentSemesterId, setCurrentSemesterId] = useState<string>("");
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
   const [lecturerSearchTerm, setLecturerSearchTerm] = useState("");
+  const [moduleSearchTerm, setModuleSearchTerm] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -210,6 +211,19 @@ export default function ModuleAssignmentsPage() {
     });
   }, [lecturers, lecturerSearchTerm]);
 
+  // Filter modules for search
+  const filteredModules = useMemo(() => {
+    if (!moduleSearchTerm) return modules;
+
+    return modules.filter((module) => {
+      const searchLower = moduleSearchTerm.toLowerCase();
+      return (
+        module.name.toLowerCase().includes(searchLower) ||
+        module.code.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [modules, moduleSearchTerm]);
+
   // Pagination
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -266,6 +280,8 @@ export default function ModuleAssignmentsPage() {
 
       toast.success("Module assignment created successfully!");
       setIsCreateDialogOpen(false);
+      setModuleSearchTerm("");
+      setLecturerSearchTerm("");
       refetch();
 
       // Reset form
@@ -380,7 +396,13 @@ export default function ModuleAssignmentsPage() {
           </p>
         </div>
 
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+          setIsCreateDialogOpen(open);
+          if (!open) {
+            setModuleSearchTerm("");
+            setLecturerSearchTerm("");
+          }
+        }}>
           <DialogTrigger asChild>
             <Button className="bg-[#026892] hover:bg-[#026892]/90 text-white">
               <Plus className="w-4 h-4 mr-2" />
@@ -395,60 +417,142 @@ export default function ModuleAssignmentsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="module">Module *</Label>
-                  <Select
-                    value={formData.moduleId}
-                    onValueChange={(value) => {
-                      setFormData((prev) => ({ ...prev, moduleId: value }));
-                      const selectedModule = modules.find(
-                        (m) => m.id === value
-                      );
-                      if (selectedModule) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          creditHours: selectedModule.credits.toString(),
-                          contactHours: selectedModule.contactHours.toString(),
-                        }));
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select module" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {modules.map((module) => (
-                        <SelectItem key={module.id} value={module.id}>
-                          <div className="flex flex-col">
-                            <span className="font-medium">{module.name}</span>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
+                    <Select
+                      value={formData.moduleId}
+                      onValueChange={(value) => {
+                        setFormData((prev) => ({ ...prev, moduleId: value }));
+                        const selectedModule = modules.find(
+                          (m) => m.id === value
+                        );
+                        if (selectedModule) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            creditHours: selectedModule.credits.toString(),
+                            contactHours: selectedModule.contactHours.toString(),
+                          }));
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-full pl-10 h-12 border-2 border-gray-200 focus:border-[#026892] transition-colors">
+                        <SelectValue placeholder="Search and select a module..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        <div className="px-2 py-2 sticky top-0 bg-white border-b z-10">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Input
+                              placeholder="Type to search modules..."
+                              value={moduleSearchTerm}
+                              onChange={(e) =>
+                                setModuleSearchTerm(e.target.value)
+                              }
+                              className="pl-10 h-9"
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </div>
+                        <div className="p-1">
+                          {filteredModules.length > 0 ? (
+                            filteredModules.map((module) => (
+                              <SelectItem
+                                key={module.id}
+                                value={module.id}
+                                className="cursor-pointer hover:bg-[#026892]/5 rounded-md my-1"
+                              >
+                                <div className="flex items-center gap-3 py-2">
+                                  <div className="text-[#026892] rounded-lg w-10 h-10 flex items-center justify-center font-semibold text-sm flex-shrink-0">
+                                    {module.code}
+                                  </div>
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="font-medium text-gray-900 truncate">
+                                      {module.name}
+                                    </span>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <div className="text-center py-6 text-gray-500">
+                              <BookOpen className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                              <p className="text-sm">No modules found</p>
+                              <p className="text-xs mt-1">
+                                Try a different search term
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="instructor">Lecturer *</Label>
-                  <Select
-                    value={formData.instructorId}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, instructorId: value }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select lecturer" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {lecturers.map((lecturer) => (
-                        <SelectItem key={lecturer.id} value={lecturer.id}>
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {lecturer.fullName}
-                            </span>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 z-10" />
+                    <Select
+                      value={formData.instructorId}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, instructorId: value }))
+                      }
+                    >
+                      <SelectTrigger className="w-full pl-10 h-12 border-2 border-gray-200 focus:border-[#026892] transition-colors">
+                        <SelectValue placeholder="Search and select a lecturer..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        <div className="px-2 py-2 sticky top-0 bg-white border-b z-10">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Input
+                              placeholder="Type to search lecturers..."
+                              value={lecturerSearchTerm}
+                              onChange={(e) =>
+                                setLecturerSearchTerm(e.target.value)
+                              }
+                              className="pl-10 h-9"
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                        </div>
+                        <div className="p-1">
+                          {filteredLecturers.length > 0 ? (
+                            filteredLecturers.map((lecturer) => (
+                              <SelectItem
+                                key={lecturer.id}
+                                value={lecturer.id}
+                                className="cursor-pointer hover:bg-[#026892]/5 rounded-md my-1"
+                              >
+                                <div className="flex items-center gap-3 py-2">
+                                  <div className="bg-[#026892]/10 text-[#026892] rounded-full w-10 h-10 flex items-center justify-center font-semibold text-sm flex-shrink-0">
+                                    {lecturer.fullName
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")
+                                      .slice(0, 2)}
+                                  </div>
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="font-medium text-gray-900 truncate">
+                                      {lecturer.fullName}
+                                    </span>
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <div className="text-center py-6 text-gray-500">
+                              <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                              <p className="text-sm">No lecturers found</p>
+                              <p className="text-xs mt-1">
+                                Try a different search term
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="space-y-2">

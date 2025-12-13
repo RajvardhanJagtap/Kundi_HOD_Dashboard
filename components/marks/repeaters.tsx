@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Download, FileSpreadsheet, AlertCircle, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ExcelPreviewTable } from "@/components/ui/excel-preview-table";
 import { 
   fetchRetakersExcelSheet, 
   downloadRetakersExcelSheet, 
@@ -171,51 +172,19 @@ const RepeatersComponent: React.FC<RepeatersComponentProps> = ({ className, year
 
       {/* Excel Preview */}
       {previewData ? (
-        <>
-         
-          
-          {/* Manual table display since ExcelPreviewTable might not exist */}
-          <div className="space-y-4">
-            {previewData.sheets.map((sheet, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle className="text-lg">{sheet.sheetName}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse border border-gray-200">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          {sheet.headers.map((header, headerIndex) => (
-                            <th key={headerIndex} className="border border-gray-200 px-4 py-2 text-left font-medium text-gray-900">
-                              {header}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sheet.rows.slice(0, 10).map((row, rowIndex) => (
-                          <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                            {row.map((cell, cellIndex) => (
-                              <td key={cellIndex} className="border border-gray-200 px-4 py-2 text-sm text-gray-700">
-                                {typeof cell === 'object' && cell !== null ? String(cell) : String(cell || '')}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {sheet.totalRows > 10 && (
-                      <p className="text-sm text-gray-500 mt-2">
-                        Showing first 10 rows of {sheet.totalRows} total rows
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        <div className="w-full min-w-0 overflow-hidden">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold">Retakers & Repeaters Sheet Preview</h2>
+            </div>
           </div>
-        </>
+          <ExcelPreviewTable
+            data={previewData.sheets}
+            onDownload={downloadSheet}
+            isDownloadLoading={isDownloading}
+            hideTopMeta={true}
+          />
+        </div>
       ) : !isPreviewLoading && !error && (
         <Card>
           <CardContent className="p-8 text-center">
