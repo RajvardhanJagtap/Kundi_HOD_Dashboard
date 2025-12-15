@@ -129,6 +129,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(data.user);
       setPermissions(data.permissions);
       setRoles(data.roles);
+      
+      // Validate user roles - only allow HEAD_OF_DEPARTMENT and SUPERADMIN
+      const allowedRoles = ["HEAD_OF_DEPARTMENT", "SUPERADMIN"];
+      const hasValidRole = data.roles.some((role: string) => allowedRoles.includes(role));
+      
+      if (!hasValidRole) {
+        throw new Error("Access denied. Only HOD and SUPERADMIN roles are allowed to access this portal.");
+      }
+      
     setDepartmentId(data.user.attributes?.DEPARTMENT_ID || null);
       setIsAuthenticated(true);
     } catch (error: any) {
