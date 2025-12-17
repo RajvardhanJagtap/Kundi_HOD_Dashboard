@@ -21,9 +21,9 @@ const ClassMarksTabs: React.FC<{
   setActiveTab: (tab: string) => void
 }> = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { key: "summary", label: "Summary" },
-    { key: "overall-marks", label: "Overall Marks" },
-    { key: "repeaters-retakers", label: "Repeaters & Retakers" },
+    { key: "summary", label: "Main Summary Sheet" },
+    { key: "overall-marks", label: "Main Sheet" },
+    { key: "repeaters-retakers", label: "Repeaters & Retakers Sheet" },
   ]
 
   return (
