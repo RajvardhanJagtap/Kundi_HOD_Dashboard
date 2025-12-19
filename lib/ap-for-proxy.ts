@@ -18,7 +18,7 @@ const api: AxiosInstance = axios.create({
 
 // Request interceptor
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     if (DEBUG_API) {
       console.log('API Request:', {
         method: config.method,
@@ -28,16 +28,11 @@ api.interceptors.request.use(
       })
     }
 
-    // Add auth token if available
+    // Add auth token if available (use centralized utility)
     if (typeof window !== 'undefined') {
-      const getCookie = (name: string) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()?.split(";").shift();
-        return null;
-      };
+      const { getCookie } = await import('./token-utils');
+      const token = getCookie('accessToken');
       
-      const token = getCookie('accessToken') || localStorage.getItem('accessToken');
       if (token && config.headers) {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
@@ -70,7 +65,7 @@ api.interceptors.response.use(
     }
     return response
   },
-  (error) => {
+  async (error) => {
     if (DEBUG_API) {
       console.error('API Response Error:', {
         message: error.message,
@@ -80,12 +75,55 @@ api.interceptors.response.use(
       })
     }
 
-    // Handle specific error cases
-    if (error.response?.status === 401) {
-      // Token expired or invalid
+    const originalRequest = error.config
+
+    // Handle 401 errors with token refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+
       if (typeof window !== 'undefined') {
-        document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        localStorage.removeItem('accessToken');
+        try {
+          // Import token refresh utility
+          const { refreshAccessToken, clearAuthData } = await import('./token-utils')
+          
+          const newAccessToken = await refreshAccessToken()
+          
+          if (newAccessToken) {
+            // Update the authorization header and retry the request
+            originalRequest.headers = originalRequest.headers || {}
+            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`
+            
+            // If using proxy, also update X-Access-Token header
+            if (USE_PROXY) {
+              originalRequest.headers['X-Access-Token'] = newAccessToken
+            }
+            
+            console.log('Token refreshed, retrying original request')
+            return api(originalRequest)
+          } else {
+            // Refresh failed - clear auth and redirect to login
+            console.error('Token refresh failed, clearing auth data and redirecting to login')
+            clearAuthData()
+            
+            // Dispatch logout event to notify AuthContext
+            window.dispatchEvent(new CustomEvent('auth:logout'))
+            
+            if (!window.location.pathname.includes('/login')) {
+              window.location.href = '/login'
+            }
+          }
+        } catch (refreshError) {
+          console.error('Error during token refresh:', refreshError)
+          const { clearAuthData } = await import('./token-utils')
+          clearAuthData()
+          
+          // Dispatch logout event to notify AuthContext
+          window.dispatchEvent(new CustomEvent('auth:logout'))
+          
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login'
+          }
+        }
       }
     } else if (error.code === 'ERR_NETWORK') {
       error.message = 'Network error. Please check your internet connection.'
@@ -113,13 +151,14 @@ export const buildApiUrl = (endpoint: string): string => {
 export const buildDirectUrl = (endpoint: string): string => {
   let token = null;
   if (typeof window !== 'undefined') {
-    const getCookie = (name: string) => {
+    // Use centralized utility (synchronously, but we'll import it lazily if needed)
+    const getCookie = (name: string): string | null => {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
       return null;
     };
-    token = getCookie('accessToken') || localStorage.getItem('accessToken');
+    token = getCookie('accessToken');
   }
   
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint

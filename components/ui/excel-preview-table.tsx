@@ -15,6 +15,7 @@ interface ExcelPreviewTableProps {
   isDownloadLoading?: boolean
   hideTopMeta?: boolean
   startAtHeader?: boolean
+  emptyMessage?: string
 }
 
 export function ExcelPreviewTable({
@@ -23,6 +24,7 @@ export function ExcelPreviewTable({
   isDownloadLoading = false,
   hideTopMeta = false,
   startAtHeader = false,
+  emptyMessage,
 }: ExcelPreviewTableProps) {
   const [currentSheetIndex, setCurrentSheetIndex] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -334,6 +336,18 @@ export function ExcelPreviewTable({
           </CardHeader>
 
           <CardContent className="p-0 overflow-hidden">
+            {/* Empty Message */}
+            {emptyMessage && (
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center gap-2 text-gray-800">
+                  <svg className="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="font-medium text-sm">{emptyMessage}</p>
+                </div>
+              </div>
+            )}
+            
             {/* Sheet Tabs */}
             {data.length > 1 && (
               <div className="border-b bg-gray-50 px-4 py-2">

@@ -30,33 +30,39 @@ apiInstance.interceptors.response.use(
 
       try {
         if (typeof window !== "undefined") {
-          const getCookie = (name: string) => {
-            const value = `; ${document.cookie}`
-            const parts = value.split(`; ${name}=`)
-            if (parts.length === 2) return parts.pop()?.split(";").shift()
-            return null
-          }
-
-          const refreshToken = getCookie("refreshToken")
-          if (refreshToken) {
-            const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-              refreshToken,
-            })
-
-            const { accessToken } = response.data.data
-            document.cookie = `accessToken=${accessToken}; path=/; max-age=86400; SameSite=Lax`
-
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`
+          // Use centralized token refresh utility
+          const { refreshAccessToken, clearAuthData } = await import("./token-utils")
+          
+          const newAccessToken = await refreshAccessToken()
+          
+          if (newAccessToken) {
+            originalRequest.headers = originalRequest.headers || {}
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+            
+            console.log("Token refreshed, retrying original request")
             return apiInstance(originalRequest)
+          } else {
+            // Refresh failed - clear auth and redirect
+            console.error("Token refresh failed, clearing auth data and redirecting to login")
+            clearAuthData()
+            
+            // Dispatch logout event to notify AuthContext
+            window.dispatchEvent(new CustomEvent("auth:logout"))
+            
+            if (!window.location.pathname.includes("/login")) {
+              window.location.href = "/login"
+            }
           }
         }
       } catch (refreshError) {
+        console.error("Error during token refresh:", refreshError)
         if (typeof window !== "undefined") {
-          document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-          document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-          localStorage.removeItem("user")
-          localStorage.removeItem("permissions")
-          localStorage.removeItem("roles")
+          const { clearAuthData } = await import("./token-utils")
+          clearAuthData()
+          
+          // Dispatch logout event to notify AuthContext
+          window.dispatchEvent(new CustomEvent("auth:logout"))
+          
           if (!window.location.pathname.includes("/login")) {
             window.location.href = "/login"
           }

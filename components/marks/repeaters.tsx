@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Download, FileSpreadsheet, AlertCircle, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ExcelPreviewTable } from "@/components/ui/excel-preview-table";
+import { useAcademicYears } from "@/hooks/academic-year-and-semesters/useAcademicYears";
 import { 
   fetchRetakersExcelSheet, 
   downloadRetakersExcelSheet, 
@@ -36,21 +37,89 @@ const RepeatersComponent: React.FC<RepeatersComponentProps> = ({ className, year
   
   const [error, setError] = useState<string | null>(null);
   const [previewData, setPreviewData] = useState<RetakersExcelPreviewData | null>(null);
+  const [hasNoRetakers, setHasNoRetakers] = useState(false);
   const { toast } = useToast();
+  const { years } = useAcademicYears();
+
+  // Get academic year name from years array using the academicYearId
+  const getAcademicYearName = (): string => {
+    if (!academicYearId) return 'selected';
+    
+    // First try to find by ID
+    const yearById = years.find(y => y.id === academicYearId || y.name === academicYearId);
+    if (yearById) return yearById.name;
+    
+    // Fallback to localStorage (might have the name stored)
+    if (typeof window !== 'undefined') {
+      const storedYear = localStorage.getItem('selectedAcademicYear');
+      // Check if storedYear is actually a name (not a UUID)
+      if (storedYear && !storedYear.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        return storedYear;
+      }
+    }
+    
+    // Last resort: use the year prop if it's not a UUID
+    if (year && !year.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return year;
+    }
+    
+    return academicYearId; // Fallback to ID if name not found
+  };
+
+  // Check if sheet has actual student data (not just headers)
+  const checkIfEmpty = (data: RetakersExcelPreviewData): boolean => {
+    if (!data.sheets || data.sheets.length === 0) return true;
+    
+    for (const sheet of data.sheets) {
+      // Check if there are any rows with actual student data
+      // Student data typically has registration numbers (6+ digits) or numeric marks
+      const hasStudentData = sheet.rows?.some(row => {
+        return row.some((cell: any) => {
+          // Fix: Check if cell is null/undefined first before using 'in' operator
+          if (cell === null || cell === undefined) return false;
+          
+          const value = typeof cell === 'object' && cell !== null && 'value' in cell ? cell.value : cell;
+          const strValue = String(value || '').trim();
+          // Check for registration number pattern or valid marks
+          return /^\d{6,}$/.test(strValue) || 
+                 (/^\d+\.?\d*$/.test(strValue) && parseFloat(strValue) > 0 && parseFloat(strValue) <= 100);
+        });
+      });
+      
+      if (hasStudentData) {
+        return false; // Found student data, not empty
+      }
+    }
+    
+    return true; // No student data found in any sheet
+  };
 
   const loadPreview = async () => {
     setIsPreviewLoading(true);
     setError(null);
+    setHasNoRetakers(false);
 
     try {
       validateRetakersSheetParams(sheetInfo);
       const data = await fetchAndParseRetakersSheet(sheetInfo);
+      
+      // Check if the sheet is empty (no retakers/repeaters)
+      const isEmpty = checkIfEmpty(data);
+      setHasNoRetakers(isEmpty);
+      
       setPreviewData(data);
       
-      toast({
-        title: "Preview Loaded",
-        description: `Successfully loaded retakers sheet preview with ${data.sheets.length} sheet(s).`,
-      });
+      if (isEmpty) {
+        toast({
+          title: "No Retakers Found",
+          description: "No retake/repeat students found for this academic year.",
+        });
+      } else {
+        toast({
+          title: "Preview Loaded",
+          description: `Successfully loaded retakers sheet preview with ${data.sheets.length} sheet(s).`,
+        });
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setError(errorMessage);
@@ -178,11 +247,13 @@ const RepeatersComponent: React.FC<RepeatersComponentProps> = ({ className, year
               <h2 className="text-lg font-semibold">Retakers & Repeaters Sheet Preview</h2>
             </div>
           </div>
+          
           <ExcelPreviewTable
             data={previewData.sheets}
             onDownload={downloadSheet}
             isDownloadLoading={isDownloading}
             hideTopMeta={true}
+            emptyMessage={hasNoRetakers ? `No retake/repeat students found for academic year ${getAcademicYearName()}` : undefined}
           />
         </div>
       ) : !isPreviewLoading && !error && (

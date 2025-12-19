@@ -243,6 +243,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
+
+    // Listen for logout events from token refresh failures
+    const handleLogoutEvent = () => {
+      console.log('Received logout event, clearing auth state');
+      logout();
+    };
+
+    window.addEventListener('auth:logout', handleLogoutEvent);
+
+    return () => {
+      window.removeEventListener('auth:logout', handleLogoutEvent);
+    };
   }, []);
 
   const value: AuthContextType = {
