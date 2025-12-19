@@ -144,21 +144,21 @@ export default function HODDashboardPage() {
           </CardHeader>
           <CardContent className="grid gap-3">
             <Link
-              href="/academic/teaching-plans"
+              href="/department/teaching-plans"
               className="flex items-center gap-3 p-3 rounded-md bg-blue-50 text-[#026892] hover:bg-blue-100 transition-colors"
             >
               <FileText className="h-5 w-5" />
               <span className="font-medium">Approve Teaching Plans</span>
             </Link>
             <Link
-              href="/staff/workload"
+              href="/staff/module-assignments"
               className="flex items-center gap-3 p-3 rounded-md bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
             >
               <UserPlus className="h-5 w-5" />
               <span className="font-medium">Assign Lecturers to Modules</span>
             </Link>
             <Link
-              href="/academic/assessment"
+              href="/academic/marks-submitted"
               className="flex items-center gap-3 p-3 rounded-md bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors"
             >
               <CheckSquare className="h-5 w-5" />
