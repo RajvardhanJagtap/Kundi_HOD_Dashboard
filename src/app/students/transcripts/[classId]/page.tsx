@@ -81,11 +81,11 @@ export default function ClassTranscriptsPage() {
   }, [semesters, selectedSemester]);
 
   useEffect(() => {
-    // Set initialization complete after a short delay
-    setTimeout(() => {
+    // Set initialization complete when initial data is available
+    if (years?.length > 0 && selectedYear && semesters?.length > 0 && selectedSemester) {
       setIsInitializing(false);
-    }, 300);
-  }, []);
+    }
+  }, [years, selectedYear, semesters, selectedSemester]);
 
   const handleYearChange = (yearId: string) => {
     setSelectedYear(yearId);
@@ -240,8 +240,8 @@ export default function ClassTranscriptsPage() {
     );
   };
 
-  // Show loading skeleton only during initialization
-  const showLoading = isInitializing || isLoading;
+  // Show loading state during initialization or when any critical data is loading
+  const showLoading = isInitializing || yearsLoading || semestersLoading || (isLoading && enrollments.length === 0);
 
   if (error) {
     return (
@@ -364,7 +364,19 @@ export default function ClassTranscriptsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {currentEnrollments.length > 0 ? (
+                    {showLoading ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={8}
+                          className="text-center py-8"
+                        >
+                          <div className="flex items-center justify-center">
+                            <Loader2 className="w-6 h-6 animate-spin text-[#026892] mr-2" />
+                            <span className="text-gray-600">Loading students...</span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : currentEnrollments.length > 0 ? (
                       currentEnrollments.map((enrollment) => (
                         <TableRow key={enrollment.id}>
                           <TableCell className="font-medium text-gray-900">
