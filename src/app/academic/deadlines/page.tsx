@@ -103,7 +103,8 @@ export default function MarksSubmissionDeadlinesPage() {
     isCreatingSubmissions,
   } = useModuleAssignments({ 
     page: 0, 
-    size: 100
+    size: 100,
+    ...(semesterId && { semester: semesterId }) // Only pass semesterId if available
   });
 
   // Refetch data when academic year or semester changes

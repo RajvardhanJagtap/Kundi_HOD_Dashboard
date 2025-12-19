@@ -48,6 +48,12 @@ export const useModuleAssignments = (
   });
 
   const fetchData = useCallback(async () => {
+    // Don't fetch if semester is not available
+    if (!params.semester) {
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
       setError(null);

@@ -47,16 +47,16 @@ const notifyRefreshSubscribers = (token: string) => {
   refreshSubscribers = [];
 };
 
-// Check if token is about to expire (within 5 minutes)
+// Check if token is about to expire (within 2 minutes for better reliability)
 const isTokenExpiringSoon = (token: string): boolean => {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     const expirationTime = payload.exp * 1000; // Convert to milliseconds
     const currentTime = Date.now();
-    const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
-    return expirationTime - currentTime < fiveMinutes;
+    const twoMinutes = 2 * 60 * 1000; // 2 minutes in milliseconds (reduced from 5)
+    return expirationTime - currentTime <= twoMinutes; // Use <= for more precise timing
   } catch {
-    return true; // If we can't parse the token, assume it's expiring
+    return false; // If we can't parse the token, assume it's valid (don't force refresh)
   }
 };
 
@@ -65,10 +65,10 @@ const refreshTokenIfNeeded = async (): Promise<string | null> => {
   const token = getCookie('accessToken');
   const refreshToken = getCookie('refreshToken');
   
-  if (!token || !refreshToken) return null;
+  if (!refreshToken) return null; // Only need refresh token
   
-  // Check if token is expiring soon
-  if (!isTokenExpiringSoon(token)) return token;
+  // If we have a valid access token that's not expiring soon, return it
+  if (token && !isTokenExpiringSoon(token)) return token;
   
   // If already refreshing, wait for it to complete
   if (isRefreshing) {
@@ -99,27 +99,58 @@ const refreshTokenIfNeeded = async (): Promise<string | null> => {
     notifyRefreshSubscribers(accessToken);
     
     return accessToken;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Token refresh failed:', error);
-    // Clear all auth data and redirect
-    clearCookie('accessToken');
-    clearCookie('refreshToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('permissions');
-    localStorage.removeItem('roles');
-    window.location.href = '/login';
+    // Don't immediately redirect - let the response interceptor handle it
+    // Only clear tokens if it's a clear authentication failure
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
+      clearCookie('accessToken');
+      clearCookie('refreshToken');
+    }
     return null;
   } finally {
     isRefreshing = false;
   }
 };
 
-// Request interceptor to add auth token and refresh if needed
+// Request interceptor to add auth token
 api.interceptors.request.use(async (config) => {
   if (typeof window !== 'undefined') {
-    const token = await refreshTokenIfNeeded();
+    const token = getCookie('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      // If no token found, try to refresh it
+      const refreshToken = getCookie('refreshToken');
+      if (refreshToken) {
+        const newToken = await refreshTokenIfNeeded();
+        if (newToken) {
+          config.headers.Authorization = `Bearer ${newToken}`;
+        } else {
+          // Refresh failed, clear auth data and redirect to login
+          clearCookie('accessToken');
+          clearCookie('refreshToken');
+          localStorage.removeItem('user');
+          localStorage.removeItem('permissions');
+          localStorage.removeItem('roles');
+          
+          // Only redirect if we're not already on login page
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/login';
+          }
+        }
+      } else {
+        // No refresh token available, clear auth data and redirect to login
+        clearCookie('accessToken');
+        localStorage.removeItem('user');
+        localStorage.removeItem('permissions');
+        localStorage.removeItem('roles');
+        
+        // Only redirect if we're not already on login page
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
+      }
     }
   }
   return config;
@@ -131,7 +162,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       originalRequest._retry = true;
       
       if (typeof window !== 'undefined') {
@@ -144,7 +175,17 @@ api.interceptors.response.use(
               return api(originalRequest);
             }
           } catch (refreshError) {
-            // Error already handled in refreshTokenIfNeeded
+            // If refresh failed completely, clear auth data and redirect
+            clearCookie('accessToken');
+            clearCookie('refreshToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('permissions');
+            localStorage.removeItem('roles');
+            
+            // Only redirect if we're not already on login page
+            if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+              window.location.href = '/login';
+            }
           }
         }
       }
