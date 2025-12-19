@@ -26,7 +26,7 @@ export const transcriptApi = {
       name: 'proxy-with-auth',
       fetch: async () => {
         const url = buildApiUrl(endpoint);
-        console.log('Strategy 1: Proxy with auth -', url);
+        // Strategy 1: Proxy with auth
         
         const getCookie = (name: string) => {
           const value = `; ${document.cookie}`;
@@ -65,7 +65,7 @@ export const transcriptApi = {
       name: 'direct-cors',
       fetch: async () => {
         const directUrl = buildDirectUrl(endpoint);
-        console.log('Strategy 2: Direct CORS -', directUrl);
+        // Strategy 2: Direct CORS
         
         const getCookie = (name: string) => {
           const value = `; ${document.cookie}`;
@@ -114,7 +114,7 @@ export const transcriptApi = {
         if (!token) throw new Error('No token available for query param strategy');
         
         const url = `${buildApiUrl(endpoint)}?token=${encodeURIComponent(token)}`;
-        console.log('Strategy 3: Proxy with query token -', url);
+        // Strategy 3: Proxy with query token
 
         const response = await fetch(url, {
           method: 'GET',
@@ -139,7 +139,7 @@ export const transcriptApi = {
         return new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           const url = buildApiUrl(endpoint);
-          console.log('Strategy 4: XHR fallback -', url);
+          // Strategy 4: XHR fallback
           
           xhr.open('GET', url, true);
           xhr.responseType = 'blob';
@@ -181,7 +181,7 @@ export const transcriptApi = {
     
     for (const strategy of strategies) {
       try {
-        console.log(`Attempting strategy: ${strategy.name}`);
+        // Attempting strategy
         const blob = await strategy.fetch();
         
         // Validate the PDF
@@ -189,7 +189,7 @@ export const transcriptApi = {
         const isValidPdf = transcriptApi.validatePdfData(arrayBuffer);
         
         if (isValidPdf && blob.size > 0) {
-          console.log(`Success with strategy: ${strategy.name}, size: ${blob.size} bytes`);
+          // Success with strategy
           return blob;
         } else {
           console.warn(`Strategy ${strategy.name} returned invalid or empty PDF`);
@@ -201,7 +201,7 @@ export const transcriptApi = {
         
         // For certain errors, skip remaining strategies
         if (error.message?.includes('401') || error.message?.includes('Authentication')) {
-          console.log('Authentication error - stopping strategy attempts');
+          // Authentication error - stopping strategy attempts
           break;
         }
         
@@ -248,7 +248,7 @@ export const transcriptApi = {
   },
 
   /**
-   * Enhanced download with retry logic
+   * Enhanced download with retry logic and better error handling
    */
   downloadStudentTranscriptPdf: async (
     studentId: string, 
@@ -256,36 +256,76 @@ export const transcriptApi = {
     studentName: string
   ): Promise<void> => {
     try {
+      // Starting PDF download process
+      
       // First try to get the blob using our enhanced method
       const blob = await transcriptApi.getStudentTranscriptPdf(studentId, academicYearId);
       
+      // Blob received
+      
+      // Validate blob before proceeding
+      if (blob.size === 0) {
+        throw new Error('Received empty file');
+      }
+      
+      if (blob.type !== 'application/pdf' && !blob.type.includes('pdf')) {
+        console.warn('Unexpected blob type:', blob.type);
+      }
+      
       // Create download
       const downloadUrl = window.URL.createObjectURL(blob);
+      // Blob URL created
+      
       const link = document.createElement('a');
       link.href = downloadUrl;
       
       const cleanName = studentName
         .replace(/[^\w\s-_.]/g, '')
         .replace(/\s+/g, '_')
-        .trim();
+        .trim() || 'Student';
         
       const timestamp = new Date().toISOString().split('T')[0];
       link.download = `${cleanName}_Transcript_${timestamp}.pdf`;
       
+      // Download filename prepared
+      
+      // Make link visible for debugging
       link.style.display = 'none';
       document.body.appendChild(link);
+      
+      // Trigger download
       link.click();
       
+      // Cleanup with longer timeout to ensure download starts
       setTimeout(() => {
-        if (document.body.contains(link)) {
-          document.body.removeChild(link);
+        try {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
+          window.URL.revokeObjectURL(downloadUrl);
+          // Cleanup completed
+        } catch (cleanupError) {
+          console.warn('Cleanup error:', cleanupError);
         }
-        window.URL.revokeObjectURL(downloadUrl);
-      }, 100);
+      }, 1000);
       
     } catch (error: any) {
       console.error('Enhanced download error:', error);
-      throw new Error(`Failed to download transcript: ${error.message}`);
+      
+      // Provide more specific error messages
+      if (error.message.includes('401') || error.message.includes('Authentication')) {
+        throw new Error('Your session has expired. Please log in again and try downloading.');
+      } else if (error.message.includes('404') || error.message.includes('not found')) {
+        throw new Error('Transcript not found for this student. Please check the academic year and try again.');
+      } else if (error.message.includes('403') || error.message.includes('permission')) {
+        throw new Error('You do not have permission to download this transcript.');
+      } else if (error.message.includes('Network') || error.message.includes('CORS')) {
+        throw new Error('Network error occurred. Please check your connection and try again.');
+      } else if (error.message.includes('empty file')) {
+        throw new Error('No transcript data available. The transcript may not have been generated yet.');
+      } else {
+        throw new Error(`Failed to download transcript: ${error.message}`);
+      }
     }
   },
 

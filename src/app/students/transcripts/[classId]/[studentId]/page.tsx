@@ -88,12 +88,7 @@ export default function StudentTranscriptPage() {
       setSemesterId(storedSemesterId.trim());
     }
 
-    console.log('Student page initialized with:', {
-      academicYearId: storedAcademicYearId,
-      semesterId: storedSemesterId,
-      classId,
-      studentId
-    });
+    // Student page initialized
 
     setIsInitialized(true);
   }, [searchParams, classId, studentId]);
@@ -134,11 +129,39 @@ export default function StudentTranscriptPage() {
       return;
     }
 
+    if (!academicYearId) {
+      toast.error("Academic Year ID not available");
+      return;
+    }
+
     try {
       setIsDownloading(true);
+      // Starting download
+      
       await downloadTranscript(studentInfo.studentFullName || "Student");
-    } catch (error) {
-      // Error handling is done in the hook
+      // Download completed successfully
+    } catch (error: any) {
+      
+      // Try fallback method - open in new tab
+      try {
+        // Attempting fallback download method
+        const fallbackUrl = `/api/proxy/grading/progressive-reports/student/${studentId}/academic-year/${academicYearId}/pdf`;
+        
+        // Create a temporary link with fallback
+        const fallbackLink = document.createElement('a');
+        fallbackLink.href = fallbackUrl;
+        fallbackLink.target = '_blank';
+        fallbackLink.download = `${studentInfo.studentFullName || 'Student'}_Transcript_${new Date().toISOString().split('T')[0]}.pdf`;
+        
+        document.body.appendChild(fallbackLink);
+        fallbackLink.click();
+        document.body.removeChild(fallbackLink);
+        
+        toast.success("Transcript opened in new tab. You can save it from there.");
+      } catch (fallbackError) {
+        console.error('Fallback method also failed:', fallbackError);
+        toast.error("Download failed. Please try refreshing the page and downloading again.");
+      }
     } finally {
       setIsDownloading(false);
     }
@@ -228,7 +251,7 @@ export default function StudentTranscriptPage() {
 
           <Button
             onClick={handleDownload}
-            disabled={isLoading || isDownloading || (!pdfData && !pdfUrl)}
+            disabled={isLoading || isDownloading || !studentInfo || !academicYearId || (!pdfData && !pdfUrl)}
             className="bg-[#026892] hover:bg-[#026892]/90 flex items-center"
           >
             {isDownloading ? (
