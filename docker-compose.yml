@@ -1,33 +1,12 @@
+version: "3.9"
+
 services:
-  hod-portal:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: samps-hod-portal
+  muticket-ui:
+    image: stesgroup/hod-portal:latest
+    container_name: hod-portal-ui
     ports:
-      - "3006:3006"
+      - "3006:3000"
     environment:
-      - NODE_ENV=production
-      - PORT=3006
-      - HOSTNAME=0.0.0.0
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://41.186.188.74:2000
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://localhost:3006 || exit 1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 40s
-    volumes:
-      # Mount any additional volumes if needed
-      - ./logs:/app/logs
-    networks:
-      - hod-network
-
-networks:
-  hod-network:
-    driver: bridge
-    name: hod-portal-network
-
-volumes:
-  hod-logs:
-    driver: local
