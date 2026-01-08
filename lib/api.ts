@@ -84,7 +84,7 @@ const refreshTokenIfNeeded = async (): Promise<string | null> => {
   try {
     const refreshEndpoint = process.env.NODE_ENV === 'development'
       ? '/api/auth/refresh'
-      : 'http://41.186.186.167:2000/api/v1/auth/refresh';
+      : `${API_BASE_URL}/auth/refresh`;
       
     const response = await axios.post(refreshEndpoint, {
       refreshToken,

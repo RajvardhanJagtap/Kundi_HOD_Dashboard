@@ -1,7 +1,8 @@
 // app/api/proxy/[...path]/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { api } from '../../../../../lib/api'
 
-const API_BASE_URL = 'http://41.186.186.167:2000/api/v1'
+const API_BASE_URL = api.defaults.baseURL
 
 export async function GET(
   request: NextRequest,

@@ -1,4 +1,5 @@
 import axios from "axios"
+import { api } from "./api"
 
 // Type definition for group submission
 interface GroupSubmission {
@@ -8,92 +9,8 @@ interface GroupSubmission {
   [key: string]: any
 }
 
-const API_BASE_URL = "http://41.186.186.167:2000/api/v1"
-
-const apiInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 30000,
-  withCredentials: false,
-  responseType: "json",
-})
-
-apiInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
-
-      try {
-        if (typeof window !== "undefined") {
-          // Use centralized token refresh utility
-          const { refreshAccessToken, clearAuthData } = await import("./token-utils")
-          
-          const newAccessToken = await refreshAccessToken()
-          
-          if (newAccessToken) {
-            originalRequest.headers = originalRequest.headers || {}
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
-            
-            console.log("Token refreshed, retrying original request")
-            return apiInstance(originalRequest)
-          } else {
-            // Refresh failed - clear auth and redirect
-            console.error("Token refresh failed, clearing auth data and redirecting to login")
-            clearAuthData()
-            
-            // Dispatch logout event to notify AuthContext
-            window.dispatchEvent(new CustomEvent("auth:logout"))
-            
-            if (!window.location.pathname.includes("/login")) {
-              window.location.href = "/login"
-            }
-          }
-        }
-      } catch (refreshError) {
-        console.error("Error during token refresh:", refreshError)
-        if (typeof window !== "undefined") {
-          const { clearAuthData } = await import("./token-utils")
-          clearAuthData()
-          
-          // Dispatch logout event to notify AuthContext
-          window.dispatchEvent(new CustomEvent("auth:logout"))
-          
-          if (!window.location.pathname.includes("/login")) {
-            window.location.href = "/login"
-          }
-        }
-      }
-    }
-    return Promise.reject(error)
-  },
-)
-
-apiInstance.interceptors.request.use(
-  (config: any) => {
-    if (typeof window !== "undefined") {
-      const getCookie = (name: string) => {
-        const value = `; ${document.cookie}`
-        const parts = value.split(`; ${name}=`)
-        if (parts.length === 2) return parts.pop()?.split(";").shift()
-        return null
-      }
-
-      const token = getCookie("accessToken")
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  },
-)
+// Use the centralized api instance from "./api" 
+// It already has interceptors configured for auth and token refresh
 
 interface SummarySheetResponse {
   success: boolean
@@ -134,7 +51,7 @@ export const generateYearSummarySheet = async (
     const endpoint = `/grading/overall-sheets/generate-year-summary-sheet/${academicYearId}/group/${groupId}/excel`
     console.log("Summary API - Making request to:", endpoint)
 
-    const response = await apiInstance.get(endpoint, {
+    const response = await api.get(endpoint, {
       responseType: "blob",
     })
 
@@ -211,7 +128,7 @@ export const generateYearSummarySheet = async (
 
 export const getAvailableGroups = async (academicYearId: string) => {
   const url = `/grading/groups?academicYearId=${academicYearId}`
-  const response = await apiInstance.get(url)
+  const response = await api.get(url)
   return response.data
 }
 
@@ -242,7 +159,7 @@ export const generateSummarySheetForPreview = async (
 
   const endpoint = `/grading/overall-sheets/generate-year-summary-sheet/${academicYearId}/group/${groupId}/excel`
 
-  const response = await apiInstance.get(endpoint, {
+  const response = await api.get(endpoint, {
     responseType: "blob",
   })
 

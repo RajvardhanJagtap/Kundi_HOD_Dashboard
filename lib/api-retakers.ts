@@ -1,6 +1,8 @@
 // src/lib/api-retakers.ts
 // Dedicated API utility for managing retakers and repeaters data and Excel file operations
 
+import { api } from "./api"
+
 /**
  * Parameters for retakers/repeaters sheet generation
  */
@@ -188,31 +190,19 @@ export async function fetchRetakersExcelSheet(params: RetakersSheetParams): Prom
     throw new Error("Authentication token not found. Please log in again.")
   }
 
-  const endpoint = `http://41.186.186.167:2000/api/v1/grading/overall-sheets/generate-year-retake-sheet/${params.yearId}/group/${params.groupId}/excel`
+  const endpoint = `/grading/overall-sheets/generate-year-retake-sheet/${params.yearId}/group/${params.groupId}/excel`
 
   console.log("Fetching retakers sheet from:", endpoint)
 
-  const response = await fetch(endpoint, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    },
+  const response = await api.get(endpoint, {
+    responseType: 'blob'
   })
 
-  if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-
-    try {
-      const errorData = await response.json()
-      if (errorData.message) errorMessage = errorData.message
-      else if (errorData.error) errorMessage = errorData.error
-    } catch {}
-
-    throw new Error(`Failed to fetch retakers sheet: ${errorMessage}`)
+  if (!response.data) {
+    throw new Error('No data received from server')
   }
 
-  const blob = await response.blob()
+  const blob = response.data
 
   const shortYearId = params.yearId.slice(0, 8)
   const shortGroupId = params.groupId.slice(0, 8)

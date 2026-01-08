@@ -3,7 +3,7 @@
  * Centralized functions for handling token refresh and cookie management
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://41.186.186.167:2000/api/v1';
+import { api } from './api';
 
 /**
  * Get a cookie value by name
@@ -68,7 +68,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
     // Use the refresh endpoint (check for proxy or direct)
     const refreshEndpoint = process.env.NEXT_PUBLIC_USE_PROXY === 'true'
       ? '/api/auth/refresh'
-      : `${API_BASE_URL}/auth/refresh`;
+      : `${api.defaults.baseURL}/auth/refresh`;
     
     const response = await axios.post(refreshEndpoint, {
       refreshToken,

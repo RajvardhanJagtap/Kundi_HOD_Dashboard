@@ -1,6 +1,8 @@
 // src/lib/api-grading.ts
 // API utility for managing grading data and Excel file operations
 
+import { api } from "./api"
+
 interface GradingSheetParams {
   yearId: string
   groupId: string
@@ -197,8 +199,7 @@ function applyTintToColor(hexColor: string, tint: number): string {
   const newG = Math.max(0, Math.min(255, applyTint(g, tint)))
   const newB = Math.max(0, Math.min(255, applyTint(b, tint)))
 
-  const toHex = (value: number) => value.toString(16).padStart(2, "0")
-  return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`
+  return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`
 }
 
 /**
@@ -218,30 +219,19 @@ export async function fetchGradingExcelSheet(params: GradingSheetParams): Promis
     throw new Error("Authentication token not found. Please log in again.")
   }
 
-  const API_BASE_URL = "http://41.186.186.167:2000/api/v1"
-  const endpoint = `${API_BASE_URL}/grading/overall-sheets/generate-year-regular-sheet/${params.yearId}/group/${params.groupId}/excel`
+  const endpoint = `/grading/overall-sheets/generate-year-regular-sheet/${params.yearId}/group/${params.groupId}/excel`
 
   console.log("Fetching grading sheet from:", endpoint)
 
-  const response = await fetch(endpoint, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    },
+  const response = await api.get(endpoint, {
+    responseType: 'blob'
   })
 
-  if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-    try {
-      const errorData = await response.json()
-      if (errorData.message) errorMessage = errorData.message
-      else if (errorData.error) errorMessage = errorData.error
-    } catch {}
-    throw new Error(`Failed to fetch grading sheet: ${errorMessage}`)
+  if (!response.data) {
+    throw new Error('No data received from server')
   }
 
-  const blob = await response.blob()
+  const blob = response.data
 
   const shortYearId = params.yearId.slice(0, 8)
   const shortGroupId = params.groupId.slice(0, 8)
