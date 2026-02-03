@@ -1,30 +1,32 @@
-"use client"
-import type React from "react"
-import { useState, useEffect } from "react"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, CheckCircle, Send, Download } from "lucide-react"
-import { toast } from "react-hot-toast"
-import ExcelMarksPage from "@/components/marks/over-all"
-import RepeatersComponent from "@/components/marks/repeaters"
-import SummaryPage from "@/components/marks/summary"
-import { AcademicContextProvider } from "@/app/academicContext"
-import { useAcademicYears } from "@/hooks/academic-year-and-semesters/useAcademicYears"
-import { moduleAssignmentsApi } from "@/lib/modules/moduleAssignmentsApi"
-import { useSemesters } from "@/hooks/academic-year-and-semesters/useSemesters"
-import { useMarksSubmission } from "@/hooks/overall-marks-submission/useMarksSubmission"
+"use client";
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, CheckCircle, Send, Download } from "lucide-react";
+import { toast } from "react-hot-toast";
+import ExcelMarksPage from "@/components/marks/over-all";
+import RepeatersComponent from "@/components/marks/repeaters";
+import SummaryPage from "@/components/marks/summary";
+import RepeatersSummarySheet from "@/components/marks/repeaters-summary";
+import { AcademicContextProvider } from "@/app/academicContext";
+import { useAcademicYears } from "@/hooks/academic-year-and-semesters/useAcademicYears";
+import { moduleAssignmentsApi } from "@/lib/modules/moduleAssignmentsApi";
+import { useSemesters } from "@/hooks/academic-year-and-semesters/useSemesters";
+import { useMarksSubmission } from "@/hooks/overall-marks-submission/useMarksSubmission";
 
 // Tab component for the class marks view
 const ClassMarksTabs: React.FC<{
-  activeTab: string
-  setActiveTab: (tab: string) => void
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }> = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { key: "summary", label: "Main Summary Sheet" },
     { key: "overall-marks", label: "Main Sheet" },
+    { key: "repeaters-summary", label: "Repeaters & Retakers Summary Sheet" },
     { key: "repeaters-retakers", label: "Repeaters & Retakers Sheet" },
-  ]
+  ];
 
   return (
     <div className="border-b border-gray-200 mb-6">
@@ -44,31 +46,31 @@ const ClassMarksTabs: React.FC<{
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default function ClassMarksPage() {
-  const params = useParams()
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [activeTab, setActiveTab] = useState("summary")
+  const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState("summary");
 
   // Get group ID from URL search params or localStorage
-  const [groupId, setGroupId] = useState<string>("")
-  const [semesterId, setSemesterId] = useState<string>("")
-  const [academicYearId, setAcademicYearId] = useState<string>("")
+  const [groupId, setGroupId] = useState<string>("");
+  const [semesterId, setSemesterId] = useState<string>("");
+  const [academicYearId, setAcademicYearId] = useState<string>("");
 
   // Get stored academic year and semester from localStorage
-  const [selectedYear, setSelectedYear] = useState<string>("")
-  const [selectedSemester, setSelectedSemester] = useState<string>("")
+  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [selectedSemester, setSelectedSemester] = useState<string>("");
 
   // Persistent state management for approval and submission
-  const [isApproved, setIsApproved] = useState(false)
-  const [isSubmittedToDean, setIsSubmittedToDean] = useState(false)
+  const [isApproved, setIsApproved] = useState(false);
+  const [isSubmittedToDean, setIsSubmittedToDean] = useState(false);
 
   // Fetch academic years and semesters
-  const { years, isLoading: yearsLoading } = useAcademicYears()
-  const { semesters, isLoading: semestersLoading } = useSemesters(selectedYear)
+  const { years, isLoading: yearsLoading } = useAcademicYears();
+  const { semesters, isLoading: semestersLoading } = useSemesters(selectedYear);
 
   // Marks submission hook
   const {
@@ -87,41 +89,58 @@ export default function ClassMarksPage() {
     resetApprovalState,
     resetSubmissionState,
     resetDownloadState,
-  } = useMarksSubmission()
+  } = useMarksSubmission();
 
   useEffect(() => {
     // Get group ID and other IDs from URL params or localStorage
     const urlGroupId =
-      searchParams.get("groupId") || (typeof window !== "undefined" ? localStorage.getItem("selectedGroupId") : "")
+      searchParams.get("groupId") ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("selectedGroupId")
+        : "");
     const urlSemesterId =
       searchParams.get("semesterId") ||
-      (typeof window !== "undefined" ? localStorage.getItem("selectedSemesterId") : "")
+      (typeof window !== "undefined"
+        ? localStorage.getItem("selectedSemesterId")
+        : "");
     const urlAcademicYearId =
       searchParams.get("academicYearId") ||
-      (typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYearId") : "")
+      (typeof window !== "undefined"
+        ? localStorage.getItem("selectedAcademicYearId")
+        : "");
 
     // Load stored academic year and semester from localStorage
-    const storedYear = typeof window !== "undefined" ? localStorage.getItem("selectedAcademicYear") : ""
-    const storedSemester = typeof window !== "undefined" ? localStorage.getItem("selectedSemester") : ""
+    const storedYear =
+      typeof window !== "undefined"
+        ? localStorage.getItem("selectedAcademicYear")
+        : "";
+    const storedSemester =
+      typeof window !== "undefined"
+        ? localStorage.getItem("selectedSemester")
+        : "";
 
     // Load persistent approval and submission states
     const approvalStatus =
       typeof window !== "undefined"
-        ? localStorage.getItem(`marks_approved_${urlGroupId}_${urlSemesterId}`) === "true"
-        : false
+        ? localStorage.getItem(
+            `marks_approved_${urlGroupId}_${urlSemesterId}`,
+          ) === "true"
+        : false;
     const submissionStatus =
       typeof window !== "undefined"
-        ? localStorage.getItem(`marks_submitted_${urlGroupId}_${urlSemesterId}`) === "true"
-        : false
+        ? localStorage.getItem(
+            `marks_submitted_${urlGroupId}_${urlSemesterId}`,
+          ) === "true"
+        : false;
 
-    if (urlGroupId) setGroupId(urlGroupId)
-    if (urlSemesterId) setSemesterId(urlSemesterId)
-    if (urlAcademicYearId) setAcademicYearId(urlAcademicYearId)
-    if (storedYear) setSelectedYear(storedYear)
-    if (storedSemester) setSelectedSemester(storedSemester)
+    if (urlGroupId) setGroupId(urlGroupId);
+    if (urlSemesterId) setSemesterId(urlSemesterId);
+    if (urlAcademicYearId) setAcademicYearId(urlAcademicYearId);
+    if (storedYear) setSelectedYear(storedYear);
+    if (storedSemester) setSelectedSemester(storedSemester);
 
-    setIsApproved(approvalStatus)
-    setIsSubmittedToDean(submissionStatus)
+    setIsApproved(approvalStatus);
+    setIsSubmittedToDean(submissionStatus);
 
     // Debug logging to help identify issues
     console.log("Class Marks Page - Loaded IDs:", {
@@ -130,98 +149,115 @@ export default function ClassMarksPage() {
       academicYearId: urlAcademicYearId,
       storedYear,
       storedSemester,
-    })
-  }, [searchParams])
+    });
+  }, [searchParams]);
 
   // Set current academic year when years are loaded
   useEffect(() => {
     if (years && years.length > 0 && !academicYearId) {
       // Find the current academic year
       const currentYear = years.find(
-        (year) => year.startDate <= new Date().toISOString() && year.endDate >= new Date().toISOString(),
-      )
-      const yearToUse = currentYear || years[0]
-      setAcademicYearId(yearToUse.id)
-      setSelectedYear(yearToUse.id)
+        (year) =>
+          year.startDate <= new Date().toISOString() &&
+          year.endDate >= new Date().toISOString(),
+      );
+      const yearToUse = currentYear || years[0];
+      setAcademicYearId(yearToUse.id);
+      setSelectedYear(yearToUse.id);
 
       // Store in localStorage for consistency
       if (typeof window !== "undefined") {
-        localStorage.setItem("selectedAcademicYearId", yearToUse.id)
-        localStorage.setItem("selectedAcademicYear", yearToUse.id)
+        localStorage.setItem("selectedAcademicYearId", yearToUse.id);
+        localStorage.setItem("selectedAcademicYear", yearToUse.id);
       }
 
-      console.log("Set academic year ID:", yearToUse.id)
+      console.log("Set academic year ID:", yearToUse.id);
     }
-  }, [years, academicYearId])
+  }, [years, academicYearId]);
 
   // When groupId and semesterId are available, fetch server-side readiness
   useEffect(() => {
     const fetchGroupStatus = async () => {
-      if (!groupId || !semesterId) return
+      if (!groupId || !semesterId) return;
       try {
-        const resp = await moduleAssignmentsApi.getDepartmentGroupReadiness(semesterId)
-        const groups = resp.data.groups || []
-        const g = groups.find((gg) => gg.groupId === groupId || gg.groupName === decodeURIComponent(className))
+        const resp =
+          await moduleAssignmentsApi.getDepartmentGroupReadiness(semesterId);
+        const groups = resp.data.groups || [];
+        const g = groups.find(
+          (gg) =>
+            gg.groupId === groupId ||
+            gg.groupName === decodeURIComponent(className),
+        );
         if (g) {
           // canBeSubmittedToDean indicates readiness/approval to submit
-          setIsApproved(Boolean(g.canBeSubmittedToDean))
-          setIsSubmittedToDean(Boolean(g.isSubmittedToDean))
+          setIsApproved(Boolean(g.canBeSubmittedToDean));
+          setIsSubmittedToDean(Boolean(g.isSubmittedToDean));
           // Persist these to localStorage for compatibility with existing logic
           try {
-            localStorage.setItem(`marks_approved_${groupId}_${semesterId}`, String(Boolean(g.canBeSubmittedToDean)))
-            localStorage.setItem(`marks_submitted_${groupId}_${semesterId}`, String(Boolean(g.isSubmittedToDean)))
+            localStorage.setItem(
+              `marks_approved_${groupId}_${semesterId}`,
+              String(Boolean(g.canBeSubmittedToDean)),
+            );
+            localStorage.setItem(
+              `marks_submitted_${groupId}_${semesterId}`,
+              String(Boolean(g.isSubmittedToDean)),
+            );
           } catch (e) {
             // ignore storage errors
           }
         }
       } catch (err) {
         // don't block UI on fetch errors; keep local state
-        console.warn("Failed to fetch group readiness for class page", err)
+        console.warn("Failed to fetch group readiness for class page", err);
       }
-    }
+    };
 
-    fetchGroupStatus()
-  }, [groupId, semesterId])
+    fetchGroupStatus();
+  }, [groupId, semesterId]);
 
-  const className = decodeURIComponent(params.class as string)
-  const year = params.year as string
+  const className = decodeURIComponent(params.class as string);
+  const year = params.year as string;
 
   const handleBackToMarks = () => {
-    router.push("/academic/classes-marks")
-  }
+    router.push("/academic/classes-marks");
+  };
 
   const handleYearChange = (yearId: string) => {
-    setSelectedYear(yearId)
-    localStorage.setItem("selectedAcademicYear", yearId)
-  }
+    setSelectedYear(yearId);
+    localStorage.setItem("selectedAcademicYear", yearId);
+  };
 
   const handleSemesterChange = (semesterId: string) => {
-    setSelectedSemester(semesterId)
-    localStorage.setItem("selectedSemester", semesterId)
-  }
+    setSelectedSemester(semesterId);
+    localStorage.setItem("selectedSemester", semesterId);
+  };
 
   // Handle download overall marks
   const handleDownloadOverall = async () => {
     if (!academicYearId || !groupId) {
-      toast.error("Missing academic year or group information")
-      return
+      toast.error("Missing academic year or group information");
+      return;
     }
 
-    const fileName = `${className}_Overall_Marks_${new Date().toISOString().slice(0, 10)}.xlsx`
-    const success = await downloadOverallSheet(academicYearId, groupId, fileName)
+    const fileName = `${className}_Overall_Marks_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const success = await downloadOverallSheet(
+      academicYearId,
+      groupId,
+      fileName,
+    );
 
     if (success) {
-      toast.success("Overall marks downloaded successfully!")
+      toast.success("Overall marks downloaded successfully!");
     } else if (downloadError) {
-      toast.error(downloadError)
+      toast.error(downloadError);
     }
-  }
+  };
 
   // Handle submit to dean
   const handleSubmitToDean = async () => {
     if (!semesterId || !groupId) {
-      toast.error("Missing semester or group information")
-      return
+      toast.error("Missing semester or group information");
+      return;
     }
 
     const submitData = {
@@ -230,38 +266,38 @@ export default function ClassMarksPage() {
       priorityLevel: "NORMAL" as const,
       submissionType: "REGULAR" as const,
       semesterId,
-    }
+    };
 
-    const result = await submitGroupToDean(submitData)
+    const result = await submitGroupToDean(submitData);
 
     if (result) {
-      setIsSubmittedToDean(true)
+      setIsSubmittedToDean(true);
       // Persist submission state
-      localStorage.setItem(`marks_submitted_${groupId}_${semesterId}`, "true")
-      toast.success("Marks submitted to dean successfully!")
+      localStorage.setItem(`marks_submitted_${groupId}_${semesterId}`, "true");
+      toast.success("Marks submitted to dean successfully!");
     } else if (submissionError) {
-      toast.error(submissionError)
+      toast.error(submissionError);
     }
-  }
+  };
 
   // Clear success messages after 3 seconds
   useEffect(() => {
     if (approvalSuccess) {
-      setTimeout(() => resetApprovalState(), 3000)
+      setTimeout(() => resetApprovalState(), 3000);
     }
-  }, [approvalSuccess, resetApprovalState])
+  }, [approvalSuccess, resetApprovalState]);
 
   useEffect(() => {
     if (submissionSuccess) {
-      setTimeout(() => resetSubmissionState(), 3000)
+      setTimeout(() => resetSubmissionState(), 3000);
     }
-  }, [submissionSuccess, resetSubmissionState])
+  }, [submissionSuccess, resetSubmissionState]);
 
   useEffect(() => {
     if (downloadSuccess) {
-      setTimeout(() => resetDownloadState(), 3000)
+      setTimeout(() => resetDownloadState(), 3000);
     }
-  }, [downloadSuccess, resetDownloadState])
+  }, [downloadSuccess, resetDownloadState]);
 
   return (
     <AcademicContextProvider
@@ -277,7 +313,9 @@ export default function ClassMarksPage() {
       <div className="p-2 w-full min-w-0 overflow-x-auto">
         {/* Page title */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{className} - Marks</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {className} - Marks
+          </h1>
         </div>
         {/* Back button */}
         <div className="mb-4">
@@ -295,8 +333,12 @@ export default function ClassMarksPage() {
         <Card className="p-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">HOD Actions</h3>
-              <p className="text-sm text-gray-600">Review and approve all marks before submitting to dean</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                HOD Actions
+              </h3>
+              <p className="text-sm text-gray-600">
+                Review and approve all marks before submitting to dean
+              </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <Button
@@ -320,7 +362,9 @@ export default function ClassMarksPage() {
 
               <Button
                 onClick={handleSubmitToDean}
-                disabled={!isApproved || isSubmittingToDean || isSubmittedToDean}
+                disabled={
+                  !isApproved || isSubmittingToDean || isSubmittedToDean
+                }
                 variant={!isApproved ? "outline" : "default"}
                 className={`whitespace-nowrap ${
                   !isApproved
@@ -353,7 +397,9 @@ export default function ClassMarksPage() {
           {/* Status Messages */}
           {(approvalError || submissionError || downloadError) && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{approvalError || submissionError || downloadError}</p>
+              <p className="text-sm text-red-700">
+                {approvalError || submissionError || downloadError}
+              </p>
             </div>
           )}
 
@@ -373,13 +419,30 @@ export default function ClassMarksPage() {
 
         {/* Tab content */}
         <div className="mt-6 w-full min-w-0 overflow-hidden">
-          {activeTab === "summary" && <SummaryPage groupId={groupId} academicYearId={academicYearId} />}
-          {activeTab === "overall-marks" && <ExcelMarksPage groupId={groupId} academicYearId={academicYearId} />}
+          {activeTab === "summary" && (
+            <SummaryPage groupId={groupId} academicYearId={academicYearId} />
+          )}
+          {activeTab === "overall-marks" && (
+            <ExcelMarksPage groupId={groupId} academicYearId={academicYearId} />
+          )}
+          {activeTab === "repeaters-summary" && (
+            <RepeatersSummarySheet
+              groupId={groupId}
+              academicYearId={academicYearId}
+              className={className}
+              year={year}
+            />
+          )}
           {activeTab === "repeaters-retakers" && (
-            <RepeatersComponent className={className} year={year} groupId={groupId} academicYearId={academicYearId} />
+            <RepeatersComponent
+              className={className}
+              year={year}
+              groupId={groupId}
+              academicYearId={academicYearId}
+            />
           )}
         </div>
       </div>
     </AcademicContextProvider>
-  )
+  );
 }

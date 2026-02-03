@@ -1,5 +1,64 @@
-// src/lib/api-grading.ts
-// API utility for managing grading data and Excel file operations
+/**
+ * Fetches the Repeaters & Retakers Summary sheet from the API
+ */
+export async function fetchRepeatersSummarySheet(params: GradingSheetParams): Promise<GradingSheetResponse> {
+  return fetchExcelSheetFromApi(`/grading/overall-sheets/generate-repeaters-summary-sheet/${params.yearId}/group/${params.groupId}/excel`, params, 'repeaters-summary-sheet')
+}
+
+/**
+ * Downloads the Repeaters & Retakers Summary sheet directly
+ */
+export async function downloadRepeatersSummarySheet(params: GradingSheetParams): Promise<string> {
+  const { blob, filename } = await fetchRepeatersSummarySheet(params)
+  downloadBlobAsFile(blob, filename)
+  return filename
+}
+
+/**
+ * Utility to fetch an Excel sheet from a given API endpoint
+ */
+export async function fetchExcelSheetFromApi(endpoint: string, params: GradingSheetParams, filenamePrefix: string): Promise<GradingSheetResponse> {
+  const getCookie = (name: string) => {
+    const value = `; ${document.cookie}`
+    const parts = value.split(`; ${name}=`)
+    if (parts.length === 2) return parts.pop()?.split(";").shift()
+    return null
+  }
+
+  const token = getCookie("accessToken")
+  if (!token) {
+    throw new Error("Authentication token not found. Please log in again.")
+  }
+
+  console.log("Fetching sheet from:", endpoint)
+  const response = await api.get(endpoint, {
+    responseType: 'blob'
+  })
+  if (!response.data) {
+    throw new Error('No data received from server')
+  }
+  const blob = response.data
+  const shortYearId = params.yearId.slice(0, 8)
+  const shortGroupId = params.groupId.slice(0, 8)
+  const timestamp = new Date().toISOString().slice(0, 10)
+  const filename = `${filenamePrefix}-${shortYearId}-${shortGroupId}-${timestamp}.xlsx`
+  return { blob, filename }
+}
+
+/**
+ * Utility to trigger a browser download for a Blob
+ */
+export function downloadBlobAsFile(blob: Blob, filename: string) {
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename
+  link.style.display = "none"
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  setTimeout(() => window.URL.revokeObjectURL(url), 100)
+}
 
 import { api } from "./api"
 
@@ -56,7 +115,6 @@ interface GradingSheetResponse {
 
 /**
  * Convert ARGB hex color to standard hex color
- * ExcelJS returns colors in ARGB format (e.g., "FF4F81BD" where FF is alpha)
  */
 function argbToHex(argb: string | undefined): string | undefined {
   if (!argb) return undefined
