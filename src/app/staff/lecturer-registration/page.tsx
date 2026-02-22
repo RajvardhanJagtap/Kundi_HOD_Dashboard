@@ -610,109 +610,82 @@ export default function LecturerRegistrationPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Total Lecturers
-                </p>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.totalLecturers.toLocaleString()
-                  )}
-                </div>
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="text-green-600 font-medium">↑ +5%</span>
-                  <span className="text-gray-500">from last semester</span>
-                </div>
-              </div>
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Lecturers</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  statistics.totalLecturers.toLocaleString()
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">↑ +5% from last semester</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Active Lecturers
-                </p>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    `${((statistics.activeLecturers / statistics.totalLecturers) * 100).toFixed(1)}%`
-                  )}
-                </div>
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="text-green-600 font-medium">↑ +3.2%</span>
-                  <span className="text-gray-500">from last week</span>
-                </div>
-              </div>
-              <div className="bg-green-100 p-3 rounded-lg">
-                <UserCheck className="h-6 w-6 text-green-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Active Lecturers</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  `${((statistics.activeLecturers / statistics.totalLecturers) * 100).toFixed(1)}%`
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">↑ +3.2% from last week</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Full-Time Staff
-                </p>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.fullTimeLecturers
-                  )}
-                </div>
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="text-orange-600 font-medium">{statistics.totalLecturers - statistics.fullTimeLecturers} part-time</span>
-                </div>
-              </div>
-              <div className="bg-orange-100 p-3 rounded-lg">
-                <GraduationCap className="h-6 w-6 text-orange-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Full-Time Staff</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  statistics.fullTimeLecturers
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-orange-600 truncate">{statistics.totalLecturers - statistics.fullTimeLecturers} part-time</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Departments
-                </p>
-                <div className="text-3xl font-bold text-gray-900 mb-2">
-                  {isLoading ? (
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  ) : (
-                    statistics.uniqueDepartments
-                  )}
-                </div>
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="text-purple-600 font-medium">↑ +1</span>
-                  <span className="text-gray-500">from last month</span>
-                </div>
-              </div>
-              <div className="bg-purple-100 p-3 rounded-lg">
-                <Users className="h-6 w-6 text-purple-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Departments</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  statistics.uniqueDepartments
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-purple-600 truncate">↑ +1 from last month</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Lecturers Table with Filters */}

@@ -230,114 +230,86 @@ export default function TranscriptsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Total Groups
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {showLoading ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                  ) : (
-                    groups.length
-                  )}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-green-600">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>Active: {activeGroups}</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-[#026892]" />
-              </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Groups</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {showLoading ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                ) : (
+                  groups.length
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">Active: {activeGroups}</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Total Students
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {showLoading ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                  ) : (
-                    totalStudents
-                  )}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-green-600">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>Current enrollment</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                <Users className="h-6 w-6 text-green-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Students</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {showLoading ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                ) : (
+                  totalStudents
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">Current enrollment</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Total Capacity
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {showLoading ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                  ) : (
-                    totalCapacity
-                  )}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-orange-600">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>Maximum enrollment</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center">
-                <GraduationCap className="h-6 w-6 text-orange-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Capacity</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {showLoading ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                ) : (
+                  totalCapacity
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-orange-600 truncate">Maximum enrollment</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Utilization
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {showLoading ? (
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                  ) : (
-                    `${
-                      totalCapacity > 0
-                        ? Math.round((totalStudents / totalCapacity) * 100)
-                        : 0
-                    }%`
-                  )}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-purple-600">
-                  <TrendingUp className="h-3 w-3" />
-                  <span>Enrollment rate</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Utilization</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {showLoading ? (
+                  <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                ) : (
+                  `${
+                    totalCapacity > 0
+                      ? Math.round((totalStudents / totalCapacity) * 100)
+                      : 0
+                  }%`
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-purple-600 truncate">Enrollment rate</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Groups Table */}

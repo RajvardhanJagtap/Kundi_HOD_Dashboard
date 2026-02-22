@@ -313,63 +313,55 @@ export default function TeachingPlansPage() {
       </div>
 
       {/* Statistics cards moved here under title/description */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">Total Plans</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-samps-[#026892]">
-              {teachingPlans.length}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Plans</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{teachingPlans.length}</h3>
+              <p className="text-[11px] font-medium text-gray-600 truncate">Submitted plans</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <FileText className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Submitted plans</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">Approved</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-samps-green-600">
-              {teachingPlans.filter((p) => p.status === "Approved").length}
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Approved</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{teachingPlans.filter((p) => p.status === "Approved").length}</h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">Plans approved</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <CheckCircle className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Plans approved</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">Rejected</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-samps-red-600">
-              {teachingPlans.filter((p) => p.status === "Rejected").length}
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Rejected</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{teachingPlans.filter((p) => p.status === "Rejected").length}</h3>
+              <p className="text-[11px] font-medium text-red-600 truncate">Plans rejected</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <XCircle className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Plans rejected</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+              <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">Pending</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-samps-[#026892]">
-              {teachingPlans.filter((p) => p.status === "Pending").length}
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Pending</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{teachingPlans.filter((p) => p.status === "Pending").length}</h3>
+              <p className="text-[11px] font-medium text-orange-600 truncate">Awaiting submission</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <AlertTriangle className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Awaiting submission</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       <Tabs

@@ -136,7 +136,7 @@ function getExpandedSectionFromPath(pathname: string, navigation: any) {
 export function AppSidebar() {
   const pathname = usePathname();
   const [expandedSection, setExpandedSection] = useState<string | null>(
-    "Dashboard"
+    "Dashboard",
   );
   const [activeSubItem, setActiveSubItem] = useState<string>("");
   const [currentRole, setCurrentRole] = useState<string>("hod");
@@ -146,7 +146,7 @@ export function AppSidebar() {
   useEffect(() => {
     const shouldBeExpanded = getExpandedSectionFromPath(
       pathname,
-      currentNavigation
+      currentNavigation,
     );
     setExpandedSection(shouldBeExpanded);
 
@@ -171,7 +171,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className="bg-white border-none">
-      <SidebarHeader className="app-sidebar border-b border-gray-300 h-16">
+      <SidebarHeader className="app-sidebar border-b border-gray-300 h-16 hidden md:flex">
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/dashboard" className="flex items-center gap-2">
@@ -206,26 +206,24 @@ export function AppSidebar() {
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-between text-black hover:text-[#026892] hover:bg-[#ECFDF5] data-[state=open]:bg-[#ECFDF5] data-[state=open]:text-[#026892] ${
-                        expandedSection === item.title
-                          ? "bg-gray-700 text-white"
-                          : ""
-                      }`}
+                      className={`w-full text-sm font-medium px-4 py-2.5 rounded-lg gap-3 text-black hover:text-[#026892] hover:bg-[#ECFDF5] data-[state=open]:bg-[#ECFDF5] data-[state=open]:text-[#026892] ${""}`}
                     >
-                      <div className="flex items-center">
-                        <item.icon className="mr-3 h-4 w-4" />
+                      <div className="flex items-center gap-3">
+                        <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span>{item.title}</span>
                       </div>
-                      <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                      <span className="ml-auto flex w-5 justify-end">
+                        <ChevronRight className="w-4 h-4 shrink-0 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                      </span>
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <div className="ml-6 mt-2 space-y-1">
+                    <div className="ml-4 mt-1 space-y-1">
                       {item.items.map((subItem: any) => (
                         <Link key={subItem.title} href={subItem.url}>
                           <Button
                             variant="ghost"
-                            className={`w-full justify-start text-sm hover:text-[#026892] hover:bg-[#ECFDF5] ${
+                            className={`w-full justify-start text-xs sm:text-sm px-4 py-1.5 rounded-lg gap-3 hover:text-[#026892] hover:bg-[#ECFDF5] ${
                               pathname === subItem.url ||
                               pathname.startsWith(subItem.url + "/") ||
                               activeSubItem === subItem.url
@@ -239,43 +237,43 @@ export function AppSidebar() {
                           >
                             {/* Add appropriate icon for each submenu item */}
                             {subItem.title === "Teaching Plans" && (
-                              <ClipboardList className="mr-3 h-4 w-4" />
+                              <ClipboardList className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Attendance" && (
-                              <Clock className="mr-3 h-4 w-4" />
+                              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Timetables" && (
-                              <Calendar className="mr-3 h-4 w-4" />
+                              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Student Requests" && (
-                              <MessageSquarePlus className="mr-3 h-4 w-4" />
+                              <MessageSquarePlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Marks Submitted" && (
-                              <CheckCircle className="mr-3 h-4 w-4" />
+                              <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Classes Marks" && (
-                              <BookmarkCheck className="mr-3 h-4 w-4" />
+                              <BookmarkCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Students Transcripts" && (
-                              <Scroll className="mr-3 h-4 w-4" />
+                              <Scroll className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Student Records" && (
-                              <Award className="mr-3 h-4 w-4" />
+                              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Lecturer Registration" && (
-                              <Users className="mr-3 h-4 w-4" />
+                              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Leave Requests" && (
-                              <Users className="mr-3 h-4 w-4" />
+                              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Modules Allocation" && (
-                              <Users className="mr-3 h-4 w-4" />
+                              <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Assign Claims" && (
-                              <FileText className="mr-3 h-4 w-4" />
+                              <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             {subItem.title === "Set Submissions" && (
-                              <CalendarCheck className="mr-3 h-4 w-4" />
+                              <CalendarCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             )}
                             <span>{subItem.title}</span>
                           </Button>
@@ -288,7 +286,7 @@ export function AppSidebar() {
                 <Link href={item.url}>
                   <Button
                     variant="ghost"
-                    className={`w-full justify-start text-black hover:text-[#026892] hover:bg-[#ECFDF5] ${
+                    className={`w-full justify-start text-sm font-medium px-4 py-2.5 rounded-lg gap-3 text-black hover:text-[#026892] hover:bg-[#ECFDF5] ${
                       pathname === item.url ? "bg-[#ECFDF5] text-[#026892]" : ""
                     }`}
                     onClick={() => {
@@ -296,7 +294,7 @@ export function AppSidebar() {
                       setActiveSubItem(item.url);
                     }}
                   >
-                    <item.icon className="mr-3 h-4 w-4" />
+                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>{item.title}</span>
                   </Button>
                 </Link>

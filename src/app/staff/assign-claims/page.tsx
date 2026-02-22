@@ -425,94 +425,58 @@ export default function AssignClaimsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Open Claims
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {statistics.openClaims}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-red-600">
-                  <AlertCircle className="h-3 w-3" />
-                  <span>Requiring assignment</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              </div>
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Open Claims</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{statistics.openClaims}</h3>
+              <p className="text-[11px] font-medium text-red-600 truncate">Requiring assignment</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  Assigned Claims
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {statistics.assignedClaims}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-blue-600">
-                  <UserCheck className="h-3 w-3" />
-                  <span>Assigned to lecturers</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                <UserCheck className="h-6 w-6 text-[#026892]" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Assigned Claims</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{statistics.assignedClaims}</h3>
+              <p className="text-[11px] font-medium text-blue-600 truncate">Assigned to lecturers</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  In Review
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {statistics.inReviewClaims}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-yellow-600">
-                  <Clock className="h-3 w-3" />
-                  <span>Being processed</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-yellow-50 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">In Review</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{statistics.inReviewClaims}</h3>
+              <p className="text-[11px] font-medium text-yellow-600 truncate">Being processed</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-yellow-50 flex items-center justify-center flex-shrink-0">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm border border-gray-200">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">
-                  High Priority
-                </p>
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
-                  {statistics.highPriorityClaims}
-                </h3>
-                <div className="flex items-center gap-1 text-sm text-red-600">
-                  <AlertTriangle className="h-3 w-3" />
-                  <span>Urgent claims</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">High Priority</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{statistics.highPriorityClaims}</h3>
+              <p className="text-[11px] font-medium text-red-600 truncate">Urgent claims</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Claims Table with Filters */}

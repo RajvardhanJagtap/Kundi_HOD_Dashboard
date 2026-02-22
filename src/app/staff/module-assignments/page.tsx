@@ -863,71 +863,63 @@ export default function ModuleAssignmentsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              Total Assignments
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#026892]">
-              {isLoading ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                statistics.totalAssignments
-              )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Assignments</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  statistics.totalAssignments
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-gray-600 truncate">Total module assignments</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <BookOpen className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">
-                Total module assignments
-              </span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              Lecturers Involved
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-600">
-              {isLoading ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                statistics.uniqueLecturers
-              )}
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Lecturers Involved</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  statistics.uniqueLecturers
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-gray-600 truncate">Teaching staff</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <Users className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Teaching staff</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              Class Groups
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#026892]">
-              {isLoading ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                statistics.uniqueGroups
-              )}
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Class Groups</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">
+                {isLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  statistics.uniqueGroups
+                )}
+              </h3>
+              <p className="text-[11px] font-medium text-gray-600 truncate">Assigned groups</p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <Users className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Assigned groups</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* Assignments Table with Filters */}

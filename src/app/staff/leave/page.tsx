@@ -141,50 +141,58 @@ export default function LeavePage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card className="bg-white border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Pending Requests</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{pendingCount}</div>
-            <p className="text-xs text-orange-600">Require your approval</p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Pending Requests</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{pendingCount}</h3>
+              <p className="text-[11px] font-medium text-orange-600 truncate">Require your approval</p>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+            </div>
+          </div>
+        </div>
         
-        <Card className="bg-white border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Upcoming Leave</CardTitle>
-            <Calendar className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{upcomingLeave}</div>
-            <p className="text-xs text-gray-500">Approved future leave</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Upcoming Leave</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{upcomingLeave}</h3>
+              <p className="text-[11px] font-medium text-gray-600 truncate">Approved future leave</p>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
+            </div>
+          </div>
+        </div>
         
-        <Card className="bg-white border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Days This Month</CardTitle>
-            <Clock className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{totalDaysThisMonth}</div>
-            <p className="text-xs text-gray-500">Total approved days</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Days This Month</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">{totalDaysThisMonth}</h3>
+              <p className="text-[11px] font-medium text-gray-600 truncate">Total approved days</p>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+            </div>
+          </div>
+        </div>
         
-        <Card className="bg-white border border-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-700">Staff Coverage</CardTitle>
-            <Users className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-gray-900">85%</div>
-            <p className="text-xs text-green-600">Available this week</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Staff Coverage</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">85%</h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">Available this week</p>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Filters and Leave Requests */}

@@ -248,67 +248,55 @@ export default function AttendancePage() {
       </div>
 
       {/* Statistics Cards - match teaching plans style */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              Department Average
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-gray-800">80.9%</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Users className="h-4 w-4 text-[#026892]" />
-              <span className="text-sm text-[#026892]">
-                +2.3% from last month
-              </span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Department Average</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">80.9%</h3>
+              <p className="text-[11px] font-medium text-[#026892] truncate">+2.3% from last month</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              Total Students
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-gray-800">160</div>
-            <div className="flex items-center gap-2 mt-2">
-              <Users className="h-4 w-4 text-samps-green-600" />
-              <span className="text-sm text-samps-green-600">Across 4 modules</span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-[#026892]" />
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              At Risk Students
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-gray-800">12</div>
-            <div className="flex items-center gap-2 mt-2">
-              <AlertTriangle className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-samps-red-600">&lt;70% attendance</span>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Total Students</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">160</h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">Across 4 modules</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-white shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg text-gray-700">
-              Today's Average
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-gray-800">93.3%</div>
-            <div className="flex items-center gap-2 mt-2">
-              <CheckCircle className="h-4 w-4 text-samps-green-600" />
-              <span className="text-sm text-samps-green-600">
-                Above department avg
-              </span>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">At Risk Students</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">12</h3>
+              <p className="text-[11px] font-medium text-red-600 truncate">&lt;70% attendance</p>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-hidden hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">Today's Average</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">93.3%</h3>
+              <p className="text-[11px] font-medium text-green-600 truncate">Above department avg</p>
+            </div>
+            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+              <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="year1" className="w-full">
