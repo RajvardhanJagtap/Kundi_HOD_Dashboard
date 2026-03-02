@@ -192,6 +192,8 @@ export function HeaderContent({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedAcademicYear", year);
       localStorage.setItem("selectedAcademicYearId", year);
+      // Keep pages in sync even when we auto-select.
+      window.dispatchEvent(new Event("academicYearChanged"));
     }
     // Don't clear semester for programmatic selection
   };

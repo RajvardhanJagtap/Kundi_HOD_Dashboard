@@ -43,12 +43,23 @@ import {
   Bar,
   BarChart,
 } from "recharts";
+import { useEffect, useState } from "react";
 import DepartmentCalendar from "@/components/DepartmentCalendar";
 import DepartmentPerformance from "@/components/DepartmentPerformance";
 import QuickActions from "@/components/QuickActions";
 import StatCard from "@/components/StatCard";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  fetchHodDashboardStats,
+  HodDashboardStats,
+} from "@/lib/hod-dashboard-api";
 
 export default function HODDashboardPage() {
+  const { departmentId } = useAuth();
+  const [selectedAcademicYearId, setSelectedAcademicYearId] =
+    useState<string>("");
+  const [selectedSemesterId, setSelectedSemesterId] = useState<string>("");
+  const [stats, setStats] = useState<HodDashboardStats | null>(null);
   const todaysSchedule = [
     {
       title: "Attendance Check",
@@ -79,6 +90,52 @@ export default function HODDashboardPage() {
     return `${String(twelveHour).padStart(2, "0")}:${minute} ${period}`;
   };
 
+  // Keep dashboard in sync with the header dropdown selections (stored in localStorage).
+  useEffect(() => {
+    const readSelections = () => {
+      if (typeof window === "undefined") return;
+      const yearId = localStorage.getItem("selectedAcademicYearId") || "";
+      const semesterId = localStorage.getItem("selectedSemesterId") || "";
+      setSelectedAcademicYearId(yearId);
+      setSelectedSemesterId(semesterId);
+    };
+
+    readSelections();
+
+    window.addEventListener("academicYearChanged", readSelections);
+    window.addEventListener("semesterChanged", readSelections);
+
+    return () => {
+      window.removeEventListener("academicYearChanged", readSelections);
+      window.removeEventListener("semesterChanged", readSelections);
+    };
+  }, []);
+
+  // Fetch real stats whenever department/year/semester changes.
+  useEffect(() => {
+    if (!departmentId || !selectedAcademicYearId || !selectedSemesterId) return;
+
+    let isCancelled = false;
+
+    (async () => {
+      try {
+        const data = await fetchHodDashboardStats({
+          departmentId,
+          academicYearId: selectedAcademicYearId,
+          semesterId: selectedSemesterId,
+        });
+        if (!isCancelled) setStats(data);
+      } catch (error) {
+        // Avoid UI changes; keep previous values on error.
+        console.error("Failed to load dashboard stats:", error);
+      }
+    })();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [departmentId, selectedAcademicYearId, selectedSemesterId]);
+
   return (
     <div className="grid gap-6">
       <div>
@@ -94,7 +151,7 @@ export default function HODDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           title="Staff Members"
-          value={45}
+          value={stats?.staffCount ?? 0}
           change="+5% from last semester"
           changeType="positive"
           icon={Users}
@@ -103,7 +160,7 @@ export default function HODDashboardPage() {
         />
         <StatCard
           title="Enrolled Students"
-          value={1234}
+          value={stats?.enrolledStudents ?? 0}
           change="+3% from last academic year"
           changeType="positive"
           icon={CheckCircle}
@@ -112,7 +169,7 @@ export default function HODDashboardPage() {
         />
         <StatCard
           title="Pending Approvals"
-          value={23}
+          value={stats?.pendingApprovals ?? 0}
           change="High priority"
           changeType="neutral"
           icon={AlertTriangle}
@@ -121,7 +178,7 @@ export default function HODDashboardPage() {
         />
         <StatCard
           title="Active Modules"
-          value={32}
+          value={stats?.activeModules ?? 0}
           change="+4 from last semester"
           changeType="positive"
           icon={BookOpen}
@@ -154,7 +211,9 @@ export default function HODDashboardPage() {
                         <h4 className="text-base font-semibold text-gray-900 leading-snug break-words">
                           {item.title}
                         </h4>
-                        <p className="text-sm text-gray-600 mt-0.5 break-words">{item.location}</p>
+                        <p className="text-sm text-gray-600 mt-0.5 break-words">
+                          {item.location}
+                        </p>
                       </div>
                       <p className="text-sm sm:text-base text-gray-500 font-medium leading-none whitespace-nowrap">
                         {formattedTime}
@@ -181,8 +240,12 @@ export default function HODDashboardPage() {
                     <FileText className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Teaching Plan - Module ABC101</h4>
-                    <p className="text-[11px] text-gray-600">Dr. Alice Smith - 2024-07-20</p>
+                    <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                      Teaching Plan - Module ABC101
+                    </h4>
+                    <p className="text-[11px] text-gray-600">
+                      Dr. Alice Smith - 2024-07-20
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -192,8 +255,12 @@ export default function HODDashboardPage() {
                     <CheckCircle className="h-4 w-4 text-green-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Leave Request - John Doe</h4>
-                    <p className="text-[11px] text-gray-600">John Doe - 2024-07-19</p>
+                    <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                      Leave Request - John Doe
+                    </h4>
+                    <p className="text-[11px] text-gray-600">
+                      John Doe - 2024-07-19
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -203,8 +270,12 @@ export default function HODDashboardPage() {
                     <AlertTriangle className="h-4 w-4 text-orange-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Grade Submission - CSC203</h4>
-                    <p className="text-[11px] text-gray-600">Prof. Bob Johnson - 2024-07-18</p>
+                    <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                      Grade Submission - CSC203
+                    </h4>
+                    <p className="text-[11px] text-gray-600">
+                      Prof. Bob Johnson - 2024-07-18
+                    </p>
                   </div>
                 </div>
               </Link>
