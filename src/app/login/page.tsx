@@ -39,12 +39,12 @@ export default function HODLogin() {
     return (
         <div className="min-h-screen flex">
             <div className="w-full h-screen bg-white overflow-hidden flex">
-            <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden bg-gray-900 min-h-screen">
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gray-900 min-h-screen">
                 {/* single responsive image that covers the panel */}
                 <img
                     src="/img/graduated.jpg"
                     alt="Decorative background"
-                    className="absolute inset-0 h-full w-full object-cover object-left opacity-95"
+                    className="absolute inset-0 h-full w-full object-cover object-center opacity-95"
                     loading="lazy"
                     decoding="async"
                 />
@@ -68,7 +68,7 @@ export default function HODLogin() {
             </div>
 
             {/* Right Panel - Login Form */}
-            <div className="flex-1 flex items-center justify-center p-8 bg-gray-50 min-h-screen">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50 min-h-screen">
                 <div className="w-full max-w-md">
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-2 mb-8 justify-center">

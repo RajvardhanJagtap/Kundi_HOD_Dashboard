@@ -49,6 +49,36 @@ import QuickActions from "@/components/QuickActions";
 import StatCard from "@/components/StatCard";
 
 export default function HODDashboardPage() {
+  const todaysSchedule = [
+    {
+      title: "Attendance Check",
+      location: "Office",
+      time: "08:30",
+      type: "Task",
+    },
+    {
+      title: "Dept Meeting",
+      location: "Room A",
+      time: "10:00",
+      type: "Meeting",
+    },
+    {
+      title: "Student Follow-up",
+      location: "Admin",
+      time: "13:00",
+      type: "Task",
+    },
+  ].sort((a, b) => a.time.localeCompare(b.time));
+
+  const formatScheduleTime = (time: string) => {
+    const [hourString, minute] = time.split(":");
+    const hour = Number(hourString);
+    const period = hour >= 12 ? "PM" : "AM";
+    const twelveHour = hour % 12 === 0 ? 12 : hour % 12;
+
+    return `${String(twelveHour).padStart(2, "0")}:${minute} ${period}`;
+  };
+
   return (
     <div className="grid gap-6">
       <div>
@@ -100,63 +130,55 @@ export default function HODDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 items-stretch">
         <QuickActions />
 
-        <Card className="bg-white shadow-sm border border-gray-200 rounded-lg h-full">
-          <div className="px-2 sm:px-3 md:px-4 mb-1.5 sm:mb-2 md:mb-3 pt-2 sm:pt-3 md:pt-4">
+        <Card className="bg-white shadow-sm border border-gray-200 rounded-lg h-full flex flex-col">
+          <div className="px-2 sm:px-3 md:px-3 mb-1 sm:mb-1.5 md:mb-2 pt-2 sm:pt-2.5 md:pt-3">
             <CardTitle className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
-              Today's Meetings
+              Today's Schedule
             </CardTitle>
           </div>
-          <CardContent className="p-3 sm:p-4">
-            <div className="space-y-3">
-              <div className="flex items-start gap-3 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="flex-shrink-0 w-12 text-center">
-                  <div className="text-sm font-semibold text-gray-600">09:00</div>
-                  <div className="text-xs text-gray-500">AM</div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Department Meeting</h4>
-                  <p className="text-[11px] text-gray-600 truncate">Conference Room A</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="flex-shrink-0 w-12 text-center">
-                  <div className="text-sm font-semibold text-gray-600">11:30</div>
-                  <div className="text-xs text-gray-500">AM</div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Curriculum Review</h4>
-                  <p className="text-[11px] text-gray-600 truncate">Meeting Room 2</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                <div className="flex-shrink-0 w-12 text-center">
-                  <div className="text-sm font-semibold text-gray-600">02:00</div>
-                  <div className="text-xs text-gray-500">PM</div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Student Affairs Discussion</h4>
-                  <p className="text-[11px] text-gray-600 truncate">Office 301</p>
-                </div>
-              </div>
+          <CardContent className="p-2.5 sm:p-3 flex-1">
+            <div className="divide-y divide-gray-100">
+              {todaysSchedule.map((item) => {
+                const formattedTime = formatScheduleTime(item.time);
+
+                return (
+                  <div
+                    key={`${item.time}-${item.title}`}
+                    className="py-3 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 pr-2">
+                        <h4 className="text-base font-semibold text-gray-900 leading-snug break-words">
+                          {item.title}
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-0.5 break-words">{item.location}</p>
+                      </div>
+                      <p className="text-sm sm:text-base text-gray-500 font-medium leading-none whitespace-nowrap">
+                        {formattedTime}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-sm border border-gray-200 rounded-lg h-full">
-          <div className="px-2 sm:px-3 md:px-4 mb-1.5 sm:mb-2 md:mb-3 pt-2 sm:pt-3 md:pt-4">
+        <Card className="bg-white shadow-sm border border-gray-200 rounded-lg h-full flex flex-col">
+          <div className="px-2 sm:px-3 md:px-3 mb-1 sm:mb-1.5 md:mb-2 pt-2 sm:pt-2.5 md:pt-3">
             <CardTitle className="text-sm sm:text-base md:text-lg font-bold text-gray-900">
               Pending Approvals
             </CardTitle>
           </div>
-          <CardContent className="p-3 sm:p-4">
+          <CardContent className="p-2 sm:p-2.5 flex-1">
             <div className="space-y-3">
               <Link href="/department/teaching-plans" className="block">
-                <div className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer">
+                <div className="flex items-start gap-2.5 p-2 rounded-lg border border-gray-200 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer">
                   <div className="flex-shrink-0">
-                    <FileText className="h-5 w-5 text-blue-600" />
+                    <FileText className="h-4 w-4 text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Teaching Plan - Module ABC101</h4>
@@ -165,9 +187,9 @@ export default function HODDashboardPage() {
                 </div>
               </Link>
               <Link href="/staff/leave" className="block">
-                <div className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-green-50 hover:bg-green-100 transition-colors cursor-pointer">
+                <div className="flex items-start gap-2.5 p-2 rounded-lg border border-gray-200 bg-green-50 hover:bg-green-100 transition-colors cursor-pointer">
                   <div className="flex-shrink-0">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <CheckCircle className="h-4 w-4 text-green-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Leave Request - John Doe</h4>
@@ -176,9 +198,9 @@ export default function HODDashboardPage() {
                 </div>
               </Link>
               <Link href="/academic/marks-submitted" className="block">
-                <div className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
+                <div className="flex items-start gap-2.5 p-2 rounded-lg border border-gray-200 bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
                   <div className="flex-shrink-0">
-                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    <AlertTriangle className="h-4 w-4 text-orange-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">Grade Submission - CSC203</h4>
